@@ -1,30 +1,34 @@
 # Requirements Document 
 
-Authors:
+Authors: Elia Fontana, Andrea Palomba, Leonardo Perugini, Francesco Sattolo
 
-Date:
+Date: 06/04/2020
 
-Version:
+Version: 1.0
 
 # Contents
 
+- [Requirements Document](#requirements-document)
+- [Contents](#contents)
 - [Essential description](#essential-description)
 - [Stakeholders](#stakeholders)
 - [Context Diagram and interfaces](#context-diagram-and-interfaces)
-	+ [Context Diagram](#context-diagram)
-	+ [Interfaces](#interfaces) 
-	
+	- [Context Diagram](#context-diagram)
+	- [Interfaces](#interfaces)
 - [Stories and personas](#stories-and-personas)
 - [Functional and non functional requirements](#functional-and-non-functional-requirements)
-	+ [Functional Requirements](#functional-requirements)
-	+ [Non functional requirements](#non-functional-requirements)
+	- [Functional Requirements](#functional-requirements)
+	- [Non Functional Requirements](#non-functional-requirements)
 - [Use case diagram and use cases](#use-case-diagram-and-use-cases)
-	+ [Use case diagram](#use-case-diagram)
-	+ [Use cases](#use-cases)
-    	+ [Relevant scenarios](#relevant-scenarios)
+	- [Use case diagram](#use-case-diagram)
+		- [Use case 1, FR1 customer buys item](#use-case-1-fr1-customer-buys-item)
+				- [Scenario 1.1, customer with fidelity card](#scenario-11-customer-with-fidelity-card)
+				- [Scenario 1.2, payment failure](#scenario-12-payment-failure)
+		- [Use case 2, UC2](#use-case-2-uc2)
+		- [Use case x, UCx](#use-case-x-ucx)
 - [Glossary](#glossary)
-- [System design](#system-design)
-- [Deployment diagram](#deployment-diagram)
+- [System Design](#system-design)
+- [Deployment Diagram](#deployment-diagram)
 
 # Essential description
 
@@ -35,29 +39,52 @@ EZShop is a software application to:
 * manage customers
 * support accounting
 
-
 # Stakeholders
 
-
-| Stakeholder name  | Description | 
-| ----------------- |:-----------:|
-|   Stakeholder x..     |             | 
+| Stakeholder name          |                                                                 Description                                                                  |
+| ------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------: |
+| Owner/Manager of the shop |                                      The person that needs to manage all of the shop related activities                                      |
+| Shop Employee             |                               Who works in the store: cashiers, cleaners, inventory manager, inventory workers                               |
+| Supplier                  |                                                           Sells items to the owner                                                           |
+| customer                  |                                                           Buys items from the shop                                                           |
+| Computer Engineer         | Create and maintain the application (us) and support the user of the application in case of problems (IT, database, security administrators) |
+| Inventory                 |                                                        Items with specific properties                                                        |
+| Catalogue                 |                                                         Items with common properties                                                         |
 
 # Context Diagram and interfaces
 
 ## Context Diagram
-\<Define here Context diagram using UML use case diagram>
 
-\<actors are a subset of stakeholders>
+```plantuml
+ 
+:Owner/Manager of the shop:
+:Shop employee: 
+:Customer:
+:Supplier:
+
+rectangle application {
+  :Owner/Manager of the shop: --> (FR4: manage accounting)
+  :Owner/Manager of the shop: --> (FR1: manage sales)
+  :Shop employee: --> (FR1: manage sales)
+  :Customer: <--> :Shop employee:
+  :Owner/Manager of the shop: --> (FR2: manage inventory)
+  (FR2: manage inventory) --> :Supplier:
+  :Owner/Manager of the shop: --> (FR3: manage customers)
+  (FR3: manage customers) --> :Customer:
+}
+```
 
 ## Interfaces
-\<describe here each interface in the context diagram>
 
-\<GUIs will be described graphically in a separate document>
-
-| Actor | Logical Interface | Physical Interface  |
-| ------------- |:-------------:| -----:|
-|   Actor x..     |  |  |
+| Actor                     |                  Logical Interface                  | Physical Interface |
+| ------------------------- | :-------------------------------------------------: | -----------------: |
+| Owner/Manager of the shop |               Application GUI (admin)               |  His PC/Smartphone |
+| Shop Employee             |        Accounting section of the application        |                  x |
+| Shop Employee             |             Application GUI (employee)              |   Payment terminal |
+| Supplier                  | Inventory and Accounting section of the application |                  x |
+| Customer                  |        Accounting section of the application        |                  x |
+| Customer                  |             Application GUI (customer)              |   Their smartphone |
+| Computer Engineer         |               Programming Environment               |          Their  PC |
 
 # Stories and personas
 \<A Persona is a realistic impersonation of an actor. Define here a few personas and describe in plain text how a persona interacts with the system>
@@ -66,71 +93,123 @@ EZShop is a software application to:
 
 \<stories will be formalized later as scenarios in use cases>
 
+TODO
 
 # Functional and non functional requirements
 
 ## Functional Requirements
 
-\<In the form DO SOMETHING, or VERB NOUN, describe high level capabilities of the system>
-
-\<they match to high level use cases>
-
-| ID        | Description  |
-| ------------- |:-------------:| 
-|  FR1     |  |
-|  FR2     |   |
-| FRx..  | | 
+| ID    |                                                       Description                                                        |
+| ----- | :----------------------------------------------------------------------------------------------------------------------: |
+| FR1   |                                                       manage sales                                                       |
+| FR1.1 |              log sales data (type, amount, price of items/discounts, type of customer, time of transaction)              |
+| FR1.2 | Payment terminal ( credit card reader) integration (discount if registered customer, update inventory status, log sales) |
+| FR2   |                                                     manage inventory                                                     |
+| FR2.1 |                              log inventory status (type, amount of items), available space                               |
+| FR2.2 |                                            Add/Remove items to/from inventory                                            |
+| FR2.3 |                                              Search through items (ordered)                                              |
+| FR2.4 |                                         Notice if item quantity under threshold                                          |
+| FR3   |                                                     manage catalogue                                                     |
+| FR3.1 |                                             log information about promotion                                              |
+| FR3.2 |                                            Add/Remove items to/from catalogue                                            |
+| FR3.3 |                                              Search through items (ordered)                                              |
+| FR4   |                                                      manage orders                                                       |
+| FR4.1 |                                      log information about suppliers (items costs)                                       |
+| FR4.2 |                                                Add/Remove items to order                                                 |
+| FR4.3 |                                             Send order and pay the supplier                                              |
+| FR5   |                                                     manage customers                                                     |
+| FR5.1 |                                      manage fidelity cards (points, special offers)                                      |
+| FR5.2 |                                                   Track user purchase                                                    |
+| FR5.3 |                                         Send customized offers (advertisements)                                          |
+| FR6   |                              manage employees (information, role, salary costs, timetables)                              |
+| FR6.1 |                                                   Add/Remove Employee                                                    |
+| FR6.2 |                                                     Update Employee                                                      |
+| FR7   |                                                    manage accounting                                                     |
+| FR7.1 |                          log information about the shop (rent,maintenance,advertisement costs)                           |
+| FR7.2 |                                                  analize profits/losses                                                  |
 
 ## Non Functional Requirements
 
 \<Describe constraints on functional requirements>
 
-| ID        | Type (efficiency, reliability, ..)           | Description  | Refers to |
-| ------------- |:-------------:| :-----:| -----:|
-|  NFR1     |   |  | |
-|  NFR2     | |  | |
-|  NFR3     | | | |
-| NFRx .. | | | | 
-
+| ID   | Type (efficiency, reliability, .. see iso 9126) |                                     Description                                     |   Refers to FR |
+| ---- | :---------------------------------------------: | :---------------------------------------------------------------------------------: | -------------: |
+| NFR1 |                    usability                    | The owner must learn to use all the functions within 30 minutes of training session |            all |
+| NFR2 |                   efficiency                    |                   every function must have <0.1 ms response time                    | easy functions |
+| NFR2 |                   efficiency                    |                     every function must have <1 s response time                     | hard functions |
+| NFR3 |                 maintainability                 |                              add new functionalities?                               |            all |
+| NFR4 |                   reliability                   |                      bugfixes must be completed within 1 week                       |            all |
+| NFR4 |                  availability                   |                                     uptime 99%                                      |            all |
+| NFR5 |                    security                     |            Restrict different views of the GUI only to authorized people            |            all |
+| NFR6 |                     domain                      |               Possibility to change currency (euro,dollar), language                |                |
 
 # Use case diagram and use cases
 
 
 ## Use case diagram
-\<define here UML Use case diagram UCD summarizing all use cases, and their relationships>
 
+```plantuml
+:Owner/Manager of the shop:
+:Shop employee: 
+:Customer:
+:Supplier:
 
-\<next describe here each use case in the UCD>
-### Use case 1, UC1
-| Actors Involved        |  |
-| ------------- |:-------------:| 
-|  Precondition     | \<Boolean expression, must evaluate to true before the UC can start> |  
-|  Post condition     | \<Boolean expression, must evaluate to true after UC is finished> |
-|  Nominal Scenario     | \<Textual description of actions executed by the UC> |
-|  Variants     | \<other executions, ex in case of errors> |
+rectangle application {
+  :Owner/Manager of the shop: --> (FR4: manage accounting)
+  :Owner/Manager of the shop: --> (FR1: manage sales)
+  :Shop employee: --> (FR1: manage sales)
+  :Customer: <--> :Shop employee:
+  :Owner/Manager of the shop: --> (FR2: manage inventory)
+  (FR2: manage inventory) --> :Supplier:
+  :Owner/Manager of the shop: --> (FR3: manage customers)
+  (FR3: manage customers) --> :Customer:
+}
+```
 
-##### Scenario 1.1 
+### Use case 1, FR1 customer buys item
 
-\<describe here scenarios instances of UC1>
+| Actors Involved  |                            customer, shop employee                            |
+| ---------------- | :---------------------------------------------------------------------------: |
+| Precondition     |                               item in inventory                               |
+| Post condition   | item sold, amount of items in shop updated, gains updated, transaction logged |
+|                  |                                                                               |
+| Nominal Scenario |                                                                               |
+|                  |                        1. Shop employee scans products                        |
+|                  |                        2. Applying general promotions                         |
+|                  |                               3. Customer pays                                |
+|                  |           4. Application updates amount of items in shop and gains            |
+|                  |                                                                               |
+| Variant1:        |                          customer with fidelity card                          |
+| Variant2:        |                                payment failure                                |
 
-\<a scenario is a sequence of steps that corresponds to a particular execution of one use case>
+##### Scenario 1.1, customer with fidelity card 
 
-\<a scenario is a more formal description of a story>
+| Scenario ID: SC1 | Corresponds to UC 1                                                           |
+| ---------------- | :---------------------------------------------------------------------------- |
+| Description      | customer with fidelity card                                                   |
+| Precondition     | item in shop, customer already registered in the system                       |
+| Postcondition    | item sold, amount of items in shop updated, gains updated, transaction logged |
+| Step#            | Step description                                                              |
+| 1                | Accept client fidelity card                                                   |
+| 2                | shop employee scans products                                                  |
+| 3                | Apply general promotions                                                      |
+| 4                | apply customized promotions                                                   |
+| 5                | payment success                                                               |
+| 6                | Update amount of items in shop and gains                                      |
+| 7                | Update customer's points                                                      |
 
-\<only relevant scenarios should be described>
+##### Scenario 1.2, payment failure
 
-| Scenario 1.1 | |
-| ------------- |:-------------:| 
-|  Precondition     | \<Boolean expression, must evaluate to true before the scenario can start> |
-|  Post condition     | \<Boolean expression, must evaluate to true after scenario is finished> |
-| Step#        | Description  |
-|  1     |  |  
-|  2     |  |
-|  ...     |  |
-
-##### Scenario 1.2
-
-##### Scenario 1.x
+| Scenario ID: SC2 | Corresponds to UC 1          |
+| ---------------- | :--------------------------- |
+| Description      | payment failure              |
+| Precondition     | item in shop                 |
+| Postcondition    | transaction logged           |
+| Step#            | Step description             |
+| 1                | shop employee scans products |
+| 2                | Applying general promotions  |
+| 3                | payment failure              |
+| 4                | Transaction aborted          |
 
 ### Use case 2, UC2
 ..
@@ -138,20 +217,27 @@ EZShop is a software application to:
 ### Use case x, UCx
 ..
 
-
-
 # Glossary
 
 \<use UML class diagram to define important terms, or concepts in the domain of the system, and their relationships> 
 
 \<concepts are used consistently all over the document, ex in use cases, requirements etc>
 
-# System Design
-\<describe here system design>
+TODO 
 
-\<must be consistent with Context diagram>
+# System Design
+
+Payment terminal is already existing, we don't implement it.
 
 # Deployment Diagram 
 
-\<describe here deployment diagram >
+```plantuml
+file Application
+database Database
+node ownerPC
+node CashRegister
 
+Application ..> ownerPC : deploy
+Application ..> CashRegister : deploy
+Database ..> ownerPC : deploy
+```
