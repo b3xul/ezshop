@@ -26,7 +26,8 @@ Version: 1.0
         - [Scenario 1.2, payment failure](#scenario-12-payment-failure)
     - [Use case 2, FR2, shop owner/shop employee updates inventory](#use-case-2-fr2-shop-ownershop-employee-updates-inventory)
     - [Use case 2.4, FR2.4, application notifies shop owner/shop employee about low amount of a certain item](#use-case-24-fr24-application-notifies-shop-ownershop-employee-about-low-amount-of-a-certain-item)
-    - [Use case 4, FR4,](#use-case-4-fr4)
+    - [Use case 4, FR4, shop owner/employee places an order](#use-case-4-fr4-shop-owneremployee-places-an-order)
+    - [Use case 6, FR6, shop owner/employee changes employee's contract](#use-case-6-fr6-shop-owneremployee-changes-employees-contract)
     - [Use case x, UCx](#use-case-x-ucx)
 - [Glossary](#glossary)
 - [System Design](#system-design)
@@ -58,7 +59,7 @@ EZShop is a software application to:
 ## Context Diagram
 
 ```plantuml
- 
+ @startuml
 rectangle Application {
     (admin GUI)
     (shop employee GUI)
@@ -83,6 +84,7 @@ rectangle Application {
 
 (admin GUI) --> :Catalogue:
 :Inventory: <-- :Catalogue:
+@enduml
 ```
 
 ## Interfaces
@@ -160,6 +162,7 @@ TODO
 ## Use case diagram
 
 ```plantuml
+@startuml
 :Owner/Manager of the shop:
 :Shop employee: 
 :Customer:
@@ -175,6 +178,7 @@ rectangle application {
   :Owner/Manager of the shop: --> (FR3: manage customers)
   (FR3: manage customers) --> :Customer:
 }
+@enduml
 ```
 
 ### Use case 1, FR1 customer buys item
@@ -232,7 +236,6 @@ rectangle application {
 | Nominal Scenario |                                                                            |
 |                  |           1. Shop owner/employee searches through items (FR2.3)            |
 |                  | 2. Shop owner/employee adds/removes/updates items in the inventory (FR2.2) |
-|                  |                                                                            |
 
 ### Use case 2.4, FR2.4, application notifies shop owner/shop employee about low amount of a certain item
 
@@ -244,13 +247,8 @@ rectangle application {
 | Nominal Scenario |                                                                        |
 |                  | 1. Application updates amount of items in shop and gains (UC1 step 4)  |
 |                  | 2. Application sends a notification to the shop owner or shop employee |
-|                  |                                                                        |
 
-### Use case 4, FR4, 
-\                 manage orders                        
- log information about suppliers (items costs)        
-           Add/Remove items to order                  
-        Send order and pay the supplier               
+### Use case 4, FR4, shop owner/employee places an order     
 
 | Actors Involved  |                   shop owner or shop employee, supplier                    |
 | ---------------- | :------------------------------------------------------------------------: |
@@ -262,8 +260,21 @@ rectangle application {
 |                  | 2a. Application automatically queries the suppliers about the items prices |
 |                  |           2b. Shop owner/employee manually updates items prices            |
 |                  |            3. Shop owner/employee selects items and quantities             |
-|                  |                     4. Order is placed to the supplier                     |
-|                  |                     5.(calendar with estimate dates?)                      |
+|                  |                             4. payment succes                              |
+|                  |                     5. Order is placed to the supplier                     |
+|                  |                     6.(calendar with estimate dates?)                      |
+|                  |                                                                            |
+| Variant:         |                              payment failure                               |
+
+### Use case 6, FR6, shop owner/employee changes employee's contract     
+
+| Actors Involved  |                    shop owner or shop employee, shop employee                     |
+| ---------------- | :-------------------------------------------------------------------------------: |
+| Precondition     |                                                                                   |
+| Post condition   |                     employee's information updated correctly                      |
+|                  |                                                                                   |
+| Nominal Scenario |                                                                                   |
+|                  | 1. Shop owner/employee adds/removes/updates employee information in the inventory |
 
 ### Use case x, UCx
 ..
@@ -283,6 +294,7 @@ Payment terminal is already existing, we don't implement it.
 # Deployment Diagram 
 
 ```plantuml
+@startuml
 file Application
 database Database
 node ownerPC
@@ -291,4 +303,5 @@ node CashRegister
 Application ..> ownerPC : deploy
 Application ..> CashRegister : deploy
 Database ..> ownerPC : deploy
+@enduml
 ```
