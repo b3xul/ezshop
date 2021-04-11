@@ -24,11 +24,22 @@ Version: 1.0
     - [Use case 1, FR1 customer buys item](#use-case-1-fr1-customer-buys-item)
         - [Scenario 1.1, customer with fidelity card](#scenario-11-customer-with-fidelity-card)
         - [Scenario 1.2, payment failure](#scenario-12-payment-failure)
-    - [Use case 2, FR2, shop owner/shop employee updates inventory](#use-case-2-fr2-shop-ownershop-employee-updates-inventory)
-    - [Use case 2.4, FR2.4, application notifies shop owner/shop employee about low amount of a certain item](#use-case-24-fr24-application-notifies-shop-ownershop-employee-about-low-amount-of-a-certain-item)
-    - [Use case 4, FR4, shop owner/employee places an order](#use-case-4-fr4-shop-owneremployee-places-an-order)
-    - [Use case 6, FR6, shop owner/employee changes employee's contract](#use-case-6-fr6-shop-owneremployee-changes-employees-contract)
-    - [Use case x, UCx](#use-case-x-ucx)
+    - [Use case 2, FR2.1, shop owner/shop employee updates inventory](#use-case-2-fr21-shop-ownershop-employee-updates-inventory)
+        - [Scenario2.1, order arrives](#scenario21-order-arrives)
+        - [Scenario2.2, sale completed](#scenario22-sale-completed)
+    - [Use case 3, FR2.3, shop owner/inventory manager searches for a product](#use-case-3-fr23-shop-ownerinventory-manager-searches-for-a-product)
+    - [Use case 3, FR3, shop owner applies a promotion to a certain item](#use-case-3-fr3-shop-owner-applies-a-promotion-to-a-certain-item)
+    - [Use case 4, FR3 shop owner handles item to catalogue](#use-case-4-fr3-shop-owner-handles-item-to-catalogue)
+        - [Scenario4.1, FR3 shop owner remove an item from catalogue](#scenario41-fr3-shop-owner-remove-an-item-from-catalogue)
+        - [Scenario4.2, FR3 shop owner add an item to catalogue](#scenario42-fr3-shop-owner-add-an-item-to-catalogue)
+    - [Use case 5, FR4, shop owner/inventory manager places an order](#use-case-5-fr4-shop-ownerinventory-manager-places-an-order)
+        - [Scenario5.1, payment failure](#scenario51-payment-failure)
+    - [Use case , Send customized offers](#use-case--send-customized-offers)
+    - [Use case , Add fidelity card](#use-case--add-fidelity-card)
+    - [Use case 6, FR6, shop owner changes employee's contract](#use-case-6-fr6-shop-owner-changes-employees-contract)
+    - [Use case 6, FR6, shop owner adds/removes employee](#use-case-6-fr6-shop-owner-addsremoves-employee)
+    - [Use case 7, FR7.1 log information about the shop (rent,maintenance,advertisement costs)](#use-case-7-fr71-log-information-about-the-shop-rentmaintenanceadvertisement-costs)
+    - [Use case 8, FR7.2 analize profits/losses](#use-case-8-fr72-analize-profitslosses)
 - [Glossary](#glossary)
 - [System Design](#system-design)
 - [Deployment Diagram](#deployment-diagram)
@@ -47,12 +58,12 @@ EZShop is a software application to:
 | Stakeholder name          |                                                                 Description                                                                  |
 | ------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------: |
 | Owner/Manager of the shop |                                      The person that needs to manage all of the shop related activities                                      |
-| Shop Employee             |                               Who works in the store: cashiers, cleaners, inventory manager, inventory workers                               |
+| Cashiers                  |                                                                                                                                              |
+| Inventory manager         |                                                                                                                                              |
+| Accounting administrator  |                                                                                                                                              |
 | Supplier                  |                                                           Sells items to the owner                                                           |
-| customer                  |                                                           Buys items from the shop                                                           |
+| Customer                  |                                                           Buys items from the shop                                                           |
 | Computer Engineer         | Create and maintain the application (us) and support the user of the application in case of problems (IT, database, security administrators) |
-| Inventory                 |                                                        Items with specific properties                                                        |
-| Catalogue                 |                                                         Items with common properties                                                         |
 
 # Context Diagram and interfaces
 
@@ -61,43 +72,30 @@ EZShop is a software application to:
 ```plantuml
  @startuml
 rectangle Application {
-    (admin GUI)
-    (shop employee GUI)
-    (inventory employee GUI)
+    (EzShop)
 }
 
-:Owner/Manager of the shop: --> (admin GUI) : admin GUI
-(admin GUI) --> :Supplier: : Inventory and Accounting section
-(admin GUI) --> :Customer: : Accounting section
-(admin GUI) --> :Shop employee: : Accounting section
+:Owner of the shop: --> (EzShop)
 
-(admin GUI) <..> (shop employee GUI)
-(admin GUI) <..> (inventory employee GUI)
+:Shop employee: --> (EzShop)
+:Inventory manager: --> :Shop employee:
+:Cashier: --> :Shop employee:
+:Accounting administrator: --> :Shop employee:
 
-(inventory employee GUI) --> :Inventory:
-:Shop employee: --> (shop employee GUI) : employee GUI
+:payment terminal:-->(EzShop)
 
-(admin GUI) --> :Inventory:
-:Supplier: --> :Inventory:
-:Customer: --> :Inventory:
-(shop employee GUI) --> :Inventory:
-
-(admin GUI) --> :Catalogue:
-:Inventory: <-- :Catalogue:
 @enduml
 ```
 
 ## Interfaces
 
-| Actor                     |                  Logical Interface                  | Physical Interface |
-| ------------------------- | :-------------------------------------------------: | -----------------: |
-| Owner/Manager of the shop |               Application GUI (admin)               |  His PC/Smartphone |
-| Shop Employee             |        Accounting section of the application        |                  x |
-| Shop Employee             |             Application GUI (employee)              |   Payment terminal |
-| Supplier                  | Inventory and Accounting section of the application |                  x |
-| Customer                  |        Accounting section of the application        |                  x |
-| Customer                  |             Application GUI (customer)              |   Their smartphone |
-| Computer Engineer         |               Programming Environment               |          Their  PC |
+| Actor                     |      Logical Interface       |          Physical Interface |
+| ------------------------- | :--------------------------: | --------------------------: |
+| Owner/Manager of the shop |   Application GUI (admin)    | Screen keyboard mouse on PC |
+| Cashier                   |  Application GUI (cashier)   | Screen keyboard mouse on PC |
+| Inventory manager         | Application GUI (inventory)  | Screen keyboard mouse on PC |
+| Accounting administrator  | Application GUI (accounting) | Screen keyboard mouse on PC |
+| Payment terminal          |         payment API          |               internet link |
 
 # Stories and personas
 \<A Persona is a realistic impersonation of an actor. Define here a few personas and describe in plain text how a persona interacts with the system>
@@ -106,40 +104,40 @@ rectangle Application {
 
 \<stories will be formalized later as scenarios in use cases>
 
-TODO
+Owner: ...
+Shop employee: ...
 
 # Functional and non functional requirements
 
 ## Functional Requirements
 
-| ID    |                                                       Description                                                        |
-| ----- | :----------------------------------------------------------------------------------------------------------------------: |
-| FR1   |                                                       manage sales                                                       |
-| FR1.1 |              log sales data (type, amount, price of items/discounts, type of customer, time of transaction)              |
-| FR1.2 | Payment terminal ( credit card reader) integration (discount if registered customer, update inventory status, log sales) |
-| FR2   |                                                     manage inventory                                                     |
-| FR2.1 |                            log inventory status (type, amount of items), available space (?)                             |
-| FR2.2 |                                            Add/Remove items to/from inventory                                            |
-| FR2.3 |                                              Search through items (ordered)                                              |
-| FR2.4 |                                         Notice if item quantity under threshold                                          |
-| FR3   |                                                     manage catalogue                                                     |
-| FR3.1 |                                             log information about promotion                                              |
-| FR3.2 |                                            Add/Remove items to/from catalogue                                            |
-| FR3.3 |                                              Search through items (ordered)                                              |
-| FR4   |                                                      manage orders                                                       |
-| FR4.1 |                                      log information about suppliers (items costs)                                       |
-| FR4.2 |                                                Add/Remove items to order                                                 |
-| FR4.3 |                                             Send order and pay the supplier                                              |
-| FR5   |                                                     manage customers                                                     |
-| FR5.1 |                                      manage fidelity cards (points, special offers)                                      |
-| FR5.2 |                                                   Track user purchase                                                    |
-| FR5.3 |                                         Send customized offers (advertisements)                                          |
-| FR6   |                              manage employees (information, role, salary costs, timetables)                              |
-| FR6.1 |                                                   Add/Remove Employee                                                    |
-| FR6.2 |                                                     Update Employee                                                      |
-| FR7   |                                                    manage accounting                                                     |
-| FR7.1 |                          log information about the shop (rent,maintenance,advertisement costs)                           |
-| FR7.2 |                                                  analize profits/losses                                                  |
+| ID    |                                           Description                                           |
+| ----- | :---------------------------------------------------------------------------------------------: |
+| FR1   |                                          manage sales                                           |
+| FR1.1 | log sales data (type, amount, price of items/discounts, type of customer, time of transaction)  |
+| FR1.2 | Payment terminal ( credit card reader) integration (discount if registered customer, log sales) |
+| FR2   |                                        manage inventory                                         |
+| FR2.1 |                          log inventory status (type, amount of items)                           |
+| FR2.2 |                               Add/Remove items to/from inventory                                |
+| FR2.3 |                                 Search through items (ordered)                                  |
+| FR2.4 |                             Notice if item quantity under threshold                             |
+| FR3   |                                        manage catalogue                                         |
+| FR3.1 |                                 log information about promotion                                 |
+| FR3.2 |                               Add/Remove items to/from catalogue                                |
+| FR3.3 |                                 Search through items (ordered)                                  |
+| FR4   |                                          manage orders                                          |
+| FR4.1 |             log information about suppliers (items costs, estimated delivery date)              |
+| FR4.2 |                                    Add/Remove items to order                                    |
+| FR4.3 |                                 Send order and pay the supplier                                 |
+| FR5   |                                        manage customers                                         |
+| FR5.1 |                                     register fidelity cards                                     |
+| FR5.2 |                             Send customized offers (advertisements)                             |
+| FR6   |                 manage employees (information, role, salary costs, timetables)                  |
+| FR6.1 |                                       Add/Remove Employee                                       |
+| FR6.2 |                                   Update Employee information                                   |
+| FR7   |                                        manage accounting                                        |
+| FR7.1 |              log information about the shop (rent,maintenance,advertisement costs)              |
+| FR7.2 |                                     analize profits/losses                                      |
 
 ## Non Functional Requirements
 
@@ -183,7 +181,7 @@ rectangle application {
 
 ### Use case 1, FR1 customer buys item
 
-| Actors Involved  |                            customer, shop employee                            |
+| Actors Involved  |                                 shop employee                                 |
 | ---------------- | :---------------------------------------------------------------------------: |
 | Precondition     |                               item in inventory                               |
 | Post condition   | item sold, amount of items in shop updated, gains updated, transaction logged |
@@ -192,7 +190,8 @@ rectangle application {
 |                  |                        1. Shop employee scans products                        |
 |                  |                        2. Applying general promotions                         |
 |                  |                               3. Customer pays                                |
-|                  |           4. Application updates amount of items in shop and gains            |
+|                  |                4. Application updates amount of items in shop                 |
+|                  |                              5. Update database                               |
 |                  |                                                                               |
 | Variant1:        |                          customer with fidelity card                          |
 | Variant2:        |                                payment failure                                |
@@ -211,7 +210,8 @@ rectangle application {
 | 4                | apply customized promotions                                                   |
 | 5                | payment success                                                               |
 | 6                | Update amount of items in shop and gains                                      |
-| 7                | Update customer's points                                                      |
+| 7                | Update (add or subtract) customer's points                                    |
+| 8                | Update customer's purchase history                                            |
 
 ##### Scenario 1.2, payment failure
 
@@ -226,59 +226,192 @@ rectangle application {
 | 3                | payment failure              |
 | 4                | Transaction aborted          |
 
-### Use case 2, FR2, shop owner/shop employee updates inventory
+### Use case 2, FR2.1, shop owner/shop employee updates inventory
 
-| Actors Involved  |                   shop owner or shop employee, inventory                   |
-| ---------------- | :------------------------------------------------------------------------: |
-| Precondition     |                inventory in consistent state, order arrives                |
-| Post condition   |                        inventory updated correctly                         |
-|                  |                                                                            |
-| Nominal Scenario |                                                                            |
-|                  |           1. Shop owner/employee searches through items (FR2.3)            |
-|                  | 2. Shop owner/employee adds/removes/updates items in the inventory (FR2.2) |
+| Actors Involved  |                 shop owner, inventory manager                  |
+| ---------------- | :------------------------------------------------------------: |
+| Precondition     |      inventory in consistent state, item is in catalogue       |
+| Post condition   |                  inventory updated correctly                   |
+|                  |                                                                |
+| Nominal Scenario |                                                                |
+|                  | 1. Shop owner/inventory manager searches through items (FR2.3) |
+|                  |                                                                |
+| Variant1         |                         order arrives                          |
+| Variant2         |                         sale completed                         |
 
-### Use case 2.4, FR2.4, application notifies shop owner/shop employee about low amount of a certain item
+##### Scenario2.1, order arrives
+| Scenario ID: SC2 | Corresponds to UC 1                                                      |
+| ---------------- | :----------------------------------------------------------------------- |
+| Description      | order arrives                                                            |
+| Precondition     | order arrives                                                            |
+| Postcondition    |                                                                          |
+| Step#            | Step description                                                         |
+| 1                | Shop owner/inventory manager searches through items (FR2.3)              |
+| 2                | Shop owner/inventory manager adds/updates items in the inventory (FR2.2) |
 
-| Actors Involved  |                 shop owner or shop employee, inventory                 |
-| ---------------- | :--------------------------------------------------------------------: |
-| Precondition     |             one item amount drop under a certain threshold             |
-| Post condition   |            notification sent to shop owner or shop employee            |
-|                  |                                                                        |
-| Nominal Scenario |                                                                        |
-|                  | 1. Application updates amount of items in shop and gains (UC1 step 4)  |
-|                  | 2. Application sends a notification to the shop owner or shop employee |
+##### Scenario2.2, sale completed
 
-### Use case 4, FR4, shop owner/employee places an order     
+| Scenario ID: SC2 | Corresponds to UC 1                                                                                                    |
+| ---------------- | :--------------------------------------------------------------------------------------------------------------------- |
+| Description      | sale completed                                                                                                         |
+| Precondition     | sale completed                                                                                                         |
+| Postcondition    |                                                                                                                        |
+| Step#            | Step description                                                                                                       |
+| 1                | Shop owner/inventory manager searches through items (FR2.3)                                                            |
+| 2                | Shop owner/inventory manager removes items in the inventory (FR2.2)                                                    |
+| 3                | If one item amount drop under a certain threshold, Application sends a notification to the shop owner or shop employee |
 
-| Actors Involved  |                   shop owner or shop employee, supplier                    |
-| ---------------- | :------------------------------------------------------------------------: |
-| Precondition     |                                                                            |
-| Post condition   |                                order placed                                |
-|                  |                                                                            |
-| Nominal Scenario |                                                                            |
-|                  |           1. Shop owner/employee searches through items (FR2.3)            |
-|                  | 2a. Application automatically queries the suppliers about the items prices |
-|                  |           2b. Shop owner/employee manually updates items prices            |
-|                  |            3. Shop owner/employee selects items and quantities             |
-|                  |                             4. payment succes                              |
-|                  |                     5. Order is placed to the supplier                     |
-|                  |                     6.(calendar with estimate dates?)                      |
-|                  |                                                                            |
-| Variant:         |                              payment failure                               |
+### Use case 3, FR2.3, shop owner/inventory manager searches for a product
 
-### Use case 6, FR6, shop owner/employee changes employee's contract     
+| Actors Involved  |             shop owner, inventory manager              |
+| ---------------- | :----------------------------------------------------: |
+| Precondition     |  inventory in consistent state, item is in catalogue   |
+| Post condition   |                                                        |
+|                  |                                                        |
+| Nominal Scenario |                                                        |
+|                  | 1. Shop owner/inventory manager searches through items |
 
-| Actors Involved  |                    shop owner or shop employee, shop employee                     |
-| ---------------- | :-------------------------------------------------------------------------------: |
-| Precondition     |                                                                                   |
-| Post condition   |                     employee's information updated correctly                      |
-|                  |                                                                                   |
-| Nominal Scenario |                                                                                   |
-|                  | 1. Shop owner/employee adds/removes/updates employee information in the inventory |
 
-### Use case x, UCx
-..
+### Use case 3, FR3, shop owner applies a promotion to a certain item                                          
 
+| Actors Involved  |                              shop owner                               |
+| ---------------- | :-------------------------------------------------------------------: |
+| Precondition     |                     catalogue in consistent state                     |
+| Post condition   |                         catalogue is updated                          |
+|                  |                                                                       |
+| Nominal Scenario |                                                                       |
+|                  |                  1. Shop owner searches through item                  |
+|                  |        2. Shop owner decide/select discount/promotion to apply        |
+|                  | 3. Shop owner decide/select the starting and ending date of promotion |
+|                  |                        4. Promotion is applied                        |
+
+### Use case 4, FR3 shop owner handles item to catalogue
+| Actors Involved  |       shop owner, shop employee        |
+| ---------------- | :------------------------------------: |
+| Precondition     | catalogue is update and work propertly |
+| Post condition   |           catalogue updated            |
+|                  |                                        |
+| Nominal Scenario |                                        |
+|                  |                                        |
+| Variant1         |             remove an item             |
+| Variant2         |              add an item               |
+
+##### Scenario4.1, FR3 shop owner remove an item from catalogue
+
+| Actors Involved  |               shop owner, shop employee               |
+| ---------------- | :---------------------------------------------------: |
+| Precondition     |                                                       |
+| Post condition   |                                                       |
+|                  |                                                       |
+| Nominal Scenario |                                                       |
+|                  |          1. Shop owner searches through item          |
+|                  |     2. Shop owner remove item from the catalogue      |
+|                  | 3. Shop owner/employee remove item from the inventory |
+
+##### Scenario4.2, FR3 shop owner add an item to catalogue
+
+| Actors Involved  |           shop owner, shop employee            |
+| ---------------- | :--------------------------------------------: |
+| Precondition     |                                                |
+| Post condition   |                                                |
+|                  |                                                |
+| Nominal Scenario |                                                |
+|                  |  1. Shop owner adds product to the catalogue   |
+|                  | 2. Shop owner/employee adds item to order list |
+
+### Use case 5, FR4, shop owner/inventory manager places an order     
+
+| Actors Involved  |                 shop owner, inventory manager                  |
+| ---------------- | :------------------------------------------------------------: |
+| Precondition     |      list size > minimum threshold, new item in catalogue      |
+| Post condition   |           item added to order list, empty order list           |
+|                  |                                                                |
+| Nominal Scenario |                                                                |
+|                  | 1. Shop owner/inventory manager searches through items (FR2.3) |
+|                  |  2. Shop owner/inventory manager selects items and quantities  |
+|                  |     3. Shop owner/inventory manager adds item to the list      |
+|                  |                       4.Select supplier                        |
+|                  |                         5. Order sent                          |
+|                  |                       6. Payment succes                        |
+|                  |               7. Order is placed to the supplier               |
+|                  |                      8. Empty order list                       |
+|                  |                                                                |
+| Variant:         |                        payment failure                         |
+##### Scenario5.1, payment failure
+
+| Scenario ID: SC2 | Corresponds to UC 1 |
+| ---------------- | :------------------ |
+| Description      |                     |
+| Precondition     |                     |
+| Postcondition    | Full list           |
+| Step#            | Step description    |
+| 1                | Abort transaction   |
+
+### Use case , Send customized offers
+
+| Scenario ID: SC2 | Corresponds to UC 5                                              |
+| ---------------- | :--------------------------------------------------------------- |
+| Description      | Send customized offers                                           |
+| Precondition     | Customer with fidelity card, promotions updated                  |
+| Postcondition    | customer's fidelity card updated                                 |
+| Step#            | Step description                                                 |
+| 1                | Application studies info about customer's past purchases         |
+| 2                | Application selects n items constantly bought by customer        |
+| 3                | promotions associated with one or more of those items is updates |
+| 4                | Application send email to customer notifying those promotions    |
+
+### Use case , Add fidelity card
+
+| Scenario ID: SC2 | Corresponds to UC 5                               |
+| ---------------- | :------------------------------------------------ |
+| Description      | Add fidelity card                                 |
+| Precondition     | Customer wants fidelity card                      |
+| Postcondition    | Customer receives fidelity card, database updated |
+| Step#            | Step description                                  |
+| 1                | Insert customer data into database                |
+
+### Use case 6, FR6, shop owner changes employee's contract     
+
+| Actors Involved  |                                      shop owner                                      |
+| ---------------- | :----------------------------------------------------------------------------------: |
+| Precondition     |                                                                                      |
+| Post condition   |                       employee's information updated correctly                       |
+|                  |                                                                                      |
+| Nominal Scenario |                                                                                      |
+|                  | 1. Shop owner updates employee information (role, timetable, salary) in the database |
+
+### Use case 6, FR6, shop owner adds/removes employee     
+
+| Actors Involved  |                        shop owner                         |
+| ---------------- | :-------------------------------------------------------: |
+| Precondition     |                                                           |
+| Post condition   |         employee's information updated correctly          |
+|                  |                                                           |
+| Nominal Scenario |                                                           |
+|                  |    1. Shop owner adds/removes employee in the database    |
+|                  | 2. Shop owner adds/removes employee account to the system |
+
+### Use case 7, FR7.1 log information about the shop (rent,maintenance,advertisement costs)
+
+| Actors Involved  |            shop owner, accounting administrator             |
+| ---------------- | :---------------------------------------------------------: |
+| Precondition     |                   List of payment/incomes                   |
+| Post condition   |                        List updated                         |
+|                  |                                                             |
+| Nominal Scenario |
+|                  | 1. Owner add payment (rent,maintenance,advertisement costs) |
+|                  |                 2. Calculate profit/losses                  |
+
+### Use case 8, FR7.2 analize profits/losses
+
+| Actors Involved  |              shop owner, accounting administrator              |
+| ---------------- | :------------------------------------------------------------: |
+| Precondition     | transaction database (incomes, expenses) in a consistent state |
+| Post condition   |          system shows to the owner financial balance           |
+|                  |                                                                |
+| Nominal Scenario |                                                                |
+|                  |    1. List all income and expensives (grouped by category)     |
+|                  |           2. Show statistics about profit and losses           |
 # Glossary
 
 \<use UML class diagram to define important terms, or concepts in the domain of the system, and their relationships> 

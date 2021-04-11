@@ -1,10 +1,4 @@
-- Decidere stakeholders
-- Context diagram e interfaces:
-  - Dividere shop employee nei diversi ruoli nel context diagram
-  - Mettere nel context diagram solo chi interagisce direttamente con l'applicazione (no suppliers, no inventory, no catalogue)
-  - Inventory diventa interfaccia per il catalogue?
-  - Dividere persona fisica owner nei diversi ruoli Administrator/owner/superuser?
+- UseCase diagram
 - Stories and personas?
-- Glossary per dividere ruoli
-- Rendere documento consistente con il glossary
-- UML Class diagram
+- UML Class diagram (Glossary)
+- Deployment diagram
