@@ -2,7 +2,7 @@
 
 Authors: Elia Fontana, Andrea Palomba, Leonardo Perugini, Francesco Sattolo
 
-Date: 06/04/2020
+Date: 06/04/2021
 
 Version: 1.0
 
@@ -71,7 +71,7 @@ EZShop is a software application to:
 ## Context Diagram
 
 ```plantuml
- @startuml
+@startuml
 rectangle Application {
     (EzShop)
 }
@@ -105,46 +105,63 @@ rectangle Application {
 # Stories and personas
 
 Owner:
-Roberto is a man who used his life savings to buy a small shop. He needs to be able to manage all the aspects of the activity in a simple and centralized way. 
+-Roberto is a man who used his life savings to buy a small shop. He needs to be able to manage all the aspects of the activity in a simple and centralized way. 
 He is happy to do any of the roles required, but likes to focus more on managing the catalogue, the orders, and thinking about customers promotions.
 For this reason he hired his friend Amanda, which usually works as a cashier, but can also manage the inventory when Roberto is not available.
 He also need to keep track of incomes and expenses, but since he is not very good with them, he pays Paolo, a very good accounting adiministrator, to help him with this task. Since Roberto is not an expert, he prefers seeing graphs than spreadsheets.
 
-Amanda loves to interact with customers, so she needs a fast application to manage sales quickly and don't make them wait. She is not very good with technology though, so she need a simple application to manage the inventory without errors, even when Roberto is not around.
+Employee:
+-Amanda loves to interact with customers, so she needs a fast application to manage sales quickly and don't make them wait. She is not very good with technology though, so she need a simple application to manage the inventory without errors, even when Roberto is not around.
 
+Owner:
+-Tom is 49 years, he is a great seller and like dealing with customers, but don't like much tecnology, so want an application that is simply to use.
+His employees work for him since 10 years so he trust them in managing accounting and inventory; however at thesame time  when there are no client 
+in the shop, sometime he take a look to warehouse about missing things because detest when a client don't find what is looking for. 
+He also like to have in storehouse all the latest releases so he update than really frequently.
+
+-Bill is 28 years, he bought the shop few months ago. 
+He is a precise person, so want to have control about all the aspect of the entire shop, in particular about the accounting part; he also would 
+like to have statistic about sales in order to try to increase the shop profits.
+He have a family with 3 children, so often he can't be physically in the shop and he like to monitoring the situation at any time with 
+his portable/(smartphone?).
+
+Employee:
+-Max is 23 years, he has not a lot experience about how to manage a shop inventory so he really like the  idea to use an application that help him doing
+his job; he is also heedless so is very happy to reach notification about the status of the inventory (when something is going to finish).
+Fortunately also the supervisor may access to the inventory an control that everything in fine.
 
 # Functional and non functional requirements
 
 ## Functional Requirements
 
-| ID    |                                           Description                                           |
-| ----- | :---------------------------------------------------------------------------------------------: |
-| FR1   |                                          manage sales                                           |
-| FR1.1 | log sales data (type, amount, price of items/discounts, type of customer, time of transaction)  |
-| FR1.2 | Payment terminal ( credit card reader) integration (discount if registered customer, log sales) |
-| FR2   |                                        manage inventory                                         |
-| FR2.1 |                          log inventory status (type, amount of items)                           |
-| FR2.2 |                               Add/Remove items to/from inventory                                |
-| FR2.3 |                                 Search through items (ordered)                                  |
-| FR2.4 |                             Notice if item quantity under threshold                             |
-| FR3   |                                        manage catalogue                                         |
-| FR3.1 |                                 log information about promotion                                 |
-| FR3.2 |                               Add/Remove items to/from catalogue                                |
-| FR3.3 |                                 Search through items (ordered)                                  |
-| FR4   |                                          manage orders                                          |
-| FR4.1 |             log information about suppliers (items costs, estimated delivery date)              |
-| FR4.2 |                                    Add/Remove items to order                                    |
-| FR4.3 |                                 Send order and pay the supplier                                 |
-| FR5   |                                        manage customers                                         |
-| FR5.1 |                                     register fidelity cards                                     |
-| FR5.2 |                             Send customized offers (advertisements)                             |
-| FR6   |                 manage employees (information, role, salary costs, timetables)                  |
-| FR6.1 |                                       Add/Remove Employee                                       |
-| FR6.2 |                                   Update Employee information                                   |
-| FR7   |                                        manage accounting                                        |
-| FR7.1 |              log information about the shop (rent,maintenance,advertisement costs)              |
-| FR7.2 |                                     analize profits/losses                                      |
-| FR8   |                       never store credit card number for security reasons                       |
+| ID    |                          Description                          |
+| ----- | :-----------------------------------------------------------: |
+| FR1   |                         manage sales                          |
+| FR1.1 |                        log sales data                         |
+| FR1.2 | Barcode reader, cash register, credit card reader integration |
+| FR2   |                       manage inventory                        |
+| FR2.1 |                     log inventory status                      |
+| FR2.2 |              Add/Remove items to/from inventory               |
+| FR2.3 |                Search through items (ordered)                 |
+| FR2.4 |            Notice if item quantity under threshold            |
+| FR3   |                       manage catalogue                        |
+| FR3.1 |                log information about promotion                |
+| FR3.2 |              Add/Remove items to/from catalogue               |
+| FR3.3 |                Search through items (ordered)                 |
+| FR4   |                         manage orders                         |
+| FR4.1 |                log information about suppliers                |
+| FR4.2 |                   Add/Remove items to order                   |
+| FR4.3 |                Send order and pay the supplier                |
+| FR5   |                       manage customers                        |
+| FR5.1 |                    register fidelity cards                    |
+| FR5.2 |            Send customized offers (advertisements)            |
+| FR6   |                       manage employees                        |
+| FR6.1 |                      Add/Remove Employee                      |
+| FR6.2 |                  Update Employee information                  |
+| FR7   |                       manage accounting                       |
+| FR7.1 |                log information about the shop                 |
+| FR7.2 |                    analize profits/losses                     |
+| FR8   |      never store credit card number for security reasons      |
 
 ## Non Functional Requirements
 
@@ -198,7 +215,7 @@ rectangle Application {
 (FR1   :manage sales) --> (FR7   :manage accounting)
 (FR4   :manage orders) --> (FR7   :manage accounting)
 (FR6   :manage employees [information, role, salary costs, timetables]) --> (FR7   :manage accounting)
-
+(FR2   :manage inventory) --> (FR3   :manage catalogue)
 @enduml
 ```
 
@@ -437,13 +454,107 @@ rectangle Application {
 
 # Glossary
 
-\<use UML class diagram to define important terms, or concepts in the domain of the system, and their relationships> 
-
-\<concepts are used consistently all over the document, ex in use cases, requirements etc>
 Definitions:
 - Owner of the shop could also be just the manager of the shop.
 
-TODO 
+```plantuml
+@startuml
+class EZShop
+
+class User{
+    account_ID
+    account_pwd
+    user_name
+    user_surname
+    hasInventoryAccess
+    hasCashRegAccess
+    hasAccountingAccess
+    hasCatalogueAccess
+    hasSuperuserAccess
+}
+class Owner
+
+class ShopEmployee{
+    se_salary
+    se_timetable
+}
+class SupplierItemPrice{
+    supplier
+    purchase_price
+}
+class Order {
+    delivery_date
+}
+class Transaction{
+    date
+    total_amount
+}
+class Catalogue
+class ItemDescriptor{
+    barcode
+    name
+    sale_price
+    general_discount
+    customized_discount
+    attributes_depending_on_the_shop
+}
+class Item{
+    item_ID
+}
+class Inventory
+
+
+class Sale{
+    hasUsedCreditCard
+}
+note "date is the date when the transaction is done" as N1
+N1 .. Transaction
+class FidelityCard{
+    fc_code
+    fc_name
+    fc_surname
+    fc_email
+    points
+}
+note "points ranges from 0 to 150" as N2
+N2 .. FidelityCard
+
+class Accounting{
+    rent_cost
+    maintenance_cost
+    advertisement_cost
+}
+note "advertisement_cost refers to physical advertisement, i.e., flyers" as N3
+N3 .. Accounting
+
+
+Owner -up-|> User
+ShopEmployee -up-|> User
+EZShop -- "*" User
+EZShop -- Catalogue
+EZShop -- Inventory
+EZShop -- "*" Sale
+EZShop -- Accounting
+
+Catalogue -- "*" ItemDescriptor
+ItemDescriptor -- "*" Item
+Inventory -- "*" Item
+
+
+Item "*" -- "*" Sale
+Sale "*" -- "0..1" FidelityCard
+
+Order "*" -- EZShop
+
+Order -up-|> Transaction
+Sale -up-|> Transaction
+Transaction "*" -- Accounting
+
+Order "*" -- "*" ItemDescriptor
+
+(Order, ItemDescriptor) .. SupplierItemPrice
+@enduml
+```
 
 # System Design
 
@@ -453,13 +564,17 @@ Payment terminal is already existing, we don't implement it.
 
 ```plantuml
 @startuml
-file Application
-database Database
-node ownerPC
+file EZShopApplication
+node Server
+node PCClient
 node CashRegister
+node BarcodeReader
+node CreditCardReader
 
-Application ..> ownerPC : deploy
-Application ..> CashRegister : deploy
-Database ..> ownerPC : deploy
+Server -- "*"PCClient 
+Server -- EZShopApplication 
+Server -- CashRegister
+Server -- BarcodeReader
+Server -- CreditCardReader
 @enduml
 ```
