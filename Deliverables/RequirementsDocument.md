@@ -24,21 +24,19 @@ Version: 1.0
     - [Use case 1, FR1 customer buys items](#use-case-1-fr1-customer-buys-items)
         - [Scenario 1.1](#scenario-11)
         - [Scenario 1.2](#scenario-12)
-    - [Use case 2, FR2.1, shop owner/inventory manager updates inventory](#use-case-2-fr21-shop-ownerinventory-manager-updates-inventory)
-        - [Scenario 2.1](#scenario-21)
-    - [Use case 3, FR2.2, shop owner/inventory manager searches for a item](#use-case-3-fr22-shop-ownerinventory-manager-searches-for-a-item)
-    - [Use case 4, FR3.1 shop owner adds/removes item to/from catalogue](#use-case-4-fr31-shop-owner-addsremoves-item-tofrom-catalogue)
-        - [Scenario 4.1](#scenario-41)
-        - [Scenario 4.2](#scenario-42)
-    - [Use case 5, FR3.3, shop owner applies a discount to a certain item](#use-case-5-fr33-shop-owner-applies-a-discount-to-a-certain-item)
-    - [Use case 6, FR4.1, shop owner/inventory manager adds/remove item to/from order](#use-case-6-fr41-shop-ownerinventory-manager-addsremove-item-tofrom-order)
-    - [Use case 7, FR4.2, shop owner/inventory manager places an order](#use-case-7-fr42-shop-ownerinventory-manager-places-an-order)
-        - [Scenario 7.1](#scenario-71)
-    - [Use case 8, FR5.1 Register fidelity card](#use-case-8-fr51-register-fidelity-card)
-    - [Use case 9, FR6.1, shop owner adds/removes employee](#use-case-9-fr61-shop-owner-addsremoves-employee)
-    - [Use case 10, FR6.2, shop owner changes employee's contract](#use-case-10-fr62-shop-owner-changes-employees-contract)
-    - [Use case 11, FR7.1 analize profits/losses](#use-case-11-fr71-analize-profitslosses)
-    - [Use case 12, FR8.1 update information about the shop](#use-case-12-fr81-update-information-about-the-shop)
+    - [Use case 2, FR2.1, shop owner/inventory manager adds/removes items to/from inventory](#use-case-2-fr21-shop-ownerinventory-manager-addsremoves-items-tofrom-inventory)
+    - [Use case 3, FR3.1 shop owner adds/removes item to/from catalogue](#use-case-3-fr31-shop-owner-addsremoves-item-tofrom-catalogue)
+        - [Scenario 3.1](#scenario-31)
+        - [Scenario 3.2](#scenario-32)
+    - [Use case 4, FR3.3, shop owner applies a discount to a certain item](#use-case-4-fr33-shop-owner-applies-a-discount-to-a-certain-item)
+    - [Use case 5, FR4.1, shop owner/inventory manager adds/remove item to/from order](#use-case-5-fr41-shop-ownerinventory-manager-addsremove-item-tofrom-order)
+    - [Use case 6, FR4.2, shop owner/inventory manager places an order](#use-case-6-fr42-shop-ownerinventory-manager-places-an-order)
+    - [Use case 7, FR5.1 Register fidelity card](#use-case-7-fr51-register-fidelity-card)
+    - [Use case 8, FR6.1, shop owner adds/removes employee](#use-case-8-fr61-shop-owner-addsremoves-employee)
+    - [Use case 9, FR6.2, shop owner changes employee's information](#use-case-9-fr62-shop-owner-changes-employees-information)
+    - [Use case 10, FR6.3, reset password](#use-case-10-fr63-reset-password)
+    - [Use case 11, FR7.1 add transaction related to the shop](#use-case-11-fr71-add-transaction-related-to-the-shop)
+    - [Use case 12, FR8.1 analize profits/losses](#use-case-12-fr81-analize-profitslosses)
 - [Glossary](#glossary)
 - [System Design](#system-design)
 - [Deployment Diagram](#deployment-diagram)
@@ -79,26 +77,24 @@ rectangle Application {
 :Cashier: --|> :Shop employee:
 :Accounting administrator: --|> :Shop employee:
 
-:Money:-->(EzShop)
-:Cash:--|>:Money:
-:Credit Card:--|>:Money:
-
-:Barcode:-->(EzShop)
+:Barcode Reader:-->(EzShop)
+:Cash Register:-->(EzShop)
+:Credit Card Reader:-->(EzShop)
 
 @enduml
 ```
 
 ## Interfaces
 
-| Actor                    |     Logical Interface      |                           Physical Interface |
-| ------------------------ | :------------------------: | -------------------------------------------: |
-| Owner of the shop        |         admin view         |                  Screen keyboard mouse on PC |
-| Cashier                  |        cashier view        |                  Screen keyboard mouse on PC |
-| Inventory manager        |       inventory view       |                  Screen keyboard mouse on PC |
-| Accounting administrator |      accounting view       |                  Screen keyboard mouse on PC |
-| Barcode                  | file containing items code |     Barcode reader connected via USB to a PC |
-| Cash                     |             x              |      Cash Register connected via USB to a PC |
-| Credit Card              |             x              | Credit Card Reader connected via USB to a PC |
+| Actor                    | Logical Interface |          Physical Interface |
+| ------------------------ | :---------------: | --------------------------: |
+| Owner of the shop        |    admin view     | Screen keyboard mouse on PC |
+| Cashier                  |   cashier view    | Screen keyboard mouse on PC |
+| Inventory manager        |  inventory view   | Screen keyboard mouse on PC |
+| Accounting administrator |  accounting view  | Screen keyboard mouse on PC |
+| Barcode Reader           |   USB protocol    |               USB interface |
+| Cash Register            |   USB protocol    |               USB interface |
+| Credit Card Reader       |   USB protocol    |               USB interface |
 
 # Stories and personas
 
@@ -122,86 +118,87 @@ Employee:
 - Max is 23 years, he has not a lot experience about how to manage a shop inventory so he really likes the idea to use an application that helps him doing his job; he is also heedless so he is very happy to receive notification about the status of the inventory (when something is going to finish).
 Fortunately also the supervisor may access to the inventory and control that everything is fine.
 
+- Paul has a Bachelor's Degree in Finance. He works as an accounting administrator for multiple clients. The owner hired him because he needed help with the financial management of the shop, especially regarding to taxes. Paul is highly competent at his job, so he needs a fast application to 
+accomodate his need to better understand his client's situation.
+
 # Functional and non functional requirements
 
 ## Functional Requirements
 
 | ID    |                    Description                     |
 | ----- | :------------------------------------------------: |
-| FR1   |                    manage sales                    |
-| FR2   |                  manage inventory                  |
+| FR1   |                    Manage sales                    |
+| FR2   |                  Manage inventory                  |
 | FR2.1 |         Add/Remove items to/from inventory         |
-| FR2.2 |           Search through items (ordered)           |
-| FR2.3 | Send notification if item quantity under threshold |
-| FR3   |                  manage catalogue                  |
+| FR2.2 | Send notification if item quantity under threshold |
+| FR3   |                  Manage catalogue                  |
 | FR3.1 |         Add/Remove items to/from catalogue         |
-| FR3.2 |           Search through items (ordered)           |
-| FR3.3 |              Update item information               |
-| FR4   |                   manage orders                    |
+| FR3.2 |              Update item information               |
+| FR4   |                   Manage orders                    |
 | FR4.1 |           Add/Remove items to/from order           |
-| FR4.2 |          Send order and pay the supplier           |
-| FR5   |                  manage customers                  |
+| FR4.2 |             Send order to the supplier             |
+| FR5   |                  Manage customers                  |
 | FR5.1 |              Register fidelity cards               |
-| FR6   |                  manage employees                  |
+| FR6   |                    Manage users                    |
 | FR6.1 |                Add/Remove Employee                 |
 | FR6.2 |            Update Employee information             |
-| FR7   |                 manage accounting                  |
-| FR7.1 |               Analize profits/losses               |
-| FR8   |         Update information about the shop          |
-| FR9   |        never store credit card information         |
+| FR6.3 |                   Reset password                   |
+| FR7   |                    Manage Shop                     |
+| FR7.1 |        Add transaction related to the shop         |
+| FR8   |                 Manage accounting                  |
+| FR8.1 |               Analize profits/losses               |
 
 ## Non Functional Requirements
 
-\<Describe constraints on functional requirements>
-
-| ID   | Type (efficiency, reliability, .. see iso 9126) |                                        Description                                         |   Refers to FR |
-| ---- | :---------------------------------------------: | :----------------------------------------------------------------------------------------: | -------------: |
-| NFR1 |                    usability                    |    The owner must learn to use all the functions within 30 minutes of training session     |            all |
-| NFR2 |                    usability                    | Shop employee must learn to use all of his functions within 15 minutes of training session |            all |
-| NFR3 |                   efficiency                    |                       every function must have <0.1 ms response time                       | easy functions |
-| NFR4 |                   efficiency                    |                        every function must have <1 s response time                         | hard functions |
-| NFR5 |                 maintainability                 |                                  add new functionalities?                                  |            all |
-| NFR6 |                   reliability                   |                          bugfixes must be completed within 1 week                          |            all |
-| NFR7 |                  availability                   |                                         uptime 99%                                         |            all |
-| NFR8 |                    security                     |               Restrict different views of the GUI only to authorized people                |            all |
-| NFR9 |                     domain                      |                   Possibility to change currency (euro,dollar), language                   |                |
+| ID    | Type (efficiency, reliability, .. see iso 9126) |                                                                                                        Description                                                                                                        |              Refers to FR |
+| ----- | :---------------------------------------------: | :-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: | ------------------------: |
+| NFR1  |                    usability                    |                                                                    The owner must learn to use all the functions within 30 minutes of training session                                                                    |                       all |
+| NFR2  |                    usability                    |                                                                Shop employee must learn to use all of his functions within 15 minutes of training session                                                                 |                       all |
+| NFR3  |                   efficiency                    |                                                                                      Every function must have <0.1 ms response time                                                                                       |  low complexity functions |
+| NFR4  |                   efficiency                    |                                                                                        Every function must have <1 s response time                                                                                        | high complexity functions |
+| NFR5  |                 maintainability                 |                                                                             Possibility to add new functionalities or improve the application                                                                             |                       all |
+| NFR6  |                   reliability                   |                                                                                         Bugfixes must be completed within 1 week                                                                                          |                       all |
+| NFR7  |                  availability                   |                                                                                              Uptime should be 99% or higher                                                                                               |                       all |
+| NFR8  |                   portability                   | The application can be accessed by any major browser, and from the operating systems where these browsers are available (Unix, Windows, MacOS). As for devices, the application should only be usable on PCs (landscape). |                       all |
+| NFR9  |                    security                     |                                                                               Restrict different views of the GUI only to authorized people                                                                               |                       all |
+| NFR10 |                    security                     |                                                                                            Never store credit card information                                                                                            |                           |
+| NFR11 |                    security                     |                                                                                   Before any delete operation the user must confirm it                                                                                    |                           |
+| NFR12 |                     domain                      |                                                                       Possibility to change language (italian, english) and currency (euro,dollar)                                                                        |                           |
 
 # Use case diagram and use cases
-
 
 ## Use case diagram
 
 ```plantuml
 @startuml
-rectangle Application {
-(FR1   :manage sales)
-(FR2   :manage inventory)
-(FR3   :manage catalogue)
-(FR4   :manage orders)
-(FR5   :manage customers)
-(FR6   :manage employees)
-(FR7   :manage accounting)
-(FR8   :never store credit card information)
-}
+(FR1   :Manage sales)
+(FR2   :Manage inventory)
+(FR3   :Manage catalogue)
+(FR4   :Manage orders)
+(FR5   :Manage customers)
+(FR6   :Manage employees)
+(FR7   :Manage shop)
+(FR8   :Manage accounting)
 
 :Owner of the shop: --|> :Cashier: : extends
 :Owner of the shop: --|> :Inventory manager: : extends
-:Owner of the shop: --> (FR3   :manage catalogue)
-:Owner of the shop: --> (FR4   :manage orders)
-:Owner of the shop: --> (FR5   :manage customers)
-:Owner of the shop: --> (FR6   :manage employees)
+:Owner of the shop: --> (FR3   :Manage catalogue)
+:Owner of the shop: --> (FR4   :Manage orders)
+:Owner of the shop: --> (FR5   :Manage customers)
+:Owner of the shop: --> (FR6   :Manage employees)
 :Owner of the shop: --|> :Accounting administrator: : extends
-:Inventory manager: --> (FR2   :manage inventory)
-:Inventory manager: --> (FR3   :manage catalogue)
-:Cashier: --> (FR1   :manage sales)
-:Accounting administrator: --> (FR7   :manage accounting)
+:Owner of the shop: --> (FR7   :Manage shop)
+:Inventory manager: --> (FR2   :Manage inventory)
+:Inventory manager: --> (FR3   :Manage catalogue)
+:Cashier: --> (FR1   :Manage sales)
+:Accounting administrator: --> (FR8   :Manage accounting)
 
-(FR1   :manage sales) --> (FR2   :manage inventory)
-(FR1   :manage sales) --> (FR7   :manage accounting)
-(FR4   :manage orders) --> (FR7   :manage accounting)
-(FR6   :manage employees) --> (FR7   :manage accounting)
-(FR2   :manage inventory) --> (FR3   :manage catalogue)
-(FR3   :manage catalogue) --> (FR4   :manage orders)
+(FR1   :Manage sales) --> (FR2   :Manage inventory)
+(FR1   :Manage sales) --> (FR8   :Manage accounting)
+(FR4   :Manage orders) --> (FR8   :Manage accounting)
+(FR6   :Manage employees) --> (FR8   :Manage accounting)
+(FR2   :Manage inventory) --> (FR3   :Manage catalogue)
+(FR3   :Manage catalogue) --> (FR4   :Manage orders)
 @enduml
 ```
 
@@ -261,9 +258,9 @@ rectangle Application {
 |               | ...repeat for each item                                                              |
 | 4             | Customer pays using cash or credit card                                              |
 | 5             | Client doesn't have enough money or transaction fails                                |
-| 5             | Cashier aborts transaction                                                           |
+| 6             | Cashier aborts transaction                                                           |
 
-### Use case 2, FR2.1, shop owner/inventory manager updates inventory
+### Use case 2, FR2.1, shop owner/inventory manager adds/removes items to/from inventory
 
 | Actors Involved  |            shop owner, inventory manager            |
 | ---------------- | :-------------------------------------------------: |
@@ -271,62 +268,43 @@ rectangle Application {
 | Post condition   |             inventory updated correctly             |
 |                  |                                                     |
 | Nominal Scenario |                                                     |
-|                  |       1. Actor searches through items (FR2.2)       |
-|                  |                                                     |
-| Variant          |                    order arrives                    |
+|                  |  1. Actor searches through items in the inventory   |
+|                  |  2. Actor adds/removes items to/from the inventory  |
 
-##### Scenario 2.1
-| Scenario      | order arrives                             |
-| ------------- | :---------------------------------------- |
-| Precondition  | order arrives                             |
-| Postcondition |                                           |
-| Step#         | Step description                          |
-| 1             | Actor searches through items (FR2.2)      |
-| 2             | Actor adds/updates items in the inventory |
+### Use case 3, FR3.1 shop owner adds/removes item to/from catalogue
+| Actors Involved  |                  shop owner                  |
+| ---------------- | :------------------------------------------: |
+| Precondition     |   catalogue is updated and work propertly    |
+| Post condition   |              catalogue updated               |
+|                  |                                              |
+| Nominal Scenario | 1. Actor searches through items in catalogue |
+|                  |                                              |
+| Variant1         |                remove an item                |
+| Variant2         |                 add an item                  |
 
-### Use case 3, FR2.2, shop owner/inventory manager searches for a item
+##### Scenario 3.1
 
-| Actors Involved  |            shop owner, inventory manager            |
-| ---------------- | :-------------------------------------------------: |
-| Precondition     | inventory in consistent state, item is in catalogue |
-| Post condition   |                                                     |
-|                  |                                                     |
-| Nominal Scenario |                                                     |
-|                  |           1. Actor searches through items           |
+| Scenario      | shop owner removes an item from catalogue          |
+| ------------- | :------------------------------------------------- |
+| Precondition  | catalogue is updated and work propertly            |
+| Postcondition | catalogue updated                                  |
+| Step#         |                                                    |
+| 1             | Shop owner searches through items in the catalogue |
+| 2             | Shop owner removes item from the catalogue         |
+| 3             | Confirm item removal                               |
+| 4             | Application removes item from the inventory        |
 
-### Use case 4, FR3.1 shop owner adds/removes item to/from catalogue
-| Actors Involved  |               shop owner                |
-| ---------------- | :-------------------------------------: |
-| Precondition     | catalogue is updated and work propertly |
-| Post condition   |            catalogue updated            |
-|                  |                                         |
-| Nominal Scenario |                                         |
-|                  |                                         |
-| Variant1         |             remove an item              |
-| Variant2         |               add an item               |
+##### Scenario 3.2
 
-##### Scenario 4.1
+| Scenario      | shop owner adds an item to catalogue   |
+| ------------- | :------------------------------------- |
+| Precondition  |                                        |
+| Postcondition |                                        |
+| Step#         |                                        |
+| 1             | Shop owner adds item to the catalogue  |
+| 2             | Shop owner adds that item to the order |
 
-| Scenario      | shop owner remove an item from catalogue   |
-| ------------- | :----------------------------------------- |
-| Precondition  |                                            |
-| Postcondition |                                            |
-| Step#         |                                            |
-| 1             | Shop owner searches through item           |
-| 2             | Shop owner removes item from the catalogue |
-| 3             | Shop owner removes item from the inventory |
-
-##### Scenario 4.2
-
-| Scenario      | shop owner adds an item to catalogue        |
-| ------------- | :------------------------------------------ |
-| Precondition  |                                             |
-| Postcondition |                                             |
-| Step#         |                                             |
-| 1             | Shop owner adds item to the catalogue       |
-| 2             | Shop owner adds that item to the order(UC6) |
-
-### Use case 5, FR3.3, shop owner applies a discount to a certain item                                          
+### Use case 4, FR3.3, shop owner applies a discount to a certain item                                          
 
 | Actors Involved  |                                                   shop owner                                                   |
 | ---------------- | :------------------------------------------------------------------------------------------------------------: |
@@ -334,26 +312,26 @@ rectangle Application {
 | Post condition   |                                              catalogue is updated                                              |
 |                  |                                                                                                                |
 | Nominal Scenario |                                                                                                                |
-|                  |                                      1. Shop owner searches through item                                       |
-|                  |                                 2. Shop owner decide/select discount to apply                                  |
-|                  |                      3. Shop owner decide/select the starting and ending date of discount                      |
-|                  |                                             4. discount is applied                                             |
+|                  |                             1. Shop owner searches through items in the catalogue                              |
+|                  |                          2. Shop owner selects fidelity discount to apply to the item                          |
+|                  |                         3. Shop owner selects the starting and ending date of discount                         |
+|                  |                                             4. Discount is applied                                             |
 |                  |                     5. Application searches through purchase history of all the customers                      |
 |                  | 6. Application sends email to customers who recently/frequently bought that item, notifying about the discount |
 
-### Use case 6, FR4.1, shop owner/inventory manager adds/remove item to/from order    
+### Use case 5, FR4.1, shop owner/inventory manager adds/remove item to/from order    
 
-| Actors Involved  |     shop owner, inventory manager     |
-| ---------------- | :-----------------------------------: |
-| Precondition     |                                       |
-| Post condition   |          item added to order          |
-|                  |                                       |
-| Nominal Scenario |                                       |
-|                  | 1. Actor searches through items (UC3) |
-|                  |  2. Actor selects items and amounts   |
-|                  |   3. Actor adds items to the order    |
+| Actors Involved  |          shop owner, inventory manager           |
+| ---------------- | :----------------------------------------------: |
+| Precondition     |                                                  |
+| Post condition   |               item added to order                |
+|                  |                                                  |
+| Nominal Scenario |                                                  |
+|                  | 1. Actor searches through items in the catalogue |
+|                  |        2. Actor selects items and amounts        |
+|                  |     3. Actor adds/removes items to the order     |
 
-### Use case 7, FR4.2, shop owner/inventory manager places an order     
+### Use case 6, FR4.2, shop owner/inventory manager places an order     
 
 | Actors Involved  |     shop owner, inventory manager     |
 | ---------------- | :-----------------------------------: |
@@ -361,25 +339,12 @@ rectangle Application {
 | Post condition   |              empty order              |
 |                  |                                       |
 | Nominal Scenario |                                       |
-|                  | 1. Actor selects supplier to buy from |
-|                  |  2. Order is placed to the supplier   |
-|                  |          3. Payment success           |
-|                  |            4. Empty order             |
+|                  |   1. Actor inserts supplier's email   |
+|                  | 2. Owner places order to the supplier |
+|                  |            3. Empty order             |
 |                  |                                       |
-| Variant:         |            payment failure            |
 
-##### Scenario 7.1
-
-| Scenario      | payment failure                    |
-| ------------- | :--------------------------------- |
-| Precondition  |                                    |
-| Postcondition | Nothing is updated                 |
-| Step#         | Step description                   |
-| 1             | Actor selects supplier to buy from |
-| 2             | Order is placed to the supplier    |
-| 3             | Payment failed                     |
-
-### Use case 8, FR5.1 Register fidelity card
+### Use case 7, FR5.1 Register fidelity card
 
 | Actors Involved  |                shop owner, cashier                |
 | ---------------- | :-----------------------------------------------: |
@@ -388,7 +353,7 @@ rectangle Application {
 |                  |                                                   |
 | Nominal scenario |       1. Insert customer data into database       |
 
-### Use case 9, FR6.1, shop owner adds/removes employee     
+### Use case 8, FR6.1, shop owner adds/removes employee     
 
 | Actors Involved  |                           shop owner                           |
 | ---------------- | :------------------------------------------------------------: |
@@ -397,9 +362,10 @@ rectangle Application {
 |                  |                                                                |
 | Nominal Scenario |                                                                |
 |                  |    1. Shop owner adds/removes employee to/from the database    |
-|                  | 2. Shop owner adds/removes employee user account to the system |
+|                  |                 2. Confirm removal (if remove)                 |
+|                  | 3. Shop owner adds/removes employee user account to the system |
 
-### Use case 10, FR6.2, shop owner changes employee's contract     
+### Use case 9, FR6.2, shop owner changes employee's information     
 
 | Actors Involved  |                         shop owner                         |
 | ---------------- | :--------------------------------------------------------: |
@@ -409,7 +375,29 @@ rectangle Application {
 | Nominal Scenario |                                                            |
 |                  | 1. Shop owner updates employee information in the database |
 
-### Use case 11, FR7.1 analize profits/losses
+### Use case 10, FR6.3, reset password    
+
+| Actors Involved  |                   shop owner                   |
+| ---------------- | :--------------------------------------------: |
+| Precondition     |                                                |
+| Post condition   |        user password updated correctly         |
+|                  |                                                |
+| Nominal Scenario |                                                |
+|                  |        1. User insert its email address        |
+|                  | 2. Send email with link to reset user password |
+|                  | 3. User follows link and chooses new password  |
+
+### Use case 11, FR7.1 add transaction related to the shop
+
+| Actors Involved  |                  shop owner                   |
+| ---------------- | :-------------------------------------------: |
+| Precondition     |                                               |
+| Post condition   |                 List updated                  |
+|                  |                                               |
+| Nominal Scenario |                                               |
+|                  | 1. Owner adds transaction related to the shop |
+
+### Use case 12, FR8.1 analize profits/losses
 
 | Actors Involved  |              shop owner, accounting administrator               |
 | ---------------- | :-------------------------------------------------------------: |
@@ -417,18 +405,8 @@ rectangle Application {
 | Post condition   |                                                                 |
 |                  |                                                                 |
 | Nominal Scenario |                                                                 |
-|                  |     1. List all incomes and expenses (grouped by category)      |
+|                  |            1. List all incomes and expenses (ledger)            |
 |                  | 2. Show statistics, reports and graphs about profits and losses |
-
-### Use case 12, FR8.1 update information about the shop
-
-| Actors Involved  |                       shop owner                        |
-| ---------------- | :-----------------------------------------------------: |
-| Precondition     |                                                         |
-| Post condition   |                      List updated                       |
-|                  |                                                         |
-| Nominal Scenario |                                                         |
-|                  | 1. Owner adds/removes/update information about the shop |
 
 # Glossary
 ```plantuml
@@ -446,8 +424,6 @@ class User{
     hasSuperuserAccess
 }
 class Owner
-note "Owner of the shop may also be just the manager" as N1
-N1 .. Owner
 
 class ShopEmployee{
     se_salary
@@ -470,6 +446,8 @@ class ItemDescriptor{
     name
     sale_price
     fidelity_discount
+    start_date
+    end_date
     attributes_depending_on_the_shop
 }
 class Item{
@@ -489,17 +467,14 @@ class FidelityCard{
     fc_email
     points
 }
-note "points range from 0 to 150" as N2
-N2 .. FidelityCard
 
-class Accounting{
+class Accounting
+
+class Shop{
     rent_cost
     maintenance_cost
     advertisement_cost
 }
-note "advertisement_cost refers to physical advertisement, i.e., flyers" as N3
-N3 .. Accounting
-
 
 Owner -up-|> User
 ShopEmployee -up-|> User
@@ -521,6 +496,7 @@ Order "*" -- EZShop
 Order -up-|> Transaction
 Sale -up-|> Transaction
 Transaction "*" -- Accounting
+Shop "*" -- Accounting
 
 Order "*" -- "*" ItemDescriptor
 
@@ -528,21 +504,42 @@ Order "*" -- "*" ItemDescriptor
 @enduml
 ```
 
+User:
+- Owner of the shop (may also be just the manager) is the only one who can have superuser access.
+- All employees can assume 1 or more roles between cashier, inventory manager and accounting administrator.
+- Each role can only access its portion of the Graphical User Interface
+
+ItemDescriptor:
+- FidelityDiscount is the discount applied to the item, if bought using a fidelity card.
+- Start date and End date represents the duration of the fidelity discount period.
+- Attributes depending on the shop could be customized depending on the type of shop:
+groceries shops will have expiration date, while fashion shops will have color of the clothes, size,..
+
+ShopPayment:
+- Type of payment could be related ApplicationFidelityCard:
+- Fidelity card points range from 0 to 150
+
+
 # System Design
 
-Barcode scanner, Cash Register and Credit Card Reader are existing physical products that we interact with just connecting them to our cash register PC.
+Barcode scanner, Cash Register and Credit Card Reader are existing physical products that we interact with just by connecting them to our cash register PC. They can be any product that the owner already has or any product that he wants to buy.
 
 # Deployment Diagram 
 
 ```plantuml
 @startuml
-file EZShopApplication
+file "EZShop backend" as EZback
 node Server
-node PCClient
+node PC
+node "Owner PC" as OwnerPC
 database Database
+file Browser
 
-Server <-- "*"PCClient:connect to 
-Server <.. EZShopApplication:deploy
+Server <-- OwnerPC:internet link
+Server <-- "*"PC:intranet link
+Server <.. EZback :deploy
 Server <.. Database:deploy
+OwnerPC <.. Browser :deploy
+PC <.. Browser :deploy
 @enduml
 ```
