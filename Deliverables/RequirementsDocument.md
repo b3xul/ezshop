@@ -24,19 +24,21 @@ Version: 1.0
     - [Use case 1, FR1 customer buys items](#use-case-1-fr1-customer-buys-items)
         - [Scenario 1.1](#scenario-11)
         - [Scenario 1.2](#scenario-12)
-    - [Use case 2, FR2.1, shop owner/inventory manager adds/removes items to/from inventory](#use-case-2-fr21-shop-ownerinventory-manager-addsremoves-items-tofrom-inventory)
-    - [Use case 3, FR3.1 shop owner adds/removes item to/from catalogue](#use-case-3-fr31-shop-owner-addsremoves-item-tofrom-catalogue)
-        - [Scenario 3.1](#scenario-31)
-        - [Scenario 3.2](#scenario-32)
-    - [Use case 4, FR3.3, shop owner applies a discount to a certain item](#use-case-4-fr33-shop-owner-applies-a-discount-to-a-certain-item)
-    - [Use case 5, FR4.1, shop owner/inventory manager adds/remove item to/from order](#use-case-5-fr41-shop-ownerinventory-manager-addsremove-item-tofrom-order)
-    - [Use case 6, FR4.2, shop owner/inventory manager places an order](#use-case-6-fr42-shop-ownerinventory-manager-places-an-order)
-    - [Use case 7, FR5.1 Register fidelity card](#use-case-7-fr51-register-fidelity-card)
-    - [Use case 8, FR6.1, shop owner adds/removes employee](#use-case-8-fr61-shop-owner-addsremoves-employee)
-    - [Use case 9, FR6.2, shop owner changes employee's information](#use-case-9-fr62-shop-owner-changes-employees-information)
-    - [Use case 10, FR6.3, reset password](#use-case-10-fr63-reset-password)
-    - [Use case 11, FR7.1 add transaction related to the shop](#use-case-11-fr71-add-transaction-related-to-the-shop)
-    - [Use case 12, FR8.1 analize profits/losses](#use-case-12-fr81-analize-profitslosses)
+    - [Use case 2, FR2.1, shop owner/inventory manager updates quantity of item in inventory](#use-case-2-fr21-shop-ownerinventory-manager-updates-quantity-of-item-in-inventory)
+    - [Use case 3, FR2.3, shop owner/inventory manager changes threshold](#use-case-3-fr23-shop-ownerinventory-manager-changes-threshold)
+    - [Use case 4, FR3.1 shop owner adds/removes item to/from catalogue](#use-case-4-fr31-shop-owner-addsremoves-item-tofrom-catalogue)
+        - [Scenario 4.1](#scenario-41)
+        - [Scenario 4.2](#scenario-42)
+    - [Use case 5, FR3.3, shop owner applies a discount to a certain item](#use-case-5-fr33-shop-owner-applies-a-discount-to-a-certain-item)
+    - [Use case 6, FR4.1, shop owner/inventory manager adds item to order](#use-case-6-fr41-shop-ownerinventory-manager-adds-item-to-order)
+    - [Use case 7, FR4.2, shop owner/inventory manager removes item from order](#use-case-7-fr42-shop-ownerinventory-manager-removes-item-from-order)
+    - [Use case 8, FR4.3, shop owner/inventory manager places an order](#use-case-8-fr43-shop-ownerinventory-manager-places-an-order)
+    - [Use case 9, FR5.1 Register fidelity card](#use-case-9-fr51-register-fidelity-card)
+    - [Use case 10, FR6.1, shop owner adds/removes employee](#use-case-10-fr61-shop-owner-addsremoves-employee)
+    - [Use case 11, FR6.2, shop owner changes employee's information](#use-case-11-fr62-shop-owner-changes-employees-information)
+    - [Use case 12, FR6.3, reset password](#use-case-12-fr63-reset-password)
+    - [Use case 13, FR7.1 add transaction related to the shop](#use-case-13-fr71-add-transaction-related-to-the-shop)
+    - [Use case 14, FR8.1 analize profits/losses](#use-case-14-fr81-analize-profitslosses)
 - [Glossary](#glossary)
 - [System Design](#system-design)
 - [Deployment Diagram](#deployment-diagram)
@@ -52,13 +54,14 @@ EZShop is a software application to:
 
 # Stakeholders
 
-| Stakeholder name  |                                                               Description                                                               |
-| ----------------- | :-------------------------------------------------------------------------------------------------------------------------------------: |
-| Owner of the shop |                                               Manages all of the shop related activities                                                |
-| Shop Employee     |                                          Cashier, Inventory manager, Accounting administrator                                           |
-| Computer Engineer | Create and maintain the application and support the user of the application in case of problems (IT, database, security administrators) |
-| Barcode           |                                                  Identifies each item of the inventory                                                  |
-| Money             |                                               Used to pay for items (cash or credit card)                                               |
+| Stakeholder name   |                                                               Description                                                               |
+| ------------------ | :-------------------------------------------------------------------------------------------------------------------------------------: |
+| Owner of the shop  |                                               Manages all of the shop related activities                                                |
+| Shop Employee      |                                          Cashier, Inventory manager, Accounting administrator                                           |
+| Computer Engineer  | Create and maintain the application and support the user of the application in case of problems (IT, database, security administrators) |
+| Barcode Reader     |                                                 Reads items and fidelity cards barcodes                                                 |
+| Cash Register      |                                                    Stores money and prints receipts                                                     |
+| Credit Card Reader |                                             Performs payment and returns transaction result                                             |
 
 # Context Diagram and interfaces
 
@@ -88,7 +91,7 @@ rectangle Application {
 
 | Actor                    | Logical Interface |          Physical Interface |
 | ------------------------ | :---------------: | --------------------------: |
-| Owner of the shop        |    admin view     | Screen keyboard mouse on PC |
+| Owner of the shop        |    owner view     | Screen keyboard mouse on PC |
 | Cashier                  |   cashier view    | Screen keyboard mouse on PC |
 | Inventory manager        |  inventory view   | Screen keyboard mouse on PC |
 | Accounting administrator |  accounting view  | Screen keyboard mouse on PC |
@@ -99,27 +102,26 @@ rectangle Application {
 # Stories and personas
 
 Owner:
-- Tom is 49 years, he is a great seller and likes dealing with customers, but doesn't like tecnology a lot, so he wants an application that is simple to use.
+- Tom is 49 years old, he is a great seller and likes dealing with customers, but doesn't like tecnology a lot, so he wants an application that is simple to use.
 His employees work for him since 10 years so he trust them in managing accounting and inventory; however, when there are no clients in the shop, sometimes he takes a look to the warehouse looking for missing items, because he detests when a client doesn't find what he is looking for. 
 He also likes to have in stock all the latest releases so he updates them really frequently.
 
-- Bill is 28 years, he bought the shop a few months ago. 
+- Bill is 28 years old, he bought the shop a few months ago. 
 He is a precise person, so he wants to have control about all the aspects of the entire shop, in particular about the accounting part; he also would like to have statistic about sales in order to try to increase the shop profits.
 He has 3 children, so he often can't be physically in the shop and he likes monitoring the situation at any time using his pc.
 
 - Roberto is a man who used his life savings to buy a small shop. He needs to be able to manage all the aspects of the activity in a simple and centralized way. 
 He is happy to do any of the roles required, but likes to focus more on managing the catalogue, the orders, and thinking about customers promotions.
 For this reason he hired his friend Amanda, who usually works as a cashier, but can also manage the inventory when Roberto is not available.
-He also need to keep track of incomes and expenses, but since he is not very good with them, he pays Paolo, a very good accounting adiministrator, to help him with this task. Since Roberto is not an expert, he prefers seeing graphs than spreadsheets.
+He also need to keep track of incomes and expenses, but since he is not very good with them, he pays Paolo, a very good accounting adiministrator, to help him with this task.
 
 Employee:
-- Amanda loves to interact with customers, so she needs a fast application to manage sales quickly and don't make them wait. She is not very good with technology though, so she needs a simple application to manage the inventory without errors, even when Roberto is not around.
+- Amanda is both a cashier and an inventory manager. She loves to interact with customers, so she needs a fast application to manage sales quickly and don't make them wait. She is not very good with technology though, so she needs a simple application to manage the inventory without errors, even when Roberto is not around.
 
-- Max is 23 years, he has not a lot experience about how to manage a shop inventory so he really likes the idea to use an application that helps him doing his job; he is also heedless so he is very happy to receive notification about the status of the inventory (when something is going to finish).
-Fortunately also the supervisor may access to the inventory and control that everything is fine.
+- Max is 23 years old, he has not a lot experience about how to manage a shop inventory so he really likes the idea to use an application that helps him doing his job; he is also heedless so he is very happy to receive notification about the status of the inventory (when something is going to run out).
+Fortunately also the owner may access the inventory and control that everything is fine.
 
-- Paul has a Bachelor's Degree in Finance. He works as an accounting administrator for multiple clients. The owner hired him because he needed help with the financial management of the shop, especially regarding to taxes. Paul is highly competent at his job, so he needs a fast application to 
-accomodate his need to better understand his client's situation.
+- Paul has a Bachelor's Degree in Finance. He works as an accounting administrator for multiple clients. The owner hired him because he needed help with the financial management of the shop, especially regarding to taxes. Paul is highly competent at his job, so he needs a fast application to visualize customized graphs and reports. This let him understand his client's situation better, to provide the best possible service.
 
 # Functional and non functional requirements
 
@@ -129,14 +131,16 @@ accomodate his need to better understand his client's situation.
 | ----- | :------------------------------------------------: |
 | FR1   |                    Manage sales                    |
 | FR2   |                  Manage inventory                  |
-| FR2.1 |         Add/Remove items to/from inventory         |
+| FR2.1 |         Update items quantity in inventory         |
 | FR2.2 | Send notification if item quantity under threshold |
+| FR2.3 |                  Change threshold                  |
 | FR3   |                  Manage catalogue                  |
 | FR3.1 |         Add/Remove items to/from catalogue         |
 | FR3.2 |              Update item information               |
 | FR4   |                   Manage orders                    |
-| FR4.1 |           Add/Remove items to/from order           |
-| FR4.2 |             Send order to the supplier             |
+| FR4.1 |                 Add item to order                  |
+| FR4.2 |               Remove item from order               |
+| FR4.3 |             Send order to the supplier             |
 | FR5   |                  Manage customers                  |
 | FR5.1 |              Register fidelity cards               |
 | FR6   |                    Manage users                    |
@@ -260,18 +264,29 @@ accomodate his need to better understand his client's situation.
 | 5             | Client doesn't have enough money or transaction fails                                |
 | 6             | Cashier aborts transaction                                                           |
 
-### Use case 2, FR2.1, shop owner/inventory manager adds/removes items to/from inventory
+### Use case 2, FR2.1, shop owner/inventory manager updates quantity of item in inventory
 
-| Actors Involved  |            shop owner, inventory manager            |
-| ---------------- | :-------------------------------------------------: |
-| Precondition     | inventory in consistent state, item is in catalogue |
-| Post condition   |             inventory updated correctly             |
-|                  |                                                     |
-| Nominal Scenario |                                                     |
-|                  |  1. Actor searches through items in the inventory   |
-|                  |  2. Actor adds/removes items to/from the inventory  |
+| Actors Involved  |                     shop owner, inventory manager                      |
+| ---------------- | :--------------------------------------------------------------------: |
+| Precondition     |          inventory in consistent state, item is in catalogue           |
+| Post condition   |                      inventory updated correctly                       |
+|                  |                                                                        |
+| Nominal Scenario |                                                                        |
+|                  |            1. Actor searches through items in the catalogue            |
+|                  |                         2. Actor selects item                          |
+|                  | 3. Actor updates quantity of item with certain attributes in inventory |
 
-### Use case 3, FR3.1 shop owner adds/removes item to/from catalogue
+### Use case 3, FR2.3, shop owner/inventory manager changes threshold
+
+| Actors Involved  | shop owner, inventory manager |
+| ---------------- | :---------------------------: |
+| Precondition     |                               |
+| Post condition   |  threshold updated correctly  |
+|                  |                               |
+| Nominal Scenario |                               |
+|                  |  1. Actor changes threshold   |
+
+### Use case 4, FR3.1 shop owner adds/removes item to/from catalogue
 | Actors Involved  |                  shop owner                  |
 | ---------------- | :------------------------------------------: |
 | Precondition     |   catalogue is updated and work propertly    |
@@ -282,29 +297,31 @@ accomodate his need to better understand his client's situation.
 | Variant1         |                remove an item                |
 | Variant2         |                 add an item                  |
 
-##### Scenario 3.1
+##### Scenario 4.1
 
-| Scenario      | shop owner removes an item from catalogue          |
-| ------------- | :------------------------------------------------- |
-| Precondition  | catalogue is updated and work propertly            |
-| Postcondition | catalogue updated                                  |
-| Step#         |                                                    |
-| 1             | Shop owner searches through items in the catalogue |
-| 2             | Shop owner removes item from the catalogue         |
-| 3             | Confirm item removal                               |
-| 4             | Application removes item from the inventory        |
+| Scenario      | shop owner removes an item from catalogue                          |
+| ------------- | :----------------------------------------------------------------- |
+| Precondition  | catalogue is updated and work propertly                            |
+| Postcondition | catalogue updated                                                  |
+| Step#         |                                                                    |
+| 1             | Shop owner searches through items in the catalogue                 |
+| 2             | Shop owner select item                                             |
+| 3             | Shop owner removes item with certain attributes from the catalogue |
+| 4             | Confirm item removal                                               |
+| 5             | Application removes item from the catalogue                        |
+| 6             | Application removes item from the inventory                        |
 
-##### Scenario 3.2
+##### Scenario 4.2
 
-| Scenario      | shop owner adds an item to catalogue   |
-| ------------- | :------------------------------------- |
-| Precondition  |                                        |
-| Postcondition |                                        |
-| Step#         |                                        |
-| 1             | Shop owner adds item to the catalogue  |
-| 2             | Shop owner adds that item to the order |
+| Scenario      | shop owner adds an item to catalogue          |
+| ------------- | :-------------------------------------------- |
+| Precondition  |                                               |
+| Postcondition |                                               |
+| Step#         |                                               |
+| 1             | Shop owner adds item to the catalogue         |
+| 2             | Shop owner selects amount to add to the order |
 
-### Use case 4, FR3.3, shop owner applies a discount to a certain item                                          
+### Use case 5, FR3.3, shop owner applies a discount to a certain item                                          
 
 | Actors Involved  |                                                   shop owner                                                   |
 | ---------------- | :------------------------------------------------------------------------------------------------------------: |
@@ -319,19 +336,32 @@ accomodate his need to better understand his client's situation.
 |                  |                     5. Application searches through purchase history of all the customers                      |
 |                  | 6. Application sends email to customers who recently/frequently bought that item, notifying about the discount |
 
-### Use case 5, FR4.1, shop owner/inventory manager adds/remove item to/from order    
+### Use case 6, FR4.1, shop owner/inventory manager adds item to order    
 
-| Actors Involved  |          shop owner, inventory manager           |
-| ---------------- | :----------------------------------------------: |
-| Precondition     |                                                  |
-| Post condition   |               item added to order                |
-|                  |                                                  |
-| Nominal Scenario |                                                  |
-|                  | 1. Actor searches through items in the catalogue |
-|                  |        2. Actor selects items and amounts        |
-|                  |     3. Actor adds/removes items to the order     |
+| Actors Involved  |                  shop owner, inventory manager                   |
+| ---------------- | :--------------------------------------------------------------: |
+| Precondition     |                                                                  |
+| Post condition   |                       item added to order                        |
+|                  |                                                                  |
+| Nominal Scenario |                                                                  |
+|                  |         1. Actor searches through items in the catalogue         |
+|                  | 2. Actor selects item with certain attributes from the catalogue |
+|                  |                     3. Actor selects amounts                     |
+|                  |                 4. Actor adds items to the order                 |
+|                  |                                                                  |
 
-### Use case 6, FR4.2, shop owner/inventory manager places an order     
+### Use case 7, FR4.2, shop owner/inventory manager removes item from order    
+
+| Actors Involved  | shop owner, inventory manager |
+| ---------------- | :---------------------------: |
+| Precondition     |                               |
+| Post condition   |      item added to order      |
+|                  |                               |
+| Nominal Scenario |                               |
+|                  |      1. Actor open order      |
+|                  |     2. Actor remove item      |
+
+### Use case 8, FR4.3, shop owner/inventory manager places an order     
 
 | Actors Involved  |     shop owner, inventory manager     |
 | ---------------- | :-----------------------------------: |
@@ -344,7 +374,7 @@ accomodate his need to better understand his client's situation.
 |                  |            3. Empty order             |
 |                  |                                       |
 
-### Use case 7, FR5.1 Register fidelity card
+### Use case 9, FR5.1 Register fidelity card
 
 | Actors Involved  |                shop owner, cashier                |
 | ---------------- | :-----------------------------------------------: |
@@ -353,7 +383,7 @@ accomodate his need to better understand his client's situation.
 |                  |                                                   |
 | Nominal scenario |       1. Insert customer data into database       |
 
-### Use case 8, FR6.1, shop owner adds/removes employee     
+### Use case 10, FR6.1, shop owner adds/removes employee     
 
 | Actors Involved  |                           shop owner                           |
 | ---------------- | :------------------------------------------------------------: |
@@ -365,7 +395,7 @@ accomodate his need to better understand his client's situation.
 |                  |                 2. Confirm removal (if remove)                 |
 |                  | 3. Shop owner adds/removes employee user account to the system |
 
-### Use case 9, FR6.2, shop owner changes employee's information     
+### Use case 11, FR6.2, shop owner changes employee's information     
 
 | Actors Involved  |                         shop owner                         |
 | ---------------- | :--------------------------------------------------------: |
@@ -375,7 +405,7 @@ accomodate his need to better understand his client's situation.
 | Nominal Scenario |                                                            |
 |                  | 1. Shop owner updates employee information in the database |
 
-### Use case 10, FR6.3, reset password    
+### Use case 12, FR6.3, reset password    
 
 | Actors Involved  |                   shop owner                   |
 | ---------------- | :--------------------------------------------: |
@@ -387,7 +417,7 @@ accomodate his need to better understand his client's situation.
 |                  | 2. Send email with link to reset user password |
 |                  | 3. User follows link and chooses new password  |
 
-### Use case 11, FR7.1 add transaction related to the shop
+### Use case 13, FR7.1 add transaction related to the shop
 
 | Actors Involved  |                  shop owner                   |
 | ---------------- | :-------------------------------------------: |
@@ -397,7 +427,7 @@ accomodate his need to better understand his client's situation.
 | Nominal Scenario |                                               |
 |                  | 1. Owner adds transaction related to the shop |
 
-### Use case 12, FR8.1 analize profits/losses
+### Use case 14, FR8.1 analize profits/losses
 
 | Actors Involved  |              shop owner, accounting administrator               |
 | ---------------- | :-------------------------------------------------------------: |
@@ -427,7 +457,6 @@ class Owner
 
 class ShopEmployee{
     se_salary
-    se_timetable
 }
 class SupplierItemPrice{
     supplier
@@ -470,10 +499,8 @@ class FidelityCard{
 
 class Accounting
 
-class Shop{
-    rent_cost
-    maintenance_cost
-    advertisement_cost
+class ShopExpenses{
+	type
 }
 
 Owner -up-|> User
@@ -496,7 +523,7 @@ Order "*" -- EZShop
 Order -up-|> Transaction
 Sale -up-|> Transaction
 Transaction "*" -- Accounting
-Shop "*" -- Accounting
+ShopExpenses "*" --|> Transaction
 
 Order "*" -- "*" ItemDescriptor
 
@@ -507,7 +534,7 @@ Order "*" -- "*" ItemDescriptor
 User:
 - Owner of the shop (may also be just the manager) is the only one who can have superuser access.
 - All employees can assume 1 or more roles between cashier, inventory manager and accounting administrator.
-- Each role can only access its portion of the Graphical User Interface
+- Each employee can only access the portion of the Graphical User Interface associated to their role.
 
 ItemDescriptor:
 - FidelityDiscount is the discount applied to the item, if bought using a fidelity card.
@@ -519,6 +546,7 @@ ShopPayment:
 - Type of payment could be related ApplicationFidelityCard:
 - Fidelity card points range from 0 to 150
 
+- Inventory is the list of all elements of the catalogue considering all attributes
 
 # System Design
 
