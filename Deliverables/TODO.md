@@ -1,4 +1,0 @@
-- UseCase diagram
-- Stories and personas?
-- UML Class diagram (Glossary)
-- Deployment diagram
