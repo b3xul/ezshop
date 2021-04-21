@@ -68,4 +68,9 @@ Version:
 ### 2) ![](Images/employee_field_change.png)
 ### Owner selects which field to update
 
+# UCX: Owner sees notifications
+## Nominal Scenario 
+### 1) ![](Images/Menu_selection_notifications.png)
+### 2) ![](Images/Notification_list.png)
+
 
