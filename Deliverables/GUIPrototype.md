@@ -100,4 +100,20 @@ They will receive an email with a link to a page where they can reset their pass
 ### 1) ![](Images/Menu_selection_notifications.png)
 ### 2) ![](Images/Notification_list.png)
 
+# UC13, Add transaction related to the shop
+## Nominal Scenario
+### 1) ![](Images/menu_selection_owner.png)
+### 2) ![](Images/owner_section.png)
+### Owner insert data about a specific transaction and add it to the accounting section
+### 3) ![](Images/manageShop.png)
+
+
+# UC14, Analize profits/losses
+## Nominal Scenario
+### 1) ![](Images/menu-selection_accounting.png)
+### 2) ![](Images/accounting_ledger.png)
+### User can switch and see also shop statistics 
+### 3) ![](Images/accounting_change_page.png)
+### 4) ![](Images/accounting_statistics.png)
+
 
