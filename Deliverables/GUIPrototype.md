@@ -8,6 +8,33 @@ Version:
 
 \<Report here the GUI that you propose. You are free to organize it as you prefer. A suggested presentation matches the Use cases and scenarios defined in the Requirement document. The GUI can be shown as a sequence of graphical files (jpg, png)  >
 
+# Login 
+
+Before every Use Case, users have to do the login, with which they enters in the EZShop application.
+
+### 1) ![](Images/EZShop.png)
+### 2) ![](Images/EZShop_login.png)
+### 3) ![](Images/Menu_selection.png)
+
+Depending on their role(s), they will have access to specific sections of the application:
+ - Shop owner: all sections.
+ - Cashier: cash register.
+ - Inventory manager: catalogue.
+ - Accountant: accounting.
+
+## Forgot password
+
+In case a user forgives their password, they can request for a new password giving their email.
+
+### 1) ![](Images/EZShop.png)
+### 2) ![](Images/Forgot_password.png)
+### 3) ![](Images/Request_password.png)
+
+They will receive an email with a link to a page where they can reset their password.
+
+### 4) ![](Images/Reset_password.png)
+
+
 # UC1: Customer buys items
 ## Nominal Scenario
 ### 1) ![](Images/Menu_selection_cashregister.png)
