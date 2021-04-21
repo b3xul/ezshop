@@ -10,7 +10,7 @@ Version:
 
 # UC1: Customer buys items
 ## Nominal Scenario
-### 1) ![](Images/Menu_selection.png)
+### 1) ![](Images/Menu_selection_cashregister.png)
 ### 2) ![](Images/Cash_register_empty.png)
 ### Cashier scans items
 ### 3) ![](Images/Cash_register_full.png)
