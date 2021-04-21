@@ -24,7 +24,7 @@ Depending on their role(s), they will have access to specific sections of the ap
 
 ### Forgot password
 
-In case a user forgives their password, they can request for a new password giving their email.
+In case users forget their password, they can request a password reset by giving their email.
 
 ### 1) ![](Images/EZShop.png)
 ### 2) ![](Images/Forgot_password.png)
@@ -65,13 +65,18 @@ They will receive an email with a link to a page where they can reset their pass
 ### 4) ![](Images/Item.png)
 ### 5) ![](Images/Modify_quantity.png)
 
-# UC3: Shop owner/Inventory manager changes threshold
+# UC3: Owner sees notifications
+## Nominal Scenario 
+### 1) ![](Images/Menu_selection_notifications.png)
+### 2) ![](Images/Notification_list.png)
+
+# UC4: Shop owner/Inventory manager changes threshold
 ## Nominal Scenario
 ### 1) ![](Images/Menu_selection_catalogue.png)
 ### 2) ![](Images/Catalogue.png)
 ### 3) ![](Images/Modify_threshold.png)
 
-# UC4: Shop owner/Inventory manager adds item to catalogue
+# UC5: Shop owner/Inventory manager adds item to catalogue
 ## Nominal Scenario
 ### 1) ![](Images/Menu_selection_catalogue.png)
 ### 2) ![](Images/Catalogue.png)
@@ -80,7 +85,7 @@ They will receive an email with a link to a page where they can reset their pass
 ### 4) ![](Images/Confirm_add_new_item.png)
 ### Return to point 2 in the Nominal Scenario, ready for other operations.
 
-# UC5: Shop owner/Inventory manager removes item from catalogue
+# UC6: Shop owner/Inventory manager removes item from catalogue
 ## Nominal Scenario
 ### 1) ![](Images/Menu_selection_catalogue.png)
 ### 2) ![](Images/Catalogue.png)
@@ -89,15 +94,15 @@ They will receive an email with a link to a page where they can reset their pass
 ### 4) ![](Images/Remove_item.png)
 ### 5) ![](Images/confirm_item_removal.png)
 
-# UC6: Shop owner/Inventory manager applies a discount to a certain item
+# UC7: Shop owner/Inventory manager updates item information
 ## Nominal Scenario
 ### 1) ![](Images/Menu_selection_catalogue.png)
 ### 2) ![](Images/Catalogue.png)
 ### User searches for the item (i.e., Vans ComfyCush)
 ### 3) ![](Images/Modify_discount.png)
-### User clicks on Discount, StartDate, EndDate and type the desired values
+### User clicks on any of the fields and type the desired values to update
 
-# UC7: shop owner/inventory manager adds item to order
+# UC8: shop owner/inventory manager adds item to order
 ## Nominal Scenario
 ### 1) ![](Images/Menu_selection_catalogue.png)
 ### 2) ![](Images/Catalogue.png)
@@ -107,15 +112,14 @@ They will receive an email with a link to a page where they can reset their pass
 ### User clicks on Amount and type the desired amount
 ### 5) ![](Images/Add_order.png)
 
-# UC8: shop owner removes item from order  
+# UC9: shop owner removes item from order  
 ## Nominal Scenario
 ### 1) ![](Images/menu_selection_owner.png)
-### 2) ![](Images/owner_section.png)
-### 3) ![](Images/Order_list.png)
-### 4) ![](Images/Remove_item_from_order.png)
-### 5) ![](Images/confirm_item_removal_from_order.png)
+### 2) ![](Images/Order_list.png)
+### 3) ![](Images/Remove_item_from_order.png)
+### 4) ![](Images/confirm_item_removal_from_order.png)
 
-# UC9: shop owner places an order  
+# UC10: shop owner places an order  
 ## Nominal Scenario
 ### 1) ![](Images/menu_selection_owner.png)
 ### 2) ![](Images/owner_section.png)
@@ -123,14 +127,14 @@ They will receive an email with a link to a page where they can reset their pass
 ### 4) ![](Images/Select_supplier.png)
 ### 5) ![](Images/Send_order.png)
 
-# UC9: Register fidelity card
+# UC11: Register fidelity card
 ## Nominal Scenario
 ### 1) ![](Images/Select_cash_register.png)
 ### 2) ![](Images/Select_create_new_fidelity.png)
 ### 3) ![](Images/add_costumer_info.png)
 ### Return to point 2, ready to create another fidelity card.
 
-# UC10: Shop owner adds/removes employee
+# UC12: Shop owner adds/removes employee
 ## Nominal Scenario
 ### 1) ![](Images/select_manage_employee.png)
 ### Add Employee
@@ -141,21 +145,20 @@ They will receive an email with a link to a page where they can reset their pass
 ### 3) ![](Images/confirm_employee_removal.png)
 ### After confirmation the application returns to Manage Employee section
 
-# UC11: Shop owner changes employee's information
+# UC13: Shop owner changes employee's information
 ## Nominal Scenario
 ### 1) ![](Images/select_manage_employee.png)
 ### 2) ![](Images/employee_field_change.png)
 ### Owner selects which field to update
 
-# UC13: Add transaction related to the shop
+# UC15: Add transaction related to the shop
 ## Nominal Scenario
 ### 1) ![](Images/menu_selection_owner.png)
 ### 2) ![](Images/owner_section.png)
 ### Owner insert data about a specific transaction and add it to the accounting section
 ### 3) ![](Images/manageShop.png)
 
-
-# UC14: Analize profits/losses
+# UC16: Analize profits/losses
 ## Nominal Scenario
 ### 1) ![](Images/menu-selection_accounting.png)
 ### 2) ![](Images/accounting_ledger.png)
@@ -164,10 +167,5 @@ They will receive an email with a link to a page where they can reset their pass
 ### User can switch and see also shop statistics 
 ### 5) ![](Images/accounting_change_page.png)
 ### 6) ![](Images/accounting_statistics.png)
-
-# UC15: Owner sees notifications
-## Nominal Scenario 
-### 1) ![](Images/Menu_selection_notifications.png)
-### 2) ![](Images/Notification_list.png)
 
 

@@ -25,21 +25,21 @@ Version: 1.0
         - [Scenario 1.1](#scenario-11)
         - [Scenario 1.2](#scenario-12)
     - [Use case 2, FR2.1, Shop owner/Inventory manager updates quantity of item in inventory](#use-case-2-fr21-shop-ownerinventory-manager-updates-quantity-of-item-in-inventory)
-    - [Use case 3, FR2.3, Shop owner/Inventory manager changes threshold](#use-case-3-fr23-shop-ownerinventory-manager-changes-threshold)
-    - [Use case 4, FR3.1, Shop owner adds/removes item to/from catalogue](#use-case-4-fr31-shop-owner-addsremoves-item-tofrom-catalogue)
-        - [Scenario 4.1](#scenario-41)
-        - [Scenario 4.2](#scenario-42)
-    - [Use case 5, FR3.3, Shop owner applies a discount to a certain item](#use-case-5-fr33-shop-owner-applies-a-discount-to-a-certain-item)
-    - [Use case 6, FR4.1, Shop owner/Inventory manager adds item to order](#use-case-6-fr41-shop-ownerinventory-manager-adds-item-to-order)
-    - [Use case 7, FR4.2, shop owner removes item from order](#use-case-7-fr42-shop-owner-removes-item-from-order)
-    - [Use case 8, FR4.3, shop owner places an order](#use-case-8-fr43-shop-owner-places-an-order)
-    - [Use case 9, FR5.1, Register fidelity card](#use-case-9-fr51-register-fidelity-card)
-    - [Use case 10, FR6.1, Shop owner adds/removes employee](#use-case-10-fr61-shop-owner-addsremoves-employee)
-    - [Use case 11, FR6.2, Shop owner changes employee's information](#use-case-11-fr62-shop-owner-changes-employees-information)
-    - [Use case 12, FR6.3, Reset password](#use-case-12-fr63-reset-password)
-    - [Use case 13, FR7.1, Add transaction related to the shop](#use-case-13-fr71-add-transaction-related-to-the-shop)
-    - [Use case 14, FR8.1, Analize profits/losses](#use-case-14-fr81-analize-profitslosses)
-    - [Use case 15, FR2.2, Display notifications of item's quantity under threshold](#use-case-15-fr22-display-notifications-of-items-quantity-under-threshold)
+    - [Use case 3, FR2.2, Display notifications of item's quantity under threshold](#use-case-3-fr22-display-notifications-of-items-quantity-under-threshold)
+    - [Use case 4, FR2.3, Shop owner/Inventory manager changes threshold](#use-case-4-fr23-shop-ownerinventory-manager-changes-threshold)
+    - [Use case 5, FR3.1, Shop owner/Inventory manager adds item to catalogue](#use-case-5-fr31-shop-ownerinventory-manager-adds-item-to-catalogue)
+    - [Use case 6, FR3.2, Shop owner/Inventory manager removes item from catalogue](#use-case-6-fr32-shop-ownerinventory-manager-removes-item-from-catalogue)
+    - [Use case 7, FR3.3, Shop owner/Inventory manager updates item information](#use-case-7-fr33-shop-ownerinventory-manager-updates-item-information)
+        - [Scenario 7.1](#scenario-71)
+    - [Use case 8, FR4.1, Shop owner/Inventory manager adds item to order](#use-case-8-fr41-shop-ownerinventory-manager-adds-item-to-order)
+    - [Use case 9, FR4.2, shop owner removes item from order](#use-case-9-fr42-shop-owner-removes-item-from-order)
+    - [Use case 10, FR4.3, shop owner places an order](#use-case-10-fr43-shop-owner-places-an-order)
+    - [Use case 11, FR5.1, Register fidelity card](#use-case-11-fr51-register-fidelity-card)
+    - [Use case 12, FR6.1, Shop owner adds/removes employee](#use-case-12-fr61-shop-owner-addsremoves-employee)
+    - [Use case 13, FR6.2, Shop owner changes employee's information](#use-case-13-fr62-shop-owner-changes-employees-information)
+    - [Use case 14, FR6.3, Reset password](#use-case-14-fr63-reset-password)
+    - [Use case 15, FR7.1, Add transaction related to the shop](#use-case-15-fr71-add-transaction-related-to-the-shop)
+    - [Use case 16, FR8.1, Analize profits/losses](#use-case-16-fr81-analize-profitslosses)
 - [Glossary](#glossary)
 - [System Design](#system-design)
 - [Deployment Diagram](#deployment-diagram)
@@ -136,8 +136,9 @@ Fortunately also the owner may access the inventory and control that everything 
 | FR2.2 | Display notifications of item's quantity under threshold |
 | FR2.3 |                     Change threshold                     |
 | FR3   |                     Manage catalogue                     |
-| FR3.1 |            Add/Remove items to/from catalogue            |
-| FR3.2 |                 Update item information                  |
+| FR3.1 |                  Add items to catalogue                  |
+| FR3.2 |               Remove items from catalogue                |
+| FR3.3 |                 Update item information                  |
 | FR4   |                      Manage orders                       |
 | FR4.1 |                    Add item to order                     |
 | FR4.2 |                  Remove item from order                  |
@@ -176,40 +177,39 @@ Fortunately also the owner may access the inventory and control that everything 
 
 ```plantuml
 @startuml
-(FR1   :Manage sales)
-(FR2   :Manage inventory)
-(FR3   :Manage catalogue)
-(FR4   :Manage orders)
-(FR5   :Manage customers)
-(FR6   :Manage employees)
-(FR7   :Manage shop)
-(FR8   :Manage accounting)
+(FR1:Manage sales)
+(FR2:Manage inventory)
+(FR3:Manage catalogue)
+(FR4:Manage orders)
+(FR5:Manage customers)
+(FR6:Manage employees)
+(FR7:Manage shop)
+(FR8:Manage accounting)
 
 :Owner of the shop: --|> :Cashier: : extends
 :Owner of the shop: --|> :Inventory manager: : extends
-:Owner of the shop: --> (FR3   :Manage catalogue)
-:Owner of the shop: --> (FR4   :Manage orders)
-:Owner of the shop: --> (FR5   :Manage customers)
-:Owner of the shop: --> (FR6   :Manage employees)
+:Owner of the shop: --> (FR4:Manage orders)
+:Cashier: --> (FR5:Manage customers)
+:Owner of the shop: --> (FR6:Manage employees)
 :Owner of the shop: --|> :Accounting administrator: : extends
-:Owner of the shop: --> (FR7   :Manage shop)
-:Inventory manager: --> (FR2   :Manage inventory)
-:Inventory manager: --> (FR3   :Manage catalogue)
-:Cashier: --> (FR1   :Manage sales)
-:Accounting administrator: --> (FR8   :Manage accounting)
+:Owner of the shop: --> (FR7:Manage shop)
+(FR7:Manage shop) --> (FR8:Manage accounting)
+:Inventory manager: --> (FR2:Manage inventory)
+:Cashier: --> (FR1:Manage sales)
+:Accounting administrator: --> (FR8:Manage accounting)
 
-(FR1   :Manage sales) --> (FR2   :Manage inventory)
-(FR1   :Manage sales) --> (FR8   :Manage accounting)
-(FR4   :Manage orders) --> (FR8   :Manage accounting)
-(FR6   :Manage employees) --> (FR8   :Manage accounting)
-(FR2   :Manage inventory) --> (FR3   :Manage catalogue)
-(FR3   :Manage catalogue) --> (FR4   :Manage orders)
+(FR1:Manage sales) --> (FR2:Manage inventory)
+(FR1:Manage sales) --> (FR8:Manage accounting)
+(FR4:Manage orders) --> (FR8:Manage accounting)
+(FR6:Manage employees) --> (FR8:Manage accounting)
+(FR2:Manage inventory) --> (FR3:Manage catalogue)
+(FR3:Manage catalogue) --> (FR4:Manage orders)
 @enduml
 ```
 
 ### Use case 1, FR1, Customer buys items
 
-| Actors Involved  |                                             Shop owner, Cashier, Inventory manager                                              |
+| Actors Involved  |                                            Shop owner, Cashier, (Inventory manager)                                             |
 | ---------------- | :-----------------------------------------------------------------------------------------------------------------------------: |
 | Precondition     |                                                       Items in inventory                                                        |
 | Post condition   |                             Items sold, amount of items in inventory updated, transactions updated                              |
@@ -277,7 +277,17 @@ Fortunately also the owner may access the inventory and control that everything 
 |                  |                         2. Actor selects item                          |
 |                  | 3. Actor updates quantity of item with certain attributes in inventory |
 
-### Use case 3, FR2.3, Shop owner/Inventory manager changes threshold
+### Use case 3, FR2.2, Display notifications of item's quantity under threshold
+
+| Actors Involved  |                Shop owner, Inventory manager                 |
+| ---------------- | :----------------------------------------------------------: |
+| Precondition     |            Notification list in consistent state             |
+| Post condition   |                                                              |
+|                  |                                                              |
+| Nominal Scenario |                                                              |
+|                  | 1. Show all notifications of item's quantity under threshold |
+
+### Use case 4, FR2.3, Shop owner/Inventory manager changes threshold
 
 | Actors Involved  | Shop owner, Inventory manager |
 | ---------------- | :---------------------------: |
@@ -287,57 +297,58 @@ Fortunately also the owner may access the inventory and control that everything 
 | Nominal Scenario |                               |
 |                  |  1. Actor changes threshold   |
 
-### Use case 4, FR3.1, Shop owner adds/removes item to/from catalogue
-| Actors Involved  |                  Shop owner                  |
-| ---------------- | :------------------------------------------: |
-| Precondition     |   Catalogue is updated and work propertly    |
-| Post condition   |              Catalogue updated               |
-|                  |                                              |
-| Nominal Scenario | 1. Actor searches through items in catalogue |
-|                  |                                              |
-| Variant1         |                Remove an item                |
-| Variant2         |                 Add an item                  |
+### Use case 5, FR3.1, Shop owner/Inventory manager adds item to catalogue
+| Actors Involved  |                     Shop owner, Inventory manager                      |
+| ---------------- | :--------------------------------------------------------------------: |
+| Precondition     | Catalogue is updated and work propertly, Amount of item added to order |
+| Post condition   |                           Catalogue updated                            |
+|                  |                                                                        |
+| Nominal Scenario |                                                                        |
+|                  |                    1. Actor fills item information                     |
+|                  |                2. Actor selects amount of item to order                |
 
-##### Scenario 4.1
+### Use case 6, FR3.2, Shop owner/Inventory manager removes item from catalogue
+| Actors Involved  |                  Shop owner, Inventory manager                   |
+| ---------------- | :--------------------------------------------------------------: |
+| Precondition     |             Catalogue is updated and work propertly              |
+| Post condition   |                        Catalogue updated                         |
+|                  |                                                                  |
+| Nominal Scenario |                                                                  |
+|                  |           1. Actor searches through items in catalogue           |
+|                  |                      2. Actor selects item                       |
+|                  | 3. Actor removes item with certain attributes from the catalogue |
+|                  |                  4.Actor confirms item removal                   |
+|                  |          5. Application removes item from the catalogue          |
+|                  |         6.  Application removes item from the inventory          |
 
-| Scenario      | Shop owner removes an item from catalogue                          |
-| ------------- | :----------------------------------------------------------------- |
-| Precondition  | Catalogue is updated and work propertly                            |
-| Postcondition | Catalogue updated                                                  |
-| Step#         |                                                                    |
-| 1             | Shop owner searches through items in the catalogue                 |
-| 2             | Shop owner select item                                             |
-| 3             | Shop owner removes item with certain attributes from the catalogue |
-| 4             | Confirm item removal                                               |
-| 5             | Application removes item from the catalogue                        |
-| 6             | Application removes item from the inventory                        |
+### Use case 7, FR3.3, Shop owner/Inventory manager updates item information                     
 
-##### Scenario 4.2
+| Actors Involved  |          Shop owner, Inventory manager           |
+| ---------------- | :----------------------------------------------: |
+| Precondition     |          Catalogue in consistent state           |
+| Post condition   |               Catalogue is updated               |
+|                  |                                                  |
+| Nominal Scenario |                                                  |
+|                  | 1. Actor searches through items in the catalogue |
+|                  |              2. Actor selects item               |
+|                  |        3. Actor updates item information         |
+|                  |                                                  |
+| Variant          |                Apply new discount                |
 
-| Scenario      | Shop owner adds an item to catalogue          |
-| ------------- | :-------------------------------------------- |
-| Precondition  |                                               |
-| Postcondition |                                               |
-| Step#         |                                               |
-| 1             | Shop owner adds item to the catalogue         |
-| 2             | Shop owner selects amount to add to the order |
+##### Scenario 7.1 
+| Scenario      | Apply new discount                                                                                          |
+| ------------- | :---------------------------------------------------------------------------------------------------------- |
+| Precondition  | Catalogue in consistent state                                                                               |
+| Postcondition | Catalogue is updated, notifications are sent to clients                                                     |
+| Step#         | Step description                                                                                            |
+| 1             | Actor searches through items in the catalogue                                                               |
+| 2             | Actor selects fidelity discount to apply to the item                                                        |
+| 3             | Actor selects the starting and ending date of discount                                                      |
+| 4             | Discount is applied                                                                                         |
+| 5             | Application searches through purchase history of all the customers                                          |
+| 6             | Application sends email to customers who recently/frequently bought that item, notifying about the discount |
 
-### Use case 5, FR3.3, Shop owner applies a discount to a certain item                                          
-
-| Actors Involved  |                                                   Shop owner                                                   |
-| ---------------- | :------------------------------------------------------------------------------------------------------------: |
-| Precondition     |                                         Catalogue in consistent state                                          |
-| Post condition   |                                              Catalogue is updated                                              |
-|                  |                                                                                                                |
-| Nominal Scenario |                                                                                                                |
-|                  |                             1. Shop owner searches through items in the catalogue                              |
-|                  |                          2. Shop owner selects fidelity discount to apply to the item                          |
-|                  |                         3. Shop owner selects the starting and ending date of discount                         |
-|                  |                                             4. Discount is applied                                             |
-|                  |                     5. Application searches through purchase history of all the customers                      |
-|                  | 6. Application sends email to customers who recently/frequently bought that item, notifying about the discount |
-
-### Use case 6, FR4.1, Shop owner/Inventory manager adds item to order    
+### Use case 8, FR4.1, Shop owner/Inventory manager adds item to order    
 
 | Actors Involved  |                  Shop owner, Inventory manager                   |
 | ---------------- | :--------------------------------------------------------------: |
@@ -351,7 +362,7 @@ Fortunately also the owner may access the inventory and control that everything 
 |                  |                 4. Actor adds items to the order                 |
 |                  |                                                                  |
 
-### Use case 7, FR4.2, shop owner removes item from order    
+### Use case 9, FR4.2, shop owner removes item from order    
 
 | Actors Involved  |        shop owner         |
 | ---------------- | :-----------------------: |
@@ -362,7 +373,7 @@ Fortunately also the owner may access the inventory and control that everything 
 |                  | 1. Shop owner open order  |
 |                  | 2. Shop owner remove item |
 
-### Use case 8, FR4.3, shop owner places an order     
+### Use case 10, FR4.3, shop owner places an order     
 
 | Actors Involved  |                 shop owner                 |
 | ---------------- | :----------------------------------------: |
@@ -375,7 +386,7 @@ Fortunately also the owner may access the inventory and control that everything 
 |                  |               3. Empty order               |
 |                  |                                            |
 
-### Use case 9, FR5.1, Register fidelity card
+### Use case 11, FR5.1, Register fidelity card
 
 | Actors Involved  |                Shop owner, Cashier                |
 | ---------------- | :-----------------------------------------------: |
@@ -384,7 +395,7 @@ Fortunately also the owner may access the inventory and control that everything 
 |                  |                                                   |
 | Nominal scenario |       1. Insert customer data into database       |
 
-### Use case 10, FR6.1, Shop owner adds/removes employee     
+### Use case 12, FR6.1, Shop owner adds/removes employee     
 
 | Actors Involved  |                           Shop owner                           |
 | ---------------- | :------------------------------------------------------------: |
@@ -396,7 +407,7 @@ Fortunately also the owner may access the inventory and control that everything 
 |                  |                 2. Confirm removal (if remove)                 |
 |                  | 3. Shop owner adds/removes employee user account to the system |
 
-### Use case 11, FR6.2, Shop owner changes employee's information     
+### Use case 13, FR6.2, Shop owner changes employee's information     
 
 | Actors Involved  |                         Shop owner                         |
 | ---------------- | :--------------------------------------------------------: |
@@ -406,7 +417,7 @@ Fortunately also the owner may access the inventory and control that everything 
 | Nominal Scenario |                                                            |
 |                  | 1. Shop owner updates employee information in the database |
 
-### Use case 12, FR6.3, Reset password    
+### Use case 14, FR6.3, Reset password    
 
 | Actors Involved  |                   Shop owner                   |
 | ---------------- | :--------------------------------------------: |
@@ -418,7 +429,7 @@ Fortunately also the owner may access the inventory and control that everything 
 |                  | 2. Send email with link to reset user password |
 |                  | 3. User follows link and chooses new password  |
 
-### Use case 13, FR7.1, Add transaction related to the shop
+### Use case 15, FR7.1, Add transaction related to the shop
 
 | Actors Involved  |                  Shop owner                   |
 | ---------------- | :-------------------------------------------: |
@@ -428,7 +439,7 @@ Fortunately also the owner may access the inventory and control that everything 
 | Nominal Scenario |                                               |
 |                  | 1. Owner adds transaction related to the shop |
 
-### Use case 14, FR8.1, Analize profits/losses
+### Use case 16, FR8.1, Analize profits/losses
 
 | Actors Involved  |              Shop owner, Accounting administrator               |
 | ---------------- | :-------------------------------------------------------------: |
@@ -438,17 +449,6 @@ Fortunately also the owner may access the inventory and control that everything 
 | Nominal Scenario |                                                                 |
 |                  |            1. List all incomes and expenses (ledger)            |
 |                  | 2. Show statistics, reports and graphs about profits and losses |
-
-### Use case 15, FR2.2, Display notifications of item's quantity under threshold
-
-| Actors Involved  |                Shop owner, Inventory manager                 |
-| ---------------- | :----------------------------------------------------------: |
-| Precondition     |            Notification list in consistent state             |
-| Post condition   |                                                              |
-|                  |                                                              |
-| Nominal Scenario |                                                              |
-|                  | 1. Show all notifications of item's quantity under threshold |
-
 
 # Glossary
 ```plantuml
