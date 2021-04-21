@@ -20,7 +20,7 @@ Depending on their role(s), they will have access to specific sections of the ap
  - Shop owner: all sections.
  - Cashier: cash register.
  - Inventory manager: catalogue.
- - Accountant: accounting.
+ - Accounting administrator: accounting.
 
 ## Forgot password
 
