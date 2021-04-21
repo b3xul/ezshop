@@ -38,6 +38,12 @@ Version:
 ### 4) ![](Images/Item.png)
 ### 5) ![](Images/Modify_quantity.png)
 
+# UC3: Shop owner/Inventory manager changes threshold
+## Nominal Scenario
+### 1) ![](Images/Menu_selection_catalogue.png)
+### 2) ![](Images/Catalogue.png)
+### 3) ![](Images/Modify_threshold.png)
+
 # UC9: Register fidelity card
 ## Nominal Scenario
 ### 1) ![](Images/Select_cash_register.png)
@@ -62,9 +68,4 @@ Version:
 ### 2) ![](Images/employee_field_change.png)
 ### Owner selects which field to update
 
-# UC3: Shop owner/Inventory manager changes threshold
-## Nominal Scenario
-### 1) ![](Images/Menu_selection_catalogue.png)
-### 2) ![](Images/Catalogue.png)
-### 3) ![](Images/Modify_threshold.png)
 
