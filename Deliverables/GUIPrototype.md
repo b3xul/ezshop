@@ -33,6 +33,7 @@ Version:
 ## Nominal Scenario
 ### 1) ![](Images/Menu_selection_catalogue.png)
 ### 2) ![](Images/Catalogue.png)
+### User searches for the item (i.e., Vans ComfyCush)
 ### 3) ![](Images/Select_item.png)
 ### 4) ![](Images/Item.png)
 ### 5) ![](Images/Modify_quantity.png)
