@@ -107,9 +107,11 @@ They will receive an email with a link to a page where they can reset their pass
 ## Nominal Scenario
 ### 1) ![](Images/menu-selection_accounting.png)
 ### 2) ![](Images/accounting_ledger.png)
+### 3) ![](Images/click_on_old_order.png)
+### 4) ![](Images/old_orderList.png)
 ### User can switch and see also shop statistics 
-### 3) ![](Images/accounting_change_page.png)
-### 4) ![](Images/accounting_statistics.png)
+### 5) ![](Images/accounting_change_page.png)
+### 6) ![](Images/accounting_statistics.png)
 
 # UC15: Owner sees notifications
 ## Nominal Scenario 
