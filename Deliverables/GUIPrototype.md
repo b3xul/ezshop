@@ -38,4 +38,9 @@ Version:
 ### 4) ![](Images/Item.png)
 ### 5) ![](Images/Modify_quantity.png)
 
+# UC3: Shop owner/Inventory manager changes threshold
+## Nominal Scenario
+### 1) ![](Images/Menu_selection_catalogue.png)
+### 2) ![](Images/Catalogue.png)
+### 3) ![](Images/Modify_threshold.png)
 
