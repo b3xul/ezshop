@@ -351,9 +351,9 @@ Fortunately also the owner may access the inventory and control that everything 
 |                  |                 4. Actor adds items to the order                 |
 |                  |                                                                  |
 
-### Use case 7, FR4.2, shop owner removes item from order    
+### Use case 7, FR4.2, Shop owner removes item from order    
 
-| Actors Involved  |        shop owner         |
+| Actors Involved  |        Shop owner         |
 | ---------------- | :-----------------------: |
 | Precondition     |                           |
 | Post condition   |    Item added to order    |
@@ -362,9 +362,9 @@ Fortunately also the owner may access the inventory and control that everything 
 |                  | 1. Shop owner open order  |
 |                  | 2. Shop owner remove item |
 
-### Use case 8, FR4.3, shop owner places an order     
+### Use case 8, FR4.3, Shop owner places an order     
 
-| Actors Involved  |                 shop owner                 |
+| Actors Involved  |                 Shop owner                 |
 | ---------------- | :----------------------------------------: |
 | Precondition     |       Order size > minimum threshold       |
 | Post condition   |                Empty order                 |
