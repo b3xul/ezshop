@@ -17,13 +17,13 @@ Version:
 ### 4) ![](Images/Print_receipt.png)
 ### Cash register prints the receipt; return to point 2, ready for another transaction.
 
-## Variant 1 - Scenario 1.1
+## Variant 1 - Scenario 1.1 - Customer with fidelity card
 ### (Same until point 3 in the Nominal Scenario)
 ### Cashier scans fidelity card
 ### ![](Images/Cash_register_full_fc.png)
 ### (Same after point 3 in the Nominal Scenario)
 
-## Variant 2 - Scenario 1.2
+## Variant 2 - Scenario 1.2 - Payment failure
 ### (Same until point 2 in the Nominal Scenario)
 ### ![](Images/Abort_transaction.png)
 ### ![](Images/Abort_confirm.png)
