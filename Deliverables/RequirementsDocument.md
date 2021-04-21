@@ -32,8 +32,8 @@ Version: 1.0
     - [Use case 7, FR3.3, Shop owner/Inventory manager updates item information](#use-case-7-fr33-shop-ownerinventory-manager-updates-item-information)
         - [Scenario 7.1](#scenario-71)
     - [Use case 8, FR4.1, Shop owner/Inventory manager adds item to order](#use-case-8-fr41-shop-ownerinventory-manager-adds-item-to-order)
-    - [Use case 9, FR4.2, shop owner removes item from order](#use-case-9-fr42-shop-owner-removes-item-from-order)
-    - [Use case 10, FR4.3, shop owner places an order](#use-case-10-fr43-shop-owner-places-an-order)
+    - [Use case 9, FR4.2, Shop owner removes item from order](#use-case-9-fr42-shop-owner-removes-item-from-order)
+    - [Use case 10, FR4.3, Shop owner places an order](#use-case-10-fr43-shop-owner-places-an-order)
     - [Use case 11, FR5.1, Register fidelity card](#use-case-11-fr51-register-fidelity-card)
     - [Use case 12, FR6.1, Shop owner adds/removes employee](#use-case-12-fr61-shop-owner-addsremoves-employee)
     - [Use case 13, FR6.2, Shop owner changes employee's information](#use-case-13-fr62-shop-owner-changes-employees-information)
@@ -362,9 +362,9 @@ Fortunately also the owner may access the inventory and control that everything 
 |                  |                 4. Actor adds items to the order                 |
 |                  |                                                                  |
 
-### Use case 9, FR4.2, shop owner removes item from order    
+### Use case 9, FR4.2, Shop owner removes item from order    
 
-| Actors Involved  |        shop owner         |
+| Actors Involved  |        Shop owner         |
 | ---------------- | :-----------------------: |
 | Precondition     |                           |
 | Post condition   |    Item added to order    |
@@ -373,9 +373,9 @@ Fortunately also the owner may access the inventory and control that everything 
 |                  | 1. Shop owner open order  |
 |                  | 2. Shop owner remove item |
 
-### Use case 10, FR4.3, shop owner places an order     
+### Use case 10, FR4.3, Shop owner places an order     
 
-| Actors Involved  |                 shop owner                 |
+| Actors Involved  |                 Shop owner                 |
 | ---------------- | :----------------------------------------: |
 | Precondition     |       Order size > minimum threshold       |
 | Post condition   |                Empty order                 |
