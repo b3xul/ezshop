@@ -33,6 +33,7 @@ Version:
 ## Nominal Scenario
 ### 1) ![](Images/Menu_selection_catalogue.png)
 ### 2) ![](Images/Catalogue.png)
+### User searches for the item (i.e., Vans ComfyCush)
 ### 3) ![](Images/Select_item.png)
 ### 4) ![](Images/Item.png)
 ### 5) ![](Images/Modify_quantity.png)
@@ -60,4 +61,10 @@ Version:
 ### 1) ![](Images/select_manage_employee.png)
 ### 2) ![](Images/employee_field_change.png)
 ### Owner selects which field to update
+
+# UC3: Shop owner/Inventory manager changes threshold
+## Nominal Scenario
+### 1) ![](Images/Menu_selection_catalogue.png)
+### 2) ![](Images/Catalogue.png)
+### 3) ![](Images/Modify_threshold.png)
 
