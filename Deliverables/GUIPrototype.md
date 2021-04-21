@@ -37,4 +37,27 @@ Version:
 ### 4) ![](Images/Item.png)
 ### 5) ![](Images/Modify_quantity.png)
 
+# UC9: Register fidelity card
+## Nominal Scenario
+### 1) ![](Images/Select_cash_register.png)
+### 2) ![](Images/Select_create_new_fidelity.png)
+### 3) ![](Images/add_costumer_info.png)
+### Return to point 2, ready to create another fidelity card.
+
+# UC10: Shop owner adds/removes employee
+## Nominal Scenario
+### 1) ![](Images/select_manage_employee.png)
+### Add Employee
+### 2) ![](Images/add_employee_button.png)
+### 3) ![](Images/add_employee_fields.png)
+### Remove Emlpoyee (starts from point 1)
+### 1) ![](Images/delete_field_employee.png)
+### 2) ![](Images/confirm_employee_removal.png)
+### After confirmation the application returns to Manage Employee section
+
+# UC11: Shop owner changes employee's information
+## Nominal Scenario
+### 1) ![](Images/select_manage_employee.png)
+### 2) ![](Images/employee_field_change.png)
+### Owner selects which field to update
 
