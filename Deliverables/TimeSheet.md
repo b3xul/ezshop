@@ -10,9 +10,9 @@ These figures will not be used to evaluate neither the project nor the team, the
 
 |    Week     | requirement engineering | design | coding | unit testing | integration testing | acceptance testing | management | git maven |
 | :---------: | :---------------------: | :----: | :----: | :----------: | :-----------------: | :----------------: | :--------: | :-------: |
-| apr 5 - 11  |           26            |        |        |              |                     |                    |            |           |
-| apr 12 - 18 |           30            |        |        |              |                     |                    |            |           |
-| apr 19 - 25 |                         |        |        |              |                     |                    |            |           |
+| apr 5 - 11  |           34            |        |        |              |                     |                    |            |           |
+| apr 12 - 18 |           41            |        |        |              |                     |                    |            |           |
+| apr 19 - 25 |            8            |        |        |              |                     |                    |            |           |
 | apr 26 - 2  |                         |        |        |              |                     |                    |            |           |
 |  may 3 - 9  |                         |        |        |              |                     |                    |            |           |
 | may 10 - 16 |                         |        |        |              |                     |                    |            |           |
