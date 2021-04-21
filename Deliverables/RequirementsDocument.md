@@ -132,7 +132,7 @@ Fortunately also the owner may access the inventory and control that everything 
 | FR1   |                    Manage sales                    |
 | FR2   |                  Manage inventory                  |
 | FR2.1 |         Update items quantity in inventory         |
-| FR2.2 | Send notification if item quantity under threshold |
+| FR2.2 | Display notifications of item's quantity under threshold |
 | FR2.3 |                  Change threshold                  |
 | FR3   |                  Manage catalogue                  |
 | FR3.1 |         Add/Remove items to/from catalogue         |
@@ -437,6 +437,17 @@ Fortunately also the owner may access the inventory and control that everything 
 | Nominal Scenario |                                                                 |
 |                  |            1. List all incomes and expenses (ledger)            |
 |                  | 2. Show statistics, reports and graphs about profits and losses |
+
+### Use case 15, FR2.2 Display notifications of item's quantity under threshold
+
+| Actors Involved  |           Shop owner, Inventory manager                      |
+| ---------------- | :-------------------------------------------:                |
+| Precondition     |       Notification list in consistent state                  |
+| Post condition   |                                                              |
+|                  |                                                              |
+| Nominal Scenario |                                                              |
+|                  | 1. Show all notifications of item's quantity under threshold |
+
 
 # Glossary
 ```plantuml
