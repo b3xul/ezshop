@@ -29,3 +29,12 @@ Version:
 ### ![](Images/Abort_confirm.png)
 ### Return to point 2 in the Nominal Scenario, ready for another transaction.
 
+# UC2: Shop owner/Inventory manager updates quantity of item in inventory
+## Nominal Scenario
+### 1) ![](Images/Menu_selection_catalogue.png)
+### 2) ![](Images/Catalogue.png)
+### 3) ![](Images/Select_item.png)
+### 4) ![](Images/Item.png)
+### 5) ![](Images/Modify_quantity.png)
+
+
