@@ -350,27 +350,27 @@ Fortunately also the owner may access the inventory and control that everything 
 |                  |                 4. Actor adds items to the order                 |
 |                  |                                                                  |
 
-### Use case 7, FR4.2, shop owner/inventory manager removes item from order    
+### Use case 7, FR4.2, shop owner removes item from order    
 
-| Actors Involved  | shop owner, inventory manager |
+| Actors Involved  | shop owner |
 | ---------------- | :---------------------------: |
 | Precondition     |                               |
 | Post condition   |      item added to order      |
 |                  |                               |
 | Nominal Scenario |                               |
-|                  |      1. Actor open order      |
-|                  |     2. Actor remove item      |
+|                  |      1. Shop owner open order      |
+|                  |     2. Shop owner remove item      |
 
-### Use case 8, FR4.3, shop owner/inventory manager places an order     
+### Use case 8, FR4.3, shop owner places an order     
 
-| Actors Involved  |     shop owner, inventory manager     |
+| Actors Involved  |     shop owner     |
 | ---------------- | :-----------------------------------: |
 | Precondition     |    order size > minimum threshold     |
 | Post condition   |              empty order              |
 |                  |                                       |
 | Nominal Scenario |                                       |
-|                  |   1. Actor inserts supplier's email   |
-|                  | 2. Owner places order to the supplier |
+|                  |   1. Shop owner select the supplier   |
+|                  | 2. Shop owner places order to the supplier |
 |                  |            3. Empty order             |
 |                  |                                       |
 
@@ -523,7 +523,7 @@ Order "*" -- EZShop
 Order -up-|> Transaction
 Sale -up-|> Transaction
 Transaction "*" -- Accounting
-ShopExpenses "*" --|> Transaction
+ShopExpenses --|> Transaction
 
 Order "*" -- "*" ItemDescriptor
 
