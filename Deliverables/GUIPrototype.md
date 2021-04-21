@@ -97,7 +97,7 @@ They will receive an email with a link to a page where they can reset their pass
 ### 3) ![](Images/Modify_discount.png)
 ### User clicks on Discount, StartDate, EndDate and type the desired values
 
-# UC7: shop owner/inventory manager adds item to order
+# UC7: Shop owner/Inventory manager adds item to order
 ## Nominal Scenario
 ### 1) ![](Images/Menu_selection_catalogue.png)
 ### 2) ![](Images/Catalogue.png)
@@ -107,7 +107,7 @@ They will receive an email with a link to a page where they can reset their pass
 ### User clicks on Amount and type the desired amount
 ### 5) ![](Images/Add_order.png)
 
-# UC8: shop owner removes item from order  
+# UC8: Shop owner removes item from order  
 ## Nominal Scenario
 ### 1) ![](Images/menu_selection_owner.png)
 ### 2) ![](Images/owner_section.png)
@@ -115,7 +115,7 @@ They will receive an email with a link to a page where they can reset their pass
 ### 4) ![](Images/Remove_item_from_order.png)
 ### 5) ![](Images/confirm_item_removal_from_order.png)
 
-# UC9: shop owner places an order  
+# UC9: Shop owner places an order  
 ## Nominal Scenario
 ### 1) ![](Images/menu_selection_owner.png)
 ### 2) ![](Images/owner_section.png)
