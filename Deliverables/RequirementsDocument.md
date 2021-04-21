@@ -384,7 +384,7 @@ Fortunately also the owner may access the inventory and control that everything 
 |                  |     1. Shop owner select the supplier      |
 |                  | 2. Shop owner places order to the supplier |
 |                  |               3. Empty order               |
-|                  |                                            |
+|                  |        4. Update transactions list         |
 
 ### Use case 11, FR5.1, Register fidelity card
 
@@ -543,22 +543,31 @@ Order "*" -- "*" ItemDescriptor
 @enduml
 ```
 
-User:
-- Owner of the shop (may also be just the manager) is the only one who can have superuser access.
-- All employees can assume 1 or more roles between cashier, inventory manager and accounting administrator.
-- Each employee can only access the portion of the Graphical User Interface associated to their role.
+- User:
+  - Owner of the shop (may also be just the manager) is the only one who can have superuser access.
+  - All employees can assume 1 or more roles between cashier, inventory manager and accounting administrator.
+  - Each employee can only access the portion of the Graphical User Interface associated to their role.
 
-ItemDescriptor:
-- FidelityDiscount is the discount applied to the item, if bought using a fidelity card.
-- Start date and End date represents the duration of the fidelity discount period.
-- Attributes depending on the shop could be customized depending on the type of shop:
+- Catalogue contains all the logical descriptors of each item
+
+- ItemDescriptor:
+  - FidelityDiscount is the discount applied to the item, if bought using a fidelity card.
+  - Start date and End date represents the duration of the fidelity discount period.
+  - Attributes depending on the shop could be customized depending on the type of shop:
 groceries shops will have expiration date, while fashion shops will have color of the clothes, size,..
 
-ShopPayment:
-- Type of payment could be related ApplicationFidelityCard:
+- Inventory contains all the physical items (logical description+item_ID)
+
 - Fidelity card points range from 0 to 150
 
-- Inventory is the list of all elements of the catalogue considering all attributes
+- ShopExpenses:
+  - Type of payment could be any shop-related expense (rent, maintenance, advertisements like flyers,...)
+
+- Order is updated as the shop owner or the inventory manager add items to it. Once it is sent, the current order becomes empty.
+
+- SupplierItemPrice represents the cost of each item from each selected supplier. This information is obtained using an API that the supplier is exposing. The owner will use this information to select the cheapest supplier to order from.
+
+- Accounting contains a list of all the transaction, both incomes and expenses.
 
 # System Design
 
