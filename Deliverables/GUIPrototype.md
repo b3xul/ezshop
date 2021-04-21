@@ -22,7 +22,7 @@ Depending on their role(s), they will have access to specific sections of the ap
  - Inventory manager: catalogue.
  - Accounting administrator: accounting.
 
-## Forgot password
+### Forgot password
 
 In case a user forgives their password, they can request for a new password giving their email.
 
