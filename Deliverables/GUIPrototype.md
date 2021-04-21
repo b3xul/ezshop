@@ -95,11 +95,6 @@ They will receive an email with a link to a page where they can reset their pass
 ### 2) ![](Images/employee_field_change.png)
 ### Owner selects which field to update
 
-# UCX: Owner sees notifications
-## Nominal Scenario 
-### 1) ![](Images/Menu_selection_notifications.png)
-### 2) ![](Images/Notification_list.png)
-
 # UC13: Add transaction related to the shop
 ## Nominal Scenario
 ### 1) ![](Images/menu_selection_owner.png)
@@ -115,5 +110,10 @@ They will receive an email with a link to a page where they can reset their pass
 ### User can switch and see also shop statistics 
 ### 3) ![](Images/accounting_change_page.png)
 ### 4) ![](Images/accounting_statistics.png)
+
+# UC15: Owner sees notifications
+## Nominal Scenario 
+### 1) ![](Images/Menu_selection_notifications.png)
+### 2) ![](Images/Notification_list.png)
 
 
