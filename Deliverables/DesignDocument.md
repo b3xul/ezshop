@@ -49,6 +49,177 @@ model ..> exceptions
 
 <for each package, report class diagram>
 
+```plantuml
+left to right direction
+class EZShop{
+    API Interface
+}
+class Shop{
+    reset()
+    createUser()
+    deleteUser()
+    getAllUsers()
+    getUser()
+    login()
+    logout()
+    createProductType()
+    deleteProductType()
+    getAllProductTypes()
+    recordOrderArrival()
+    getAllOrders()
+    defineCustomer()
+    deleteCustomer()
+    getAllCustomer()
+    createCard()
+    attachCardToCustomer()
+    startSaleTransaction()
+    endSaleTransaction()
+    startReturnTransaction()
+    endReturnTransaction()
+    deleteReturnTransaction()
+    receiveCashPayment()
+    receiveCreditCardPayment()
+    returnCashPayment()
+    returnCreditCardPayment()
+    
+}
+class User{
+    name
+    surname
+    password
+    role
+    userID??
+    updateUsersRights()
+    modifyUser()??
+}
+Shop -- EZShop
+Shop -- "*" User 
+class AccountBook{
+    recordBalanceUpdate()
+    getCreditsAndDebits()
+    computeBalance()
+}
+AccountBook - Shop
+class FinancialTransaction {
+ description
+ amount
+ date
+}
+AccountBook -- "*" FinancialTransaction
+
+class Credit 
+class Debit
+
+Credit --|> FinancialTransaction
+Debit --|> FinancialTransaction
+
+class Order
+class Sale
+class Return
+
+Order --|> Debit
+
+
+class ProductType{
+    barCode
+    description
+    sellPrice
+    quantity
+    discountRate
+    notes
+    getProductTypeByBarCode()
+    getProductTypeByDesription()
+    updateProduct()
+    updateQuantity()
+    updatePosition()
+    
+}
+
+Shop - "*" ProductType
+
+class SaleTransaction {
+    ID 
+    date
+    time
+    cost
+    paymentType
+    discount rate
+    addProductToSale()
+    deleteProductFromSale()
+    applyDiscountRateToProduct()
+    applyDiscountRateToSale()
+    computePointForSale()
+}
+SaleTransaction - "*" ProductType
+
+class Quantity {
+    quantity
+}
+(SaleTransaction, ProductType)  .. Quantity
+
+class LoyaltyCard {
+    ID
+    points
+    modifyPointsOnCard()
+}
+
+class Customer {
+    name
+    surname
+    modifyCustomer()
+    getCustomer()
+}
+
+LoyaltyCard "0..1" - Customer
+
+SaleTransaction "*" -- "0..1" LoyaltyCard
+
+class Product {
+    
+}
+
+class Position {
+    aisleID
+    rackID
+    levelID
+}
+
+ProductType - "0..1" Position
+
+ProductType -- "*" Product : describes
+
+class Order {
+  supplier
+  pricePerUnit
+  quantity
+  status
+  orderID??
+  issueReorder()
+  payOrderFor()
+  payOrder()
+}
+
+Order "*" - ProductType
+
+class ReturnTransaction {
+  quantity
+  returnedValue
+  returnProduct()
+}
+
+ReturnTransaction "*" - SaleTransaction
+ReturnTransaction "*" - ProductType
+ReturnTransaction --|> Debit
+SaleTransaction --|> Credit
+
+note "ID is a number on 10 digits " as N1  
+N1 .. LoyaltyCard
+note "bar code is a number on 12 to 14  digits, compliant to GTIN specifications, see  https://www.gs1.org/services/how-calculate-check-digit-manually " as N2  
+N2 .. ProductType
+note "ID is a unique identifier of a transaction,  printed on the receipt (ticket number) " as N3
+N3 .. SaleTransaction
+
+```
 
 # Verification traceability matrix
 
