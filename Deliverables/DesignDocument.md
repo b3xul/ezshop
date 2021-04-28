@@ -81,7 +81,9 @@ class Shop{
     receiveCreditCardPayment()
     returnCashPayment()
     returnCreditCardPayment()
-    
+    getCustomer()
+    getProductTypeByBarCode()
+    getProductTypeByDesription()
 }
 class User{
     name
@@ -127,8 +129,7 @@ class ProductType{
     quantity
     discountRate
     notes
-    getProductTypeByBarCode()
-    getProductTypeByDesription()
+    
     updateProduct()
     updateQuantity()
     updatePosition()
@@ -166,8 +167,8 @@ class LoyaltyCard {
 class Customer {
     name
     surname
+    ID
     modifyCustomer()
-    getCustomer()
 }
 
 LoyaltyCard "0..1" - Customer
