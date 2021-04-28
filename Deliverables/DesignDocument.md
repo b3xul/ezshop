@@ -115,8 +115,6 @@ Credit --|> FinancialTransaction
 Debit --|> FinancialTransaction
 
 class Order
-class Sale
-class Return
 
 Order --|> Debit
 
@@ -212,14 +210,6 @@ ReturnTransaction "*" - ProductType
 ReturnTransaction --|> Debit
 SaleTransaction --|> Credit
 
-note "ID is a number on 10 digits " as N1  
-N1 .. LoyaltyCard
-note "bar code is a number on 12 to 14  digits, compliant to GTIN specifications, see  https://www.gs1.org/services/how-calculate-check-digit-manually " as N2  
-N2 .. ProductType
-note "ID is a unique identifier of a transaction,  printed on the receipt (ticket number) " as N3
-N3 .. SaleTransaction
-
-```
 
 # Verification traceability matrix
 
