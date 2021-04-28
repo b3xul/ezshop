@@ -210,6 +210,7 @@ ReturnTransaction "*" - ProductType
 ReturnTransaction --|> Debit
 SaleTransaction --|> Credit
 
+```
 
 # Verification traceability matrix
 
