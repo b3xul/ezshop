@@ -32,8 +32,7 @@ Architectures:
 
 <report package diagram>
 
-```
-@startuml
+```plantuml
 
 package exceptions
 package "Persistent data and API" as data
@@ -42,7 +41,7 @@ package "Application logic and model" as model
 model ..> data
 model ..> exceptions
 
-@enduml
+
 ```
 
 # Low level design
