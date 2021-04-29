@@ -36,6 +36,8 @@ class Shop{
     }
 }
 
+
+
 class ProductType{
     public int getQuantity(void){
         return this.quantity;
@@ -44,3 +46,8 @@ class ProductType{
         this.quantity=quantity;
     }
 }
+
+controllare se dobbiamo aggiungere metodi nelle nostre classi per fare funzionare login() e logout() & payOrderFor()
+Aggiungere push(ProductType) a addProductToSale()?? e deleteProductFromSale()??
+applyDiscountRateToProduct()??
+update per points con computePointsForSale()?
