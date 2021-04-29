@@ -322,7 +322,7 @@ ProductType --> Shop: ProductType with Price per unit updated
 ```plantuml
 @startuml
 
-participant Administrator
+actor Administrator
 participant Shop
 participant User
 
@@ -339,7 +339,7 @@ User --> Shop: User created
 ```plantuml
 @startuml
 
-participant Administrator
+actor Administrator
 participant Shop
 participant User
 
@@ -357,7 +357,7 @@ Shop --> Administrator: deleted user
 ```plantuml
 @startuml
 
-participant Administrator
+actor Administrator
 participant Shop
 participant User
 
