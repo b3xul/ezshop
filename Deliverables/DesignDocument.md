@@ -430,7 +430,7 @@ ProductType --> Shop: ProductType with Quantity updated
 
 @enduml
 ```
-# UC4
+# UC4 - Manage Customers and  Cards
 ### Scenario 4.1 - Create customer record
 
 ```plantuml
@@ -481,7 +481,7 @@ Shop -> Customer: modifyCustomer()
 @enduml
 ```
 
-# UC6
+# UC6 - Manage sale transaction
 ### Scenario 6.2 - Sale of product type X with product discount (credit card)
 
 ```plantuml
@@ -548,7 +548,33 @@ Shop -> AccountBook: recordBalanceUpdate()
 
 @enduml
 ```
+# UC8 - Manage return transaction
+### Scenario 8.1/8.2 - Return transaction of product type X completed
 
+```plantuml
+@startuml
+
+actor Cashier
+participant Shop
+participant SaleTransaction
+participant ReturnTransaction
+participant ProductType
+participant AccountBook
+
+autonumber 
+Cashier -> Shop: insert transaction ID
+Shop -> ReturnTransaction: startReturnTransaction()
+ReturnTransaction -> Shop: return ReturnTransaction unique ID
+Shop -> ProductType: getProductTypeByBarcode()
+ProductType --> Shop: return ProductType
+Shop -> ReturnTransaction: returnProduct()
+Shop -> ProductType: updateQuantity()
+ReturnTransaction --> Shop: credit card/cash return
+Shop -> ReturnTransaction: endReturnTransaction()
+Shop -> AccountBook: recordBalanceUpdate()
+
+@enduml
+```
 # UC9 - Accounting 
 ## Scenario 9.1 - List credits and debits
 
