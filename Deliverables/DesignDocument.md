@@ -480,6 +480,8 @@ Shop -> Customer: modifyCustomer()
 
 @enduml
 ```
+
+# UC6
 ### Scenario 6.2 - Sale of product type X with product discount (credit card)
 
 ```plantuml
