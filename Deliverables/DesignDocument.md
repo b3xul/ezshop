@@ -35,7 +35,7 @@ Architectures:
 <report package diagram>
 
 ```plantuml
-
+@startuml
 package exceptions
 package "Persistent data and API" as data
 package "Application logic and model" as model
@@ -43,7 +43,7 @@ package "Application logic and model" as model
 model ..> data
 model ..> exceptions
 
-
+@enduml
 ```
 
 # Low level design
@@ -53,21 +53,31 @@ model ..> exceptions
 ```plantuml
 @startuml
 
-left to right direction
-class EZShop{
+
+class EZShopInterface{
     API Interface
 }
 class Shop{
+    users: List<User>
+    productTypes: List<ProductType>
+    
+    customers: List<Customer>
+    accounting: AccountBook
+
     reset()
+    login()
+    logout()
     createUser()
     deleteUser()
     getAllUsers()
     getUser()
-    login()
-    logout()
+    updateUsersRights()
     createProductType()
     deleteProductType()
     getAllProductTypes()
+    updateProduct()
+    updateQuantity()
+    updatePosition()
     recordOrderArrival()
     getAllOrders()
     defineCustomer()
@@ -76,6 +86,12 @@ class Shop{
     createCard()
     attachCardToCustomer()
     startSaleTransaction()
+    addProductToSale()
+    deleteProductFromSale()
+    applyDiscountRateToProduct()
+    applyDiscountRateToSale()
+    computePointForSale()
+    modifyPointsOnCard()
     endSaleTransaction()
     startReturnTransaction()
     endReturnTransaction()
@@ -85,42 +101,44 @@ class Shop{
     returnCashPayment()
     returnCreditCardPayment()
     getCustomer()
+    modifyCustomer()
+    issueReorder()
+    payOrderFor()
+    payOrder()
+    returnProduct()
     getProductTypeByBarCode()
     getProductTypeByDesription()
-}
-class User{
-    name
-    surname
-    password
-    role
-    userID??
-    updateUsersRights()
-    modifyUser()??
-}
-Shop -- EZShop
-Shop -- "*" User 
-class AccountBook{
     recordBalanceUpdate()
     getCreditsAndDebits()
     computeBalance()
 }
-AccountBook - Shop
-class FinancialTransaction {
- description
- amount
- date
+class User{
+    username
+    password
+    role
+    userID
 }
-AccountBook -- "*" FinancialTransaction
 
-class Credit 
-class Debit
+Shop -- EZShopInterface
+Shop -- "*" User 
+class AccountBook{
+    debits: Debit
+    credits: Credit
+    
+}
+AccountBook -- Shop
 
-Credit --|> FinancialTransaction
-Debit --|> FinancialTransaction
 
-class Order
+class Debit{
+    orders: List<Order>
+    returns: List<ReturnTransaction>
+}
+class Credit{
+    sales: List<SaleTransactions>
+}
 
-Order --|> Debit
+AccountBook --  Credit
+AccountBook --  Debit
 
 
 class ProductType{
@@ -130,11 +148,7 @@ class ProductType{
     quantity
     discountRate
     notes
-    
-    updateProduct()
-    updateQuantity()
-    updatePosition()
-    
+    position: Position
 }
 
 Shop - "*" ProductType
@@ -146,11 +160,9 @@ class SaleTransaction {
     cost
     paymentType
     discount rate
-    addProductToSale()
-    deleteProductFromSale()
-    applyDiscountRateToProduct()
-    applyDiscountRateToSale()
-    computePointForSale()
+    productTypes: Map<ProductType>< Quantity>
+    customer: Customer
+    
 }
 SaleTransaction - "*" ProductType
 
@@ -162,23 +174,20 @@ class Quantity {
 class LoyaltyCard {
     ID
     points
-    modifyPointsOnCard()
 }
 
 class Customer {
     name
     surname
-    ID
-    modifyCustomer()
+    customerID
+    loyaltyCard: LoyaltyCard
+    
+    
 }
 
 LoyaltyCard "0..1" - Customer
 
-SaleTransaction "*" -- "0..1" LoyaltyCard
-
-class Product {
-    
-}
+SaleTransaction "*" --  Customer
 
 class Position {
     aisleID
@@ -193,26 +202,31 @@ ProductType -- "*" Product : describes
 class Order {
   supplier
   pricePerUnit
+  productType: ProductType
   quantity
   status
   orderID??
-  issueReorder()
-  payOrderFor()
-  payOrder()
+  date
 }
 
 Order "*" - ProductType
+Order "*"-- Debit
+
 
 class ReturnTransaction {
   quantity
+  productType: ProductType
   returnedValue
-  returnProduct()
+  date
+  saleTransaction: SaleTransaction
+  
 }
 
 ReturnTransaction "*" - SaleTransaction
 ReturnTransaction "*" - ProductType
-ReturnTransaction --|> Debit
-SaleTransaction --|> Credit
+ReturnTransaction "*"-- Debit
+SaleTransaction "*"-- Credit
+Customer "*" -- Shop
 
 @enduml
 ```
