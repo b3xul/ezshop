@@ -16,6 +16,8 @@ Version: 1.0
 - [Low level design](#low-level-design)
 - [Verification traceability matrix](#verification-traceability-matrix)
 - [Verification sequence diagrams](#verification-sequence-diagrams)
+- [FR1](#fr1)
+- [FR3](#fr3)
 - [notes](#notes)
 
 # Instructions
@@ -49,6 +51,8 @@ model ..> exceptions
 <for each package, report class diagram>
 
 ```plantuml
+@startuml
+
 left to right direction
 class EZShop{
     API Interface
@@ -210,6 +214,7 @@ ReturnTransaction "*" - ProductType
 ReturnTransaction --|> Debit
 SaleTransaction --|> Credit
 
+@enduml
 ```
 
 # Verification traceability matrix
@@ -217,17 +222,42 @@ SaleTransaction --|> Credit
 \<for each functional requirement from the requirement document, list which classes concur to implement it>
 
 
-
-
-
-
-
-
-
-
-
 # Verification sequence diagrams 
 \<select key scenarios from the requirement document. For each of them define a sequence diagram showing that the scenario can be implemented by the classes and methods in the design>
+
+# FR1
+
+```plantuml
+@startuml
+
+participant Administrator
+participant Shop
+participant User
+
+autonumber 
+Administrator -> Shop
+Shop -> User: createUser()
+Shop -> User: DeleteUser()
+Shop -> User: UpdateUserRights()
+
+@enduml
+```
+
+# FR3 
+```plantuml
+@startuml
+
+participant User 
+participant Shop
+participant ProductType
+
+autonumber
+User -> Shop
+Shop -> ProductType: createProductType()
+
+@enduml
+```
+
 
 # notes
 - servono 3 package: data, model, exceptions
