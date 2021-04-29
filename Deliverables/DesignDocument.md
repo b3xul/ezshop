@@ -430,7 +430,56 @@ ProductType --> Shop: ProductType with Quantity updated
 
 @enduml
 ```
+# UC4
+### Scenario 4.1 - Create customer record
 
+```plantuml
+@startuml
+
+actor Manager
+participant Shop
+participant Customer
+
+autonumber 
+Manager -> Shop: insert customer's personal data
+Shop -> Customer: defineCustomer()
+Customer --> Shop: Customer is created
+
+@enduml
+```
+### Scenario 4.2 - Attach Loyalty card to customer record
+
+```plantuml
+@startuml
+
+actor Manager
+participant Shop
+participant Customer
+participant LoyaltyCard
+
+Shop -> LoyaltyCard: createCard()
+LoyaltyCard --> Shop: return LoyaltyCard's code
+Shop -> Customer: attachCardToCustomer()
+
+@enduml
+```
+
+### Scenario 4.4 - Update customer record
+
+```plantuml
+@startuml
+
+actor Manager
+participant Shop
+participant Customer
+
+Shop -> Customer: getCustomer()
+Customer --> Shop: return Customer
+Manager --> Shop: insert new data
+Shop -> Customer: modifyCustomer()
+
+@enduml
+```
 ### Scenario 6.2 - Sale of product type X with product discount (credit card)
 
 ```plantuml
