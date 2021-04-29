@@ -101,7 +101,7 @@ class Shop{
     returnCreditCardPayment()
     getCustomer()
     modifyCustomer()
-    issueReorder()
+    issueOrder()
     payOrderFor()
     payOrder()
     returnProduct()
