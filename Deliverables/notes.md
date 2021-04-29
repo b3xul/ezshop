@@ -47,4 +47,7 @@ class ProductType{
     }
 }
 
-controllare se dobbiamo aggiungere metodi nelle nostre classi per fare funzionare login() e logout()
+controllare se dobbiamo aggiungere metodi nelle nostre classi per fare funzionare login() e logout() & payOrderFor()
+Aggiungere push(ProductType) a addProductToSale()?? e deleteProductFromSale()??
+applyDiscountRateToProduct()??
+update per points con computePointsForSale()?
