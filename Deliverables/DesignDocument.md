@@ -53,7 +53,6 @@ model ..> exceptions
 ```plantuml
 @startuml
 
-
 class EZShopInterface{
     API Interface
 }
@@ -119,26 +118,21 @@ class User{
     userID
 }
 
-Shop -- EZShopInterface
-Shop -- "*" User 
+Shop -down- EZShopInterface
+Shop -down- "*" User 
 class AccountBook{
-    debits: Debit
-    credits: Credit
-    
+    operations: List<BalanceOperation>
 }
-AccountBook -- Shop
+AccountBook - Shop
+AccountBook - BalanceOperation
 
 
 class Debit{
-    orders: List<Order>
-    returns: List<ReturnTransaction>
 }
 class Credit{
-    sales: List<SaleTransactions>
+    
 }
 
-AccountBook --  Credit
-AccountBook --  Debit
 
 
 class ProductType{
@@ -166,28 +160,21 @@ class SaleTransaction {
 }
 SaleTransaction - "*" ProductType
 
-class Quantity {
-    quantity
-}
-(SaleTransaction, ProductType)  .. Quantity
-
-class LoyaltyCard {
-    ID
-    points
-}
-
 class Customer {
     name
     surname
     customerID
     loyaltyCard: LoyaltyCard
-    
-    
+}
+Customer "*" - Shop
+class LoyaltyCard {
+    ID
+    points
 }
 
 LoyaltyCard "0..1" - Customer
 
-SaleTransaction "*" --  Customer
+SaleTransaction "*" - "0..1" LoyaltyCard
 
 class Position {
     aisleID
@@ -197,8 +184,6 @@ class Position {
 
 ProductType - "0..1" Position
 
-ProductType -- "*" Product : describes
-
 class Order {
   supplier
   pricePerUnit
@@ -206,30 +191,39 @@ class Order {
   quantity
   status
   orderID??
-  date
 }
 
 Order "*" - ProductType
-Order "*"-- Debit
+Order -down-|> Debit
 
 
 class ReturnTransaction {
   quantity
   productType: ProductType
   returnedValue
-  date
   saleTransaction: SaleTransaction
-  
 }
 
+class BalanceOperation{
+    description
+    date
+}
 ReturnTransaction "*" - SaleTransaction
 ReturnTransaction "*" - ProductType
-ReturnTransaction "*"-- Debit
-SaleTransaction "*"-- Credit
-Customer "*" -- Shop
+ReturnTransaction -down-|> Debit
+SaleTransaction -down-|> Credit
+Debit -down-|> BalanceOperation
+Credit -down-|> BalanceOperation
+
 
 @enduml
 ```
+
+class Quantity {
+    quantity
+}
+(SaleTransaction, ProductType)  .. Quantity
+???
 
 # Verification traceability matrix
 
