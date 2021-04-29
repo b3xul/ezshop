@@ -16,9 +16,17 @@ Version: 1.0
 - [Low level design](#low-level-design)
 - [Verification traceability matrix](#verification-traceability-matrix)
 - [Verification sequence diagrams](#verification-sequence-diagrams)
+- [UC1 - Manage products](#uc1---manage-products)
+    - [Scenario 1.1 - Create product type X](#scenario-11---create-product-type-x)
+    - [Scenario 1.2 - Modify product type location](#scenario-12---modify-product-type-location)
+    - [Scenario 1.3 - Modify product type price per unit](#scenario-13---modify-product-type-price-per-unit)
 - [FR1](#fr1)
+    - [UC3](#uc3)
+    - [Scenario 6.2](#scenario-62)
 - [FR3](#fr3)
-- [notes](#notes)
+- [FR7](#fr7)
+- [UC9 - Accounting](#uc9---accounting)
+  - [Scenario 9-1](#scenario-9-1)
 
 # Instructions
 
@@ -59,7 +67,6 @@ class EZShopInterface{
 class Shop{
     users: List<User>
     productTypes: List<ProductType>
-    
     customers: List<Customer>
     accounting: AccountBook
 
@@ -122,6 +129,8 @@ Shop -down- EZShopInterface
 Shop -down- "*" User 
 class AccountBook{
     operations: List<BalanceOperation>
+    +List<BalanceOperation> getCreditsAndDebits(LocalDate from, LocalDate to)
+    +double computeBalance()
 }
 AccountBook - Shop
 AccountBook - BalanceOperation
@@ -156,7 +165,8 @@ class SaleTransaction {
     discount rate
     productTypes: Map<ProductType>< Quantity>
     customer: Customer
-    
+    +double receiveCashPayment(Integer transactionId, double cash)
+    +boolean receiveCreditCardPayment(Integer transactionId, String creditCard)
 }
 SaleTransaction - "*" ProductType
 
@@ -198,15 +208,19 @@ Order -down-|> Debit
 
 
 class ReturnTransaction {
+  -returnID
   quantity
   productType: ProductType
   returnedValue
   saleTransaction: SaleTransaction
+  +double returnCashPayment(Integer returnId)
+  +double returnCreditCardPayment(Integer returnId, String creditCard)
 }
 
 class BalanceOperation{
     description
     date
+    +boolean recordBalanceUpdate(double toBeAdded)
 }
 ReturnTransaction "*" - SaleTransaction
 ReturnTransaction "*" - ProductType
@@ -233,6 +247,75 @@ class Quantity {
 # Verification sequence diagrams 
 \<select key scenarios from the requirement document. For each of them define a sequence diagram showing that the scenario can be implemented by the classes and methods in the design>
 
+# UC1 - Manage products
+### Scenario 1.1 - Create product type X
+```plantuml
+@startuml
+
+actor Manager
+
+participant Shop
+participant ProductType 
+participant Position
+
+autonumber 
+
+Manager -> Shop :Insert description, barcode, price per unit, product notes, location
+Shop --> Manager: ask confirmation
+Manager -> Shop: confirm
+Shop -> ProductType: createProductType()
+ProductType --> Shop: return ProductType's ID
+Shop -> Position: updatePosition()
+Position --> Shop: ProductType with Position assigned
+
+
+@enduml
+```
+### Scenario 1.2 - Modify product type location
+```plantuml
+@startuml
+
+actor Manager
+
+participant Shop
+participant ProductType 
+participant Position
+
+autonumber
+Manager -> Shop : Insert barcode
+Shop -> ProductType: getProductTypeByBarCode()
+ProductType --> Shop: return ProductType
+Shop --> Manager: display ProductType
+Manager -> Shop : Select ProductType record and insert new location
+Shop -> Position: updatePosition()
+Position --> Shop: ProductType with Position updated
+
+@enduml
+```
+
+### Scenario 1.3 - Modify product type price per unit
+```plantuml
+@startuml
+
+actor Manager
+
+participant Shop
+participant ProductType 
+
+autonumber
+Manager -> Shop : Insert barcode
+Shop -> ProductType: getProductTypeByBarCode()
+ProductType --> Shop: return ProductType
+Shop --> Manager: display ProductType
+Manager -> Shop : Select ProductType record and insert new price per unit>0
+Shop --> Manager: ask confirmation
+Manager -> Shop: confirm
+Shop -> ProductType: updateProduct()
+ProductType --> Shop: ProductType with Price per unit updated
+
+@enduml
+```
+
 # FR1
 
 ```plantuml
@@ -247,6 +330,61 @@ Administrator -> Shop
 Shop -> User: createUser()
 Shop -> User: DeleteUser()
 Shop -> User: UpdateUserRights()
+
+@enduml
+```
+
+### UC3
+```plantuml
+@startuml
+
+participant Shop
+participant Order
+participant User
+
+autonumber 
+Shop -> Order: issueOrder()
+Order --> Shop: Order is issued
+Shop -> Shop: getAllOrders()
+Shop --> User: search for the order by scrolling manually the list
+Shop -> Order: payOrder()
+Order --> Shop: Order's state updated to PAYED
+Shop -> Shop: recordOrderArrival()
+Shop -> ProductType: getProductTypeByBarCode()
+ProductType --> Shop: ProductType
+Shop -> ProductType: updateQuantity()
+ProductType --> Shop: ProductType with Quantity updated
+
+@enduml
+```
+
+
+### Scenario 6.2
+
+```plantuml
+@startuml
+
+participant User
+participant Shop
+participant SaleTransaction
+participant ProductType
+participant AccounBook
+
+autonumber
+Shop -> SaleTransaction : startSaleTransaction()
+SaleTransaction --> Shop: return unique transaction's ID
+Shop -> ProductType : getProductTypeByBarCode()
+ProductType --> Shop: return ProductType
+Shop -> SaleTransaction : addProductToSale()
+Shop -> ProductType : UpdateQuantity()
+Shop -> SaleTransaction : applyDiscountRateToProduct()
+Shop -> SaleTransaction : endSaleTransaction()
+Shop -> User: ask for payment type
+User -> Shop : payment type credit card
+Shop -> Shop : receiveCreditCardPayment() 
+Shop -> User: ask confirmation
+User -> Shop: confirm
+Shop -> AccounBook: recordBalanceUpdate()
 
 @enduml
 ```
@@ -266,19 +404,36 @@ Shop -> ProductType: createProductType()
 @enduml
 ```
 
+# FR7 
+```plantuml
+@startuml
 
-# notes
-- servono 3 package: data, model, exceptions
-- ci daranno la classe Customer, User, ProductType e le Exceptions perche' ci sono nell'API (non serve metterle nel nostro class diagram perche' tanto non sappiamo come sono fatte)
-- volendo si possono aggiungere altre exception al package Exception
-- sequence diagrams nomi funzioni
-- Sequence diagrams anche solo per gli scenari piu' importanti, l'importante e' avere tutte le classi che servono
-- differenza tra ticket e saleTransaction e' che si puo' fare rollback della transazione ma non del ticket, decidiamo noi se avere una classe apposta per il ticket o meno
-- scrivere tipo di collezioni usate
-- nota vicino alle classi persistenti, non e' necessario mostrare le interazioni con lo storage
-- Shop implements API interface
-- No implementazione delle relationship, solo frecce e indicare collection usata 
-- Nel sequence diagram basta function name senza parametri\
-- Issue: ID of customer integer o string?
-- Per gestire file di credit card per ora basta una classe credit card
-- estimation approach non scrivere niente
+participant User 
+participant Shop
+participant ProductType
+
+autonumber
+User -> Shop
+Shop -> ProductType: createProductType()
+
+@enduml
+```
+
+# UC9 - Accounting 
+## Scenario 9-1
+
+```plantuml
+@startuml
+
+participant Manager 
+participant Shop
+participant accountBook
+
+autonumber
+Manager --> Shop : select start and end date
+Shop -> accountBook: getCreditsAndDebits()
+accountBook -> Shop: List<BalanceOperation>
+Shop --> Manager: displayOperations()
+
+@enduml
+```

@@ -87,3 +87,5 @@ Estimated calendar time, in calendar weeks (Assume team of 4 people, 8 hours per
 
 ### Gantt chart
 Insert here Gantt chart with above activities
+
+![](Images/Gantt_chart.png)
