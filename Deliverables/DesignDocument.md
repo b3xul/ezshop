@@ -20,13 +20,18 @@ Version: 1.0
     - [Scenario 1.1 - Create product type X](#scenario-11---create-product-type-x)
     - [Scenario 1.2 - Modify product type location](#scenario-12---modify-product-type-location)
     - [Scenario 1.3 - Modify product type price per unit](#scenario-13---modify-product-type-price-per-unit)
-- [FR1](#fr1)
-    - [UC3](#uc3)
-    - [Scenario 6.2](#scenario-62)
-- [FR3](#fr3)
-- [FR7](#fr7)
+- [UC2 - Manage users and rights](#uc2---manage-users-and-rights)
+    - [Scenario 2.1 Create user and define rights](#scenario-21-create-user-and-define-rights)
+    - [Scenario 2.2 Delete user](#scenario-22-delete-user)
+    - [Scenario 2.3 Modify user rights](#scenario-23-modify-user-rights)
+- [UC3 - Manage inventory and orders](#uc3---manage-inventory-and-orders)
+    - [Scenario 3.1 - Order of product type X issued](#scenario-31---order-of-product-type-x-issued)
+    - [Scenario 3.2 - Order of product type X payed](#scenario-32---order-of-product-type-x-payed)
+    - [Scenario 3.3 - Record order of product type X arrival](#scenario-33---record-order-of-product-type-x-arrival)
+    - [Scenario 6.2 - Sale of product type X with product discount (credit card)](#scenario-62---sale-of-product-type-x-with-product-discount-credit-card)
+    - [Scenario 6.4 - Sale of product type X with Loyalty Card update (cash)](#scenario-64---sale-of-product-type-x-with-loyalty-card-update-cash)
 - [UC9 - Accounting](#uc9---accounting)
-  - [Scenario 9-1](#scenario-9-1)
+  - [Scenario 9.1 - List credits and debits](#scenario-91---list-credits-and-debits)
 
 # Instructions
 
@@ -233,12 +238,6 @@ Credit -down-|> BalanceOperation
 @enduml
 ```
 
-class Quantity {
-    quantity
-}
-(SaleTransaction, ProductType)  .. Quantity
-???
-
 # Verification traceability matrix
 
 \<for each functional requirement from the requirement document, list which classes concur to implement it>
@@ -303,6 +302,7 @@ participant Shop
 participant ProductType 
 
 autonumber
+
 Manager -> Shop : Insert barcode
 Shop -> ProductType: getProductTypeByBarCode()
 ProductType --> Shop: return ProductType
@@ -316,7 +316,8 @@ ProductType --> Shop: ProductType with Price per unit updated
 @enduml
 ```
 
-# FR1
+# UC2 - Manage users and rights
+### Scenario 2.1 Create user and define rights
 
 ```plantuml
 @startuml
@@ -326,30 +327,102 @@ participant Shop
 participant User
 
 autonumber 
-Administrator -> Shop
+Administrator -> Shop : Define credentials and access rights
 Shop -> User: createUser()
-Shop -> User: DeleteUser()
-Shop -> User: UpdateUserRights()
+User --> Shop: User created
 
 @enduml
 ```
 
-### UC3
+### Scenario 2.2 Delete user
+
 ```plantuml
 @startuml
 
+participant Administrator
 participant Shop
-participant Order
 participant User
 
+autonumber
+Shop --> Administrator: Display users
+Administrator -> Shop : Select user ID
+Shop -> User: deleteUser()
+Shop --> Administrator: deleted user
+
+@enduml
+```
+
+### Scenario 2.3 Modify user rights
+
+```plantuml
+@startuml
+
+participant Administrator
+participant Shop
+participant User
+
+autonumber
+Shop --> Administrator: Display users
+Administrator -> Shop : Select user ID, access rights
+Shop -> User: updateUserRights()
+User --> Shop: updated user
+
+@enduml
+```
+
+# UC3 - Manage inventory and orders
+
+### Scenario 3.1 - Order of product type X issued
+
+```plantuml
+@startuml
+
+actor Manager
+participant Shop
+participant Order
+
 autonumber 
+Manager -> Shop: Insert productCode, quantity, price per unit
 Shop -> Order: issueOrder()
-Order --> Shop: Order is issued
-Shop -> Shop: getAllOrders()
-Shop --> User: search for the order by scrolling manually the list
+Order --> Shop: Order is recorded in the system in ISSUED state
+
+@enduml
+```
+
+### Scenario 3.2 - Order of product type X payed
+
+```plantuml
+@startuml
+
+actor Manager
+participant Shop
+participant Order
+
+autonumber 
+Manager -> Shop: Insert productCode, quantity, price per unit
+Shop -> Order: issueOrder()
+Order --> Shop: Order is recorded in the system in ISSUED state
+Shop --> Manager: getIssuedOrders()
+Manager --> Shop: selects the order by manually scrolling the list
 Shop -> Order: payOrder()
 Order --> Shop: Order's state updated to PAYED
-Shop -> Shop: recordOrderArrival()
+
+@enduml
+```
+
+### Scenario 3.3 - Record order of product type X arrival
+
+```plantuml
+@startuml
+
+actor Manager
+participant Shop
+participant Order
+
+autonumber 
+Manager -> Shop: Insert orderId
+Shop -> Order: recordOrderArrival()
+Order --> Shop: Order's state updated to COMPLETED
 Shop -> ProductType: getProductTypeByBarCode()
 ProductType --> Shop: ProductType
 Shop -> ProductType: updateQuantity()
@@ -358,74 +431,80 @@ ProductType --> Shop: ProductType with Quantity updated
 @enduml
 ```
 
-
-### Scenario 6.2
+### Scenario 6.2 - Sale of product type X with product discount (credit card)
 
 ```plantuml
 @startuml
 
-participant User
+actor User
 participant Shop
 participant SaleTransaction
 participant ProductType
-participant AccounBook
+participant AccountBook
 
 autonumber
 Shop -> SaleTransaction : startSaleTransaction()
 SaleTransaction --> Shop: return unique transaction's ID
+User -> Shop: Read product barcode and insert amount
 Shop -> ProductType : getProductTypeByBarCode()
 ProductType --> Shop: return ProductType
 Shop -> SaleTransaction : addProductToSale()
 Shop -> ProductType : UpdateQuantity()
 Shop -> SaleTransaction : applyDiscountRateToProduct()
+User --> :repeat
 Shop -> SaleTransaction : endSaleTransaction()
 Shop -> User: ask for payment type
-User -> Shop : payment type credit card
-Shop -> Shop : receiveCreditCardPayment() 
-Shop -> User: ask confirmation
+User -> Shop : Read credit card number
+Shop -> SaleTransaction : receiveCreditCardPayment() 
+Shop -> User: ask to credit sale price
 User -> Shop: confirm
-Shop -> AccounBook: recordBalanceUpdate()
+Shop -> AccountBook: recordBalanceUpdate()
 
 @enduml
 ```
 
-# FR3 
+### Scenario 6.4 - Sale of product type X with Loyalty Card update (cash)
+
 ```plantuml
 @startuml
 
-participant User 
+actor User
 participant Shop
+participant SaleTransaction
 participant ProductType
+participant LoyaltyCard
+participant AccountBook
 
 autonumber
-User -> Shop
-Shop -> ProductType: createProductType()
-
-@enduml
-```
-
-# FR7 
-```plantuml
-@startuml
-
-participant User 
-participant Shop
-participant ProductType
-
-autonumber
-User -> Shop
-Shop -> ProductType: createProductType()
+Shop -> SaleTransaction : startSaleTransaction()
+SaleTransaction --> Shop: return unique transaction's ID
+User -> Shop: Read product barcode and insert amount
+Shop -> ProductType : getProductTypeByBarCode()
+ProductType --> Shop: return ProductType
+Shop -> SaleTransaction : addProductToSale()
+Shop -> ProductType : UpdateQuantity()
+Shop -> SaleTransaction : applyDiscountRateToProduct()
+User --> :repeat
+Shop -> SaleTransaction : endSaleTransaction()
+User -> Shop: Read loyalty card serial number
+Shop -> User: ask for payment type
+User -> Shop: Collect banknotes and coins
+Shop -> LoyaltyCard: computePointsForSale()
+LoyaltyCard --> Shop: return points to add
+Shop -> LoyaltyCard : modifyPointsOnCard()
+LoyaltyCard --> Shop: updated points
+Shop -> AccountBook: recordBalanceUpdate()
 
 @enduml
 ```
 
 # UC9 - Accounting 
-## Scenario 9-1
+## Scenario 9.1 - List credits and debits
 
 ```plantuml
 @startuml
 
-participant Manager 
+actor Manager 
 participant Shop
 participant accountBook
 
