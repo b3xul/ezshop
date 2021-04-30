@@ -248,15 +248,15 @@ Credit -down-|> BalanceOperation
 # Verification traceability matrix
 
 \<for each functional requirement from the requirement document, list which classes concur to implement it>
-|     | Shop | User | ProductType | Customer | AccountBook | LoyaltyCard | SaleTransaction | Position | Quantity | ReturnTransaction | Order | Debit | Credit | BalanceOperation |
-| --- | ---- | ---- | ----------- | -------- | ----------- | ----------- | --------------- | -------- | -------- | ----------------- | ----- | ----- | ------ | ---------------- |
-| FR1 | X    | X    |             |          |             |             |                 |          |          |                   |       |       |        |                  |
-| FR3 | X    |      | X           |          |             |             |                 | X        |          |                   |       |       |        |                  |
-| FR4 | X    |      | X           |          |             |             |                 | X        | X        |                   | X     |       |        |                  |
-| FR5 | X    |      |             | X        |             | X           |                 |          |          |                   |       |       |        |                  |
-| FR6 | X    |      | X           |          |             |             | X               | X        |          | X                 |       |       |        |                  |
-| FR7 | X    |      |             |          |             |             | X               |          |          |                   |       |       |        |                  |
-| FR8 | X    |      |             |          | X           |             |                 |          |          |                   |       | X     | X      | X                |
+|     | Shop | User | ProductType | Customer | AccountBook | LoyaltyCard | SaleTransaction | Position | ReturnTransaction | Order | Debit | Credit | BalanceOperation |
+| --- | ---- | ---- | ----------- | -------- | ----------- | ----------- | --------------- | -------- | ----------------- | ----- | ----- | ------ | ---------------- |
+| FR1 | X    | X    |             |          |             |             |                 |          |                   |       |       |        |                  |
+| FR3 | X    |      | X           |          |             |             |                 | X        |                   |       |       |        |                  |
+| FR4 | X    |      | X           |          |             |             |                 | X        |                   | X     |       |        |                  |
+| FR5 | X    |      |             | X        |             | X           |                 |          |                   |       |       |        |                  |
+| FR6 | X    |      | X           |          |X            | X           | X               |          | X                 |       |       |        |                  |
+| FR7 | X    |      |             |          |             |             | X               |          | X                 |       |       |        |                  |
+| FR8 | X    |      |             |          | X           |             |                 |          |                   |       | X      | X      | X                |
 
 
 # Verification sequence diagrams 
