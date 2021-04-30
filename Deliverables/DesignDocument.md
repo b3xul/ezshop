@@ -253,7 +253,7 @@ Credit -down-|> BalanceOperation
 | FR3 | X    |      | X           |          |             |             |                 | X        |          |                   |       |       |        |                  |
 | FR4 | X    |      | X           |          |             |             |                 | X        |          |                   | X     |       |        |                  |
 | FR5 | X    |      |             | X        |             | X           |                 |          |          |                   |       |       |        |                  |
-| FR6 | X    |      | X           |          |             |             | X               |          |          | X                 |       |       |        |                  |
+| FR6 | X    |      | X           |          | X           |             | X               |          |          | X                 |       |       |        |                  |
 | FR7 | X    |      |             |          |             |             | X               |          |          | X                 |       |       |        |                  |
 | FR8 | X    |      |             |          | X           |             |                 |          |          |                   |       | X     | X      | X                |
 
