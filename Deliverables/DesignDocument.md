@@ -657,3 +657,4 @@ Shop --> Manager: display BalanceOperations
 
 @enduml
 ```
+
