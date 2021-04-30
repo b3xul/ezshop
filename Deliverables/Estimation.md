@@ -54,8 +54,10 @@ Authors: Elia Fontana, Andrea Palomba, Leonardo Perugini, Francesco Sattolo
 Date: 27/04/2021
 Version: 1.0
 # Contents
-- [Estimate by product decomposition]
-- [Estimate by activity decomposition ]
+- [Contents](#contents)
+- [Estimate by product decomposition](#estimate-by-product-decomposition)
+- [Estimate by activity decomposition ](#estimate-by-activity-decomposition)
+  - [Gantt chart](#gnatt-chart)
 # Estimation approach
 # Estimate by product decomposition
 ### 
