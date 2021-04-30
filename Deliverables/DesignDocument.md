@@ -50,13 +50,13 @@ The design must satisfy the Official Requirements document, notably functional a
 
 # High level design 
 
-<discuss architectural styles used, if any>
+
 Architectures:
 - Model View Controller
 - Stand alone Application
 - 3 tier layered
 
-<report package diagram>
+
 
 ```plantuml
 @startuml
@@ -72,7 +72,7 @@ model ..> exceptions
 
 # Low level design
 
-<for each package, report class diagram>
+
 
 ## data package
 
@@ -289,7 +289,7 @@ ReturnTransaction "*" - ProductType
 
 # Verification traceability matrix
 
-\<for each functional requirement from the requirement document, list which classes concur to implement it>
+
 |     | Shop | User | ProductType | Customer | AccountBook | LoyaltyCard | SaleTransaction | Position | Quantity | ReturnTransaction | Order | Debit | Credit | BalanceOperation |
 | --- | ---- | ---- | ----------- | -------- | ----------- | ----------- | --------------- | -------- | -------- | ----------------- | ----- | ----- | ------ | ---------------- |
 | FR1 | X    | X    |             |          |             |             |                 |          |          |                   |       |       |        |                  |
@@ -302,7 +302,7 @@ ReturnTransaction "*" - ProductType
 
 
 # Verification sequence diagrams 
-\<select key scenarios from the requirement document. For each of them define a sequence diagram showing that the scenario can be implemented by the classes and methods in the design>
+
 
 # UC1 - Manage products
 ### Scenario 1.1 - Create product type X
