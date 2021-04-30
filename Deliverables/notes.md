@@ -99,7 +99,7 @@ class SaleTransaction {
     cost
     paymentType
     discount rate
-    productTypes: Map<ProductType>< Quantity>
+    productTypes: Map[<ProductType>: quantityInSale]
     customer: Customer
     
 }
@@ -141,9 +141,6 @@ class ReturnTransaction {
   saleTransaction: SaleTransaction
   
 }
-class Quantity {
-    quantity
-}
 
 
 class BalanceOperation{
@@ -158,9 +155,9 @@ Customer "*" -right- Shop
 AccountBook -[hidden]- Customer
 Shop -up- "*" User 
 Shop -down- "*" ProductType
-ProductType -right- "0..1" Position
+ProductType -up- "0..1" Position
 ProductType "*" -down-  SaleTransaction
-(SaleTransaction, ProductType)  .. Quantity
+
 SaleTransaction -left- "*" ReturnTransaction
 SaleTransaction -up-|> Credit
 SaleTransaction "*" -right- "0..1" LoyaltyCard
