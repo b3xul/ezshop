@@ -33,6 +33,8 @@ Version: 1.0
     - [Scenario 4.1 - Create customer record](#scenario-41---create-customer-record)
     - [Scenario 4.2 - Attach Loyalty card to customer record](#scenario-42---attach-loyalty-card-to-customer-record)
     - [Scenario 4.4 - Update customer record](#scenario-44---update-customer-record)
+- [UC5 - Authenticate, authorize](#uc5---authenticate-authorize)
+    - [Scenario 5.1/5.2 - Login/Logout](#scenario-5152---loginlogout)
 - [UC6 - Manage sale transaction](#uc6---manage-sale-transaction)
     - [Scenario 6.2 - Sale of product type X with product discount (credit card)](#scenario-62---sale-of-product-type-x-with-product-discount-credit-card)
     - [Scenario 6.4 - Sale of product type X with Loyalty Card update (cash)](#scenario-64---sale-of-product-type-x-with-loyalty-card-update-cash)
@@ -518,10 +520,10 @@ participant Shop
 autonumber 
 Actor -> Shop: insert username and password
 Shop -> Shop: login()
-Shop --> Actor: show the functionalities offered by the access priviledges
+Shop --> Actor: display the functionalities offered by the access priviledges
 Actor -> Shop: want to logout
 Shop -> Shop: logout()
-Shop --> Actor: show the login page
+Shop --> Actor: display the login page
 
 @enduml
 ```
