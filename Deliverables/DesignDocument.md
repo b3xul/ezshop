@@ -14,6 +14,8 @@ Version: 1.0
 - [Instructions](#instructions)
 - [High level design](#high-level-design)
 - [Low level design](#low-level-design)
+  - [data package](#data-package)
+  - [model package](#model-package)
 - [Verification traceability matrix](#verification-traceability-matrix)
 - [Verification sequence diagrams](#verification-sequence-diagrams)
 - [UC1 - Manage products](#uc1---manage-products)
@@ -68,6 +70,37 @@ model ..> exceptions
 # Low level design
 
 <for each package, report class diagram>
+
+## data package
+
+```plantuml
+@startuml
+
+class UsersDAO{
+}
+
+class ProductTypesDAO{
+}
+
+class CustomersDAO{
+}
+
+class LoyaltyCardsDAO{
+}
+
+class SaleTransactionsDAO{
+}
+
+class ReturnTransactionsDAO{
+}
+
+class OrdersDAO{
+}
+
+@enduml
+```
+
+## model package
 
 ```plantuml
 @startuml
@@ -129,6 +162,8 @@ class Shop{
     recordBalanceUpdate()
     getCreditsAndDebits()
     computeBalance()
+
+    getIssuedOrders()
 }
 class User{
     userID
@@ -214,7 +249,7 @@ AccountBook -[hidden]- Customer
 Shop -up- "*" User 
 Shop -down- "*" ProductType
 ProductType -up- "0..1" Position
-ProductType "*" -down-  SaleTransaction
+ProductType "*" -down- "*" SaleTransaction
 
 SaleTransaction -left- "*" ReturnTransaction
 SaleTransaction -up-|> Credit
