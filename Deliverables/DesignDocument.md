@@ -28,8 +28,15 @@ Version: 1.0
     - [Scenario 3.1 - Order of product type X issued](#scenario-31---order-of-product-type-x-issued)
     - [Scenario 3.2 - Order of product type X payed](#scenario-32---order-of-product-type-x-payed)
     - [Scenario 3.3 - Record order of product type X arrival](#scenario-33---record-order-of-product-type-x-arrival)
+- [UC4 - Manage Customers and  Cards](#uc4---manage-customers-and--cards)
+    - [Scenario 4.1 - Create customer record](#scenario-41---create-customer-record)
+    - [Scenario 4.2 - Attach Loyalty card to customer record](#scenario-42---attach-loyalty-card-to-customer-record)
+    - [Scenario 4.4 - Update customer record](#scenario-44---update-customer-record)
+- [UC6 - Manage sale transaction](#uc6---manage-sale-transaction)
     - [Scenario 6.2 - Sale of product type X with product discount (credit card)](#scenario-62---sale-of-product-type-x-with-product-discount-credit-card)
     - [Scenario 6.4 - Sale of product type X with Loyalty Card update (cash)](#scenario-64---sale-of-product-type-x-with-loyalty-card-update-cash)
+- [UC8 - Manage return transaction](#uc8---manage-return-transaction)
+    - [Scenario 8.1/8.2 - Return transaction of product type X completed](#scenario-8182---return-transaction-of-product-type-x-completed)
 - [UC9 - Accounting](#uc9---accounting)
   - [Scenario 9.1 - List credits and debits](#scenario-91---list-credits-and-debits)
 
@@ -241,15 +248,15 @@ Credit -down-|> BalanceOperation
 # Verification traceability matrix
 
 \<for each functional requirement from the requirement document, list which classes concur to implement it>
-|                         |Shop|User|ProductType|Customer|AccountBook|LoyaltyCard|SaleTransaction|Position|Quantity|ReturnTransaction|Order|Debit|Credit|BalanceOperation|
-| ----------------------- | ---|---|---|----|--|---|----|---|--|---|---|----|---|- |
-|  FR1                    |   |   |   |   |   |   |   |   |   |   |   |   |   |   |
-|  FR3                    |   |   |   |   |   |   |   |   |   |   |   |   |   |   |
-|  FR4                    |   |   |   |   |   |   |   |   |   |   |   |   |   |   |
-|  FR5                    |   |   |   |   |   |   |   |   |   |   |   |   |   |   |
-|  FR6                    |   |   |   |   |   |   |   |   |   |   |   |   |   |   |
-|  FR7                    |   |   |   |   |   |   |   |   |   |   |   |   |   |   |
-|  FR8                    |   |   |   |   |   |   |   |   |   |   |   |   |   |   |
+|     | Shop | User | ProductType | Customer | AccountBook | LoyaltyCard | SaleTransaction | Position | Quantity | ReturnTransaction | Order | Debit | Credit | BalanceOperation |
+| --- | ---- | ---- | ----------- | -------- | ----------- | ----------- | --------------- | -------- | -------- | ----------------- | ----- | ----- | ------ | ---------------- |
+| FR1 | X    | X    |             |          |             |             |                 |          |          |                   |       |       |        |                  |
+| FR3 | X    |      | X           |          |             |             |                 | X        |          |                   |       |       |        |                  |
+| FR4 | X    |      | X           |          |             |             |                 | X        | X        |                   | X     |       |        |                  |
+| FR5 | X    |      |             | X        |             | X           |                 |          |          |                   |       |       |        |                  |
+| FR6 | X    |      | X           |          |             |             | X               | X        |          | X                 |       |       |        |                  |
+| FR7 | X    |      |             |          |             |             | X               |          |          |                   |       |       |        |                  |
+| FR8 | X    |      |             |          | X           |             |                 |          |          |                   |       | X     | X      | X                |
 
 
 # Verification sequence diagrams 
