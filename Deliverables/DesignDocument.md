@@ -72,9 +72,10 @@ model ..> exceptions
 ```plantuml
 @startuml
 
-class EZShopInterface{
+interface EZShopInterface{
     API Interface
 }
+
 class Shop{
     users: List<User>
     productTypes: List<ProductType>
@@ -130,30 +131,21 @@ class Shop{
     computeBalance()
 }
 class User{
+    userID
     username
     password
     role
-    userID
 }
 
-Shop -down- EZShopInterface
-Shop -down- "*" User 
 class AccountBook{
     operations: List<BalanceOperation>
-    +List<BalanceOperation> getCreditsAndDebits(LocalDate from, LocalDate to)
-    +double computeBalance()
 }
-AccountBook - Shop
-AccountBook - BalanceOperation
-
 
 class Debit{
 }
+
 class Credit{
-    
 }
-
-
 
 class ProductType{
     barCode
@@ -165,21 +157,16 @@ class ProductType{
     position: Position
 }
 
-Shop - "*" ProductType
-
 class SaleTransaction {
-    ID 
+    transactionID 
     date
     time
     cost
     paymentType
     discount rate
-    productTypes: Map<ProductType>< Quantity>
+    productTypes: Map[<ProductType>: quantityInSale]
     customer: Customer
-    +double receiveCashPayment(Integer transactionId, double cash)
-    +boolean receiveCreditCardPayment(Integer transactionId, String creditCard)
 }
-SaleTransaction - "*" ProductType
 
 class Customer {
     name
@@ -187,15 +174,10 @@ class Customer {
     customerID
     loyaltyCard: LoyaltyCard
 }
-Customer "*" - Shop
 class LoyaltyCard {
     ID
     points
 }
-
-LoyaltyCard "0..1" - Customer
-
-SaleTransaction "*" - "0..1" LoyaltyCard
 
 class Position {
     aisleID
@@ -203,43 +185,50 @@ class Position {
     levelID
 }
 
-ProductType - "0..1" Position
-
 class Order {
-  supplier
-  pricePerUnit
-  productType: ProductType
-  quantity
-  status
-  orderID??
+    orderID
+    supplier
+    pricePerUnit
+    productType: ProductType
+    quantity
+    status
 }
 
-Order "*" - ProductType
-Order -down-|> Debit
-
-
 class ReturnTransaction {
-  -returnID
-  quantity
-  productType: ProductType
-  returnedValue
-  saleTransaction: SaleTransaction
-  +double returnCashPayment(Integer returnId)
-  +double returnCreditCardPayment(Integer returnId, String creditCard)
+    returnID
+    quantity
+    productType: ProductType
+    returnedValue
+    saleTransaction: SaleTransaction
 }
 
 class BalanceOperation{
     description
     date
-    +boolean recordBalanceUpdate(double toBeAdded)
 }
-ReturnTransaction "*" - SaleTransaction
-ReturnTransaction "*" - ProductType
-ReturnTransaction -down-|> Debit
-SaleTransaction -down-|> Credit
-Debit -down-|> BalanceOperation
-Credit -down-|> BalanceOperation
 
+Shop -up- EZShopInterface
+AccountBook -right- Shop
+Customer "*" -right- Shop
+AccountBook -[hidden]- Customer
+Shop -up- "*" User 
+Shop -down- "*" ProductType
+ProductType -up- "0..1" Position
+ProductType "*" -down-  SaleTransaction
+
+SaleTransaction -left- "*" ReturnTransaction
+SaleTransaction -up-|> Credit
+SaleTransaction "*" -right- "0..1" LoyaltyCard
+LoyaltyCard "0..1" -up- Customer
+
+ReturnTransaction -up-|> Debit
+Order -up-|> Debit
+Debit -right-|> BalanceOperation
+Credit -[hidden]- Position
+Credit -up-|> BalanceOperation
+AccountBook -left- BalanceOperation
+Order "*" - ProductType
+ReturnTransaction "*" - ProductType
 
 @enduml
 ```
@@ -419,7 +408,7 @@ participant Shop
 participant Order
 
 autonumber 
-Manager -> Shop: Insert orderId
+Manager -> Shop: Insert orderID
 Shop -> Order: recordOrderArrival()
 Order --> Shop: Order's state updated to COMPLETED
 Shop -> ProductType: getProductTypeByBarCode()

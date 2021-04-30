@@ -86,6 +86,5 @@ Version: 1.0
 Estimated calendar time, in calendar weeks (Assume team of 4 people, 8 hours per day, 5 days per week ): 2 weeks, 1 day
 
 ### Gantt chart
-Insert here Gantt chart with above activities
 
-![](Gnatt_chart.png)
+![](Gantt_chart.png)
