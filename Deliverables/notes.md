@@ -53,5 +53,8 @@ applyDiscountRateToProduct()??
 update per points con computePointsForSale()?
 
 
-
-
+Users: ArrayList<User>
+Customers:  ArrayList<Customers> 
+ProductTypes: ArrayList<ProductType>
+ProductTypesSale: LinkedList<Pair<ProductType, Integer (quantity)>>
+Operations: LinkedList<BalanceOperation>

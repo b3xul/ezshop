@@ -16,6 +16,7 @@ Version: 1.0
 - [Low level design](#low-level-design)
   - [data package](#data-package)
   - [model package](#model-package)
+    - [Each collection is persistant. Each database table is updated using methods from the corresponding DAO class in the data package.](#each-collection-is-persistant-each-database-table-is-updated-using-methods-from-the-corresponding-dao-class-in-the-data-package)
 - [Verification traceability matrix](#verification-traceability-matrix)
 - [Verification sequence diagrams](#verification-sequence-diagrams)
 - [UC1 - Manage products](#uc1---manage-products)
@@ -112,9 +113,9 @@ interface EZShopInterface{
 }
 
 class Shop{
-    users: List<User>
-    productTypes: List<ProductType>
-    customers: List<Customer>
+    Users: ArrayList<User>
+    ProductTypes: ArrayList<ProductType>
+    Customers:  ArrayList<Customers>
     accounting: AccountBook
 
     reset()
@@ -175,7 +176,7 @@ class User{
 }
 
 class AccountBook{
-    operations: List<BalanceOperation>
+    BalanceOperations: LinkedList<BalanceOperation>
 }
 
 class Debit{
@@ -185,7 +186,7 @@ class Credit{
 }
 
 class ProductType{
-    barCode
+    productCode
     description
     sellPrice
     quantity
@@ -201,18 +202,18 @@ class SaleTransaction {
     cost
     paymentType
     discount rate
-    productTypes: Map[<ProductType>: quantityInSale]
+    ProductTypesSale: LinkedList<Pair<ProductType, Integer quantity>>
     customer: Customer
 }
 
 class Customer {
+    customerID
     name
     surname
-    customerID
     loyaltyCard: LoyaltyCard
 }
 class LoyaltyCard {
-    ID
+    customerCard
     points
 }
 
@@ -269,6 +270,22 @@ ReturnTransaction "*" - ProductType
 
 @enduml
 ```
+
+### Each collection is persistant. Each database table is updated using methods from the corresponding DAO class in the data package.
+
+| Persistant Class   | Data Access Object class/classes that manages its persistance |
+| ------------------ | ------------------------------------------------------------- |
+| User               | UsersDAO                                                      |
+| ProductTypes       | ProductTypesDAO                                               |
+| Position           | ProductTypesDAO                                               |
+| Customers          | CustomersDAO                                                  |
+| LoyaltyCard        | CustomersDAO                                                  |
+| SaleTransaction    | SaleTransactionsDAO                                           |
+| ReturnTransactions | ReturnTransactionsDAO                                         |
+| Orders             | OrdersDAO                                                     |
+| BalanceOperation   | SaleTransactionsDAO, ReturnTransactionsDAO, OrdersDAO         |
+| AccountBook        | SaleTransactionsDAO, ReturnTransactionsDAO, OrdersDAO         |
+| Shop               | UsersDAO, ProductTypesDAO, CustomersDAO                       |
 
 # Verification traceability matrix
 
@@ -636,7 +653,7 @@ autonumber
 Manager -> Shop : select start and end date
 Shop -> accountBook: getCreditsAndDebits()
 accountBook --> Shop: List<BalanceOperation>
-Shop --> Manager: display Operations
+Shop --> Manager: display BalanceOperations
 
 @enduml
 ```
