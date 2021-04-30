@@ -1,4 +1,4 @@
-#i Timesheet
+# Timesheet
 
 Report in this table the effort (in person hours) spent per week, per activity, per team. 
 [One person hour is the effort of one person working one hour.
