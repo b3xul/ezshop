@@ -506,6 +506,27 @@ Shop -> Customer: modifyCustomer()
 @enduml
 ```
 
+# UC5 - Authenticate, authorize
+### Scenario 5.1/5.2 - Login/Logout
+
+```plantuml
+@startuml
+
+actor Actor
+participant Shop
+
+autonumber 
+Actor -> Shop: insert username and password
+Shop -> Shop: login()
+Shop --> Actor: show the functionalities offered by the access priviledges
+Actor -> Shop: want to logout
+Shop -> Shop: logout()
+Shop --> Actor: show the login page
+
+@enduml
+```
+
+
 # UC6 - Manage sale transaction
 ### Scenario 6.2 - Sale of product type X with product discount (credit card)
 
