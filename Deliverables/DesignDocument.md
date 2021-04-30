@@ -23,7 +23,6 @@ Version: 1.0
 - [UC2 - Manage users and rights](#uc2---manage-users-and-rights)
     - [Scenario 2.1 Create user and define rights](#scenario-21-create-user-and-define-rights)
     - [Scenario 2.2 Delete user](#scenario-22-delete-user)
-    - [Scenario 2.3 Modify user rights](#scenario-23-modify-user-rights)
 - [UC3 - Manage inventory and orders](#uc3---manage-inventory-and-orders)
     - [Scenario 3.1 - Order of product type X issued](#scenario-31---order-of-product-type-x-issued)
     - [Scenario 3.2 - Order of product type X payed](#scenario-32---order-of-product-type-x-payed)
@@ -36,7 +35,7 @@ Version: 1.0
     - [Scenario 6.2 - Sale of product type X with product discount (credit card)](#scenario-62---sale-of-product-type-x-with-product-discount-credit-card)
     - [Scenario 6.4 - Sale of product type X with Loyalty Card update (cash)](#scenario-64---sale-of-product-type-x-with-loyalty-card-update-cash)
 - [UC8 - Manage return transaction](#uc8---manage-return-transaction)
-    - [Scenario 8.1/8.2 - Return transaction of product type X completed](#scenario-8182---return-transaction-of-product-type-x-completed)
+    - [Scenario 8.1/8.2 - Return transaction of product type X completed (credit card/cash)](#scenario-8182---return-transaction-of-product-type-x-completed-credit-cardcash)
 - [UC9 - Accounting](#uc9---accounting)
   - [Scenario 9.1 - List credits and debits](#scenario-91---list-credits-and-debits)
 
@@ -252,10 +251,10 @@ Credit -down-|> BalanceOperation
 | --- | ---- | ---- | ----------- | -------- | ----------- | ----------- | --------------- | -------- | -------- | ----------------- | ----- | ----- | ------ | ---------------- |
 | FR1 | X    | X    |             |          |             |             |                 |          |          |                   |       |       |        |                  |
 | FR3 | X    |      | X           |          |             |             |                 | X        |          |                   |       |       |        |                  |
-| FR4 | X    |      | X           |          |             |             |                 | X        | X        |                   | X     |       |        |                  |
+| FR4 | X    |      | X           |          |             |             |                 | X        |          |                   | X     |       |        |                  |
 | FR5 | X    |      |             | X        |             | X           |                 |          |          |                   |       |       |        |                  |
-| FR6 | X    |      | X           |          |             |             | X               | X        |          | X                 |       |       |        |                  |
-| FR7 | X    |      |             |          |             |             | X               |          |          |                   |       |       |        |                  |
+| FR6 | X    |      | X           |          |             |             | X               |          |          | X                 |       |       |        |                  |
+| FR7 | X    |      |             |          |             |             | X               |          |          | X                 |       |       |        |                  |
 | FR8 | X    |      |             |          | X           |             |                 |          |          |                   |       | X     | X      | X                |
 
 
@@ -368,24 +367,6 @@ Shop --> Administrator: deleted user
 @enduml
 ```
 
-### Scenario 2.3 Modify user rights
-
-```plantuml
-@startuml
-
-actor Administrator
-participant Shop
-participant User
-
-autonumber
-Shop --> Administrator: Display users
-Administrator -> Shop : Select user ID, access rights
-Shop -> User: updateUserRights()
-User --> Shop: updated user
-
-@enduml
-```
-
 # UC3 - Manage inventory and orders
 
 ### Scenario 3.1 - Order of product type X issued
@@ -413,6 +394,7 @@ Order --> Shop: Order is recorded in the system in ISSUED state
 actor Manager
 participant Shop
 participant Order
+participant AccountBook
 
 autonumber 
 Manager -> Shop: Insert productCode, quantity, price per unit
@@ -421,6 +403,7 @@ Order --> Shop: Order is recorded in the system in ISSUED state
 Shop --> Manager: getIssuedOrders()
 Manager --> Shop: selects the order by manually scrolling the list
 Shop -> Order: payOrder()
+Shop -> AccountBook: recordBalanceUpdate()
 Order --> Shop: Order's state updated to PAYED
 
 @enduml
@@ -452,14 +435,16 @@ ProductType --> Shop: ProductType with Quantity updated
 ```plantuml
 @startuml
 
-actor Manager
+actor User
 participant Shop
 participant Customer
 
 autonumber 
-Manager -> Shop: insert customer's personal data
+User -> Shop: insert customer's personal data
 Shop -> Customer: defineCustomer()
 Customer --> Shop: Customer is created
+Shop --> User: ask confirmation
+User -> Shop: confirm
 
 @enduml
 ```
@@ -468,10 +453,9 @@ Customer --> Shop: Customer is created
 ```plantuml
 @startuml
 
-actor Manager
 participant Shop
-participant Customer
 participant LoyaltyCard
+participant Customer
 
 Shop -> LoyaltyCard: createCard()
 LoyaltyCard --> Shop: return LoyaltyCard's code
@@ -485,13 +469,14 @@ Shop -> Customer: attachCardToCustomer()
 ```plantuml
 @startuml
 
-actor Manager
+actor User
 participant Shop
 participant Customer
 
 Shop -> Customer: getCustomer()
 Customer --> Shop: return Customer
-Manager --> Shop: insert new data
+Shop --> User: displayCustomer()
+User --> Shop: insert new data
 Shop -> Customer: modifyCustomer()
 
 @enduml
@@ -512,13 +497,12 @@ participant AccountBook
 autonumber
 Shop -> SaleTransaction : startSaleTransaction()
 SaleTransaction --> Shop: return unique transaction's ID
-User -> Shop: Read product barcode and insert amount
+User -> Shop: Read product barcode and insert quantity
 Shop -> ProductType : getProductTypeByBarCode()
 ProductType --> Shop: return ProductType
 Shop -> SaleTransaction : addProductToSale()
 Shop -> ProductType : UpdateQuantity()
 Shop -> SaleTransaction : applyDiscountRateToProduct()
-User --> :repeat
 Shop -> SaleTransaction : endSaleTransaction()
 Shop -> User: ask for payment type
 User -> Shop : Read credit card number
@@ -545,47 +529,47 @@ participant AccountBook
 autonumber
 Shop -> SaleTransaction : startSaleTransaction()
 SaleTransaction --> Shop: return unique transaction's ID
-User -> Shop: Read product barcode and insert amount
+User -> Shop: Read product barcode and insert quantity
 Shop -> ProductType : getProductTypeByBarCode()
 ProductType --> Shop: return ProductType
 Shop -> SaleTransaction : addProductToSale()
 Shop -> ProductType : UpdateQuantity()
 Shop -> SaleTransaction : applyDiscountRateToProduct()
-User --> :repeat
 Shop -> SaleTransaction : endSaleTransaction()
 User -> Shop: Read loyalty card serial number
 Shop -> User: ask for payment type
 User -> Shop: Collect banknotes and coins
-Shop -> LoyaltyCard: computePointsForSale()
-LoyaltyCard --> Shop: return points to add
-Shop -> LoyaltyCard : modifyPointsOnCard()
+Shop -> SaleTransaction: computePointsForSale()
+SaleTransaction --> Shop: return points to add
+Shop -> LoyaltyCard: modifyPointsOnCard()
 LoyaltyCard --> Shop: updated points
 Shop -> AccountBook: recordBalanceUpdate()
 
 @enduml
 ```
 # UC8 - Manage return transaction
-### Scenario 8.1/8.2 - Return transaction of product type X completed
+### Scenario 8.1/8.2 - Return transaction of product type X completed (credit card/cash)
 
 ```plantuml
 @startuml
 
-actor Cashier
+actor User
 participant Shop
-participant SaleTransaction
 participant ReturnTransaction
 participant ProductType
 participant AccountBook
 
 autonumber 
-Cashier -> Shop: insert transaction ID
+User -> Shop: insert transaction ID
 Shop -> ReturnTransaction: startReturnTransaction()
-ReturnTransaction -> Shop: return ReturnTransaction unique ID
+ReturnTransaction --> Shop: return ReturnTransaction unique ID
 Shop -> ProductType: getProductTypeByBarcode()
 ProductType --> Shop: return ProductType
 Shop -> ReturnTransaction: returnProduct()
 Shop -> ProductType: updateQuantity()
-ReturnTransaction --> Shop: credit card/cash return
+Shop -> ReturnTransaction: returnCashPayment()
+ReturnTransaction --> Shop: credit card/cash amount to return
+Shop --> User: display amount to return
 Shop -> ReturnTransaction: endReturnTransaction()
 Shop -> AccountBook: recordBalanceUpdate()
 
@@ -602,10 +586,10 @@ participant Shop
 participant accountBook
 
 autonumber
-Manager --> Shop : select start and end date
+Manager -> Shop : select start and end date
 Shop -> accountBook: getCreditsAndDebits()
-accountBook -> Shop: List<BalanceOperation>
-Shop --> Manager: displayOperations()
+accountBook --> Shop: List<BalanceOperation>
+Shop --> Manager: display Operations
 
 @enduml
 ```
