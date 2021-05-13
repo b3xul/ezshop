@@ -6,8 +6,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.ListIterator;
 
 import it.polito.ezshop.data.Implementations.SaleTransactionImpl;
 import it.polito.ezshop.exceptions.InvalidCreditCardException;
@@ -35,6 +37,7 @@ public class EZShop implements EZShopInterface {
 	LinkedList<BalanceOperation> accountBook = new LinkedList<BalanceOperation>();
 	// User loggedUser = new User();
 	Boolean loggedUser = true;
+	ArrayList<ProductType> productTypes = new ArrayList<ProductType>();
 
 	// method to open the connection to database
 	public Connection dbAccess() {
@@ -320,7 +323,15 @@ public class EZShop implements EZShopInterface {
 
 		if (loggedUser == null)
 			throw new UnauthorizedException("User not logged in");
-		SaleTransactionImpl saleTransaction = (SaleTransactionImpl) (accountBook.get(transactionId));
+		ListIterator<BalanceOperation> revListIterator = accountBook.listIterator(accountBook.size());
+		while (revListIterator.hasPrevious()) {
+			System.out.println(revListIterator.previous());
+			if(revListIterator.previous().get transactionId)
+		}
+		
+		SaleTransaction saleTransaction = (SaleTransactionImpl) (accountBook.get(transactionId));
+		ProductType productType = getProductTypeByBarCode(productCode); // could throw InvalidProductCodeException
+		saleTransaction.addEntry(productCode, amount);
 		return false;
 
 	}

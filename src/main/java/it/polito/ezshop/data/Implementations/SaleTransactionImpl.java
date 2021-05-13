@@ -29,6 +29,7 @@ public class SaleTransactionImpl extends BalanceOperationImpl implements SaleTra
 				tc.setAmount(tc.getAmount() + amount);
 				updated = true;
 				System.out.println(tc);
+				break;
 			}
 		}
 		if (updated == false) {

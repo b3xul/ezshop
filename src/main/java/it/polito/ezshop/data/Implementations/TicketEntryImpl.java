@@ -1,19 +1,20 @@
 package it.polito.ezshop.data.Implementations;
 
+import it.polito.ezshop.data.ProductType;
 import it.polito.ezshop.data.TicketEntry;
 import it.polito.ezshop.exceptions.InvalidPricePerUnitException;
 import it.polito.ezshop.exceptions.InvalidProductCodeException;
 import it.polito.ezshop.exceptions.InvalidProductDescriptionException;
 
-public class TicketEntryImpl extends ProductTypeImpl implements TicketEntry {
+public class TicketEntryImpl implements TicketEntry {
 
+	ProductType productType;
 	int amount;
 
-	TicketEntryImpl(String note, String productDescription, String barCode, Double pricePerUnit, double discountRate,
-			int amount)
+	TicketEntryImpl(ProductType productType, int amount)
 			throws InvalidProductDescriptionException, InvalidProductCodeException, InvalidPricePerUnitException {
 
-		super(note, productDescription, barCode, pricePerUnit); // TODO, discountRate);
+		this.productType = productType;
 		this.amount = amount;
 
 	}
@@ -21,35 +22,35 @@ public class TicketEntryImpl extends ProductTypeImpl implements TicketEntry {
 	@Override
 	public String getBarCode() {
 
-		return this.getBarCode();
+		return productType.getBarCode();
 
 	}
 
 	@Override
 	public void setBarCode(String barCode) {
 
-		this.setBarCode(barCode);
+		this.productType.setBarCode(barCode);
 
 	}
 
 	@Override
 	public String getProductDescription() {
 
-		return this.getProductDescription();
+		return productType.getProductDescription();
 
 	}
 
 	@Override
 	public void setProductDescription(String productDescription) {
 
-		this.setProductDescription(productDescription);
+		this.productType.setProductDescription(productDescription);
 
 	}
 
 	@Override
 	public int getAmount() {
 
-		return this.amount;
+		return amount;
 
 	}
 
@@ -59,31 +60,32 @@ public class TicketEntryImpl extends ProductTypeImpl implements TicketEntry {
 		this.amount = amount;
 
 	}
-//	@Override //->double != Double!
-//	public double getPricePerUnit() {
-//
-//		return this.getPricePerUnit();
-//
-//	}
-//
-//	@Override
-//	public void setPricePerUnit(double pricePerUnit) {
-//
-//		this.setPricePerUnit(pricePerUnit);
+
+	@Override // ->double != Double!
+	public double getPricePerUnit() {
+
+		return productType.getPricePerUnit();
+
+	}
+
+	@Override
+	public void setPricePerUnit(double pricePerUnit) {
+
+		this.productType.setPricePerUnit(pricePerUnit);
 
 	}
 
 	@Override
 	public double getDiscountRate() {
 
-		return this.getDiscountRate();
+		return productType.getDiscountRate();
 
 	}
 
 	@Override
 	public void setDiscountRate(double discountRate) {
 
-		this.setDiscountRate(discountRate);
+		this.productType.setDiscountRate(discountRate);
 
 	}
 
