@@ -4,11 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
 
+import it.polito.ezshop.data.User;
 import it.polito.ezshop.exceptions.*;
 
-public class EZShopImpl {
+public class EZShopImpl{
 
-// method to open the connection to database
+	// method to open the connection to database
 	@SuppressWarnings("finally")
 	public Connection dbAccess() {
 		
@@ -16,7 +17,7 @@ public class EZShopImpl {
 	    
 		try {  
 	    
-			String url = "jdbc:sqlite:C:\\Users\\andre\\OneDrive\\Desktop\\prova_java.db";  
+			String url = "jdbc:sqlite:prova_java.db";  
 	        conn = DriverManager.getConnection(url);  
             System.out.println("Connection to SQLite has been established.");
 	    
@@ -32,7 +33,7 @@ public class EZShopImpl {
 	
 	}
 	
-// method to close the connection to database
+	// method to close the connection to database
 	public void dbClose(Connection conn) {
 		 
 		try {  

@@ -1,7 +1,5 @@
 package it.polito.ezshop.data;
 
-import java.util.List;
-
 public interface ReturnTransaction {
 
     Integer getReturnId();
