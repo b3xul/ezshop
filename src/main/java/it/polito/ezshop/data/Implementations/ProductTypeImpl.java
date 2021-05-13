@@ -1,4 +1,4 @@
-package ezshop;
+package it.polito.ezshop.data.Implementations;
 
 import it.polito.ezshop.exceptions.*;
 public class ProductTypeImpl {
@@ -152,7 +152,7 @@ public class ProductTypeImpl {
 
 	
 	public void print() {
-		System.out.println(this.id + ")" + this.productDescription + ": " +  this.pricePerUnit + "€" + " - " + this.barCode + ", at " +  this.location + ", pieces: " +  this.quantity + " (" + this.note + ")");
+		System.out.println(this.id + ")" + this.productDescription + ": " +  this.pricePerUnit + "ï¿½" + " - " + this.barCode + ", at " +  this.location + ", pieces: " +  this.quantity + " (" + this.note + ")");
 	}
 	
 	
