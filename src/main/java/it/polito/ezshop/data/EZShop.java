@@ -461,7 +461,7 @@ public class EZShop implements EZShopInterface {
     		else if(false) throw new UnauthorizedException("user error");	
 			else if(newPos.split(" ").length != 3) throw new InvalidLocationException("wrong format for location: wrong field(s)");
 			else if(!isStringOnlyNumbers(newPos.split(" ")[0])) throw new InvalidLocationException("wrong format for location: aisle must be a number");
-			else if(!isStringOnlyAlphabet(newPos.split(" ")[1]) || newPos.split(" ")[1].length() != 1) throw new InvalidLocationException("wrong format for location: ID must be a single character");
+						else if(!isStringOnlyAlphabet(newPos.split(" ")[1])) throw new InvalidLocationException("wrong format for location: ID must contains only character");
 			else if(!isStringOnlyNumbers(newPos.split(" ")[2])) throw new InvalidLocationException("wrong format for location: level must be a number");
 			else{
 				Integer aisleNumber = Integer.parseInt(newPos.split(" ")[0]);
