@@ -1,5 +1,6 @@
 package it.polito.ezshop.data.Implementations;
 
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -22,7 +23,7 @@ public class SaleTransactionImpl extends BalanceOperationImpl implements SaleTra
 
 	}
 
-	public void addEntry(ProductType productType, int amount) {
+	public void upsertEntry(ProductType productType, int amount) { // update or insert entry if it doesn't exist
 
 		Boolean updated = false;
 		for (TicketEntry entry : entries) {
@@ -36,6 +37,31 @@ public class SaleTransactionImpl extends BalanceOperationImpl implements SaleTra
 		if (updated == false) {
 			entries.add(new TicketEntryImpl(productType, amount));
 		}
+
+	}
+
+	public Boolean removeAmountFromEntry(ProductType productType, int amountToRemove) {
+
+		Boolean updated = false;
+		Iterator<TicketEntry> iter = entries.iterator();
+		while (iter.hasNext()) {
+			TicketEntry entry = iter.next();
+			if (entry.getBarCode() == productType.getBarCode()) { // product present in the saleTransaction
+				int previousAmount = entry.getAmount();
+				if (amountToRemove < previousAmount) {
+					entry.setAmount(previousAmount - amountToRemove);
+					updated = true;
+				} else if (amountToRemove == previousAmount) {
+					iter.remove();
+					updated = true;
+				}
+				// else if (amountToRemove > previousAmount) updated==false;
+				System.out.println(entry);
+				break;
+			}
+		}
+		// if product not present in the saleTransaction updated==false
+		return updated;
 
 	}
 

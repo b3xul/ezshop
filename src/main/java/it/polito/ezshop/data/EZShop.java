@@ -296,9 +296,9 @@ public class EZShop implements EZShopInterface {
 		try {
 			c = dbAccess();
 			stmt = c.createStatement();
-			String sql = "SELECT MAX(ticketNumber) from saleTransaction";
+			String sql = "SELECT seq FROM sqlite_sequence WHERE name=\"saleTransaction\"";
 			ResultSet rs = stmt.executeQuery(sql);
-			id = rs.getInt("MAX(ticketNumber)");
+			id = rs.getInt("seq") + 1;
 			rs.close();
 			stmt.close();
 			// c.setAutoCommit(false); // all operations until the next c.commit will be
@@ -321,8 +321,6 @@ public class EZShop implements EZShopInterface {
 			throws InvalidTransactionIdException, InvalidProductCodeException, InvalidQuantityException,
 			UnauthorizedException {
 
-		// if (activeSaleTransaction == null || activeSaleTransaction.getTicketNumber()
-		// != transactionId) {
 		if (transactionId == null || transactionId <= 0)
 			throw new InvalidTransactionIdException("Transaction id cannot be null or <=0");
 		if (amount <= 0)
@@ -330,10 +328,11 @@ public class EZShop implements EZShopInterface {
 		if (loggedUser == null)
 			throw new UnauthorizedException("User not logged in");
 		ProductType productType = getProductTypeByBarCode(productCode); // could throw InvalidProductCodeException
-		if (productType == null || amount > productType.getQuantity()
+		System.out.println(productType);
+		if (productType == null || amount > productType.getQuantity() || openSaleTransaction == null
 				|| transactionId != openSaleTransaction.getTicketNumber())
 			return false;
-		openSaleTransaction.addEntry(productType, amount);
+		openSaleTransaction.upsertEntry(productType, amount);
 		return true;
 
 	}
@@ -343,7 +342,18 @@ public class EZShop implements EZShopInterface {
 			throws InvalidTransactionIdException, InvalidProductCodeException, InvalidQuantityException,
 			UnauthorizedException {
 
-		return false;
+		if (transactionId == null || transactionId <= 0)
+			throw new InvalidTransactionIdException("Transaction id cannot be null or <=0");
+		if (amount <= 0)
+			throw new InvalidQuantityException("Amount to remove cannot be <=0");
+		if (loggedUser == null)
+			throw new UnauthorizedException("User not logged in");
+		ProductType productType = getProductTypeByBarCode(productCode); // could throw InvalidProductCodeException
+		if (productType == null || openSaleTransaction == null
+				|| transactionId != openSaleTransaction.getTicketNumber())
+			return false;
+		Boolean result = openSaleTransaction.removeAmountFromEntry(productType, amount);
+		return result;
 
 	}
 
