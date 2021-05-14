@@ -5,48 +5,49 @@ import it.polito.ezshop.data.TicketEntry;
 
 public class TicketEntryImpl implements TicketEntry {
 
-	ProductType productType;
 	int amount;
+	ProductType product;
+	Double discountRate;
 
-	TicketEntryImpl(ProductType productType, int amount) {
-
-		this.productType = productType;
+	TicketEntryImpl(String note, String productDescription, String barCode, double pricePerUnit, double discountRate,
+			int amount){
+		this.product = new ProductTypeImpl(note, productDescription, barCode, pricePerUnit);
+		//this.product.setDiscountRate(discountRate);
 		this.amount = amount;
-
 	}
 
 	@Override
 	public String getBarCode() {
 
-		return productType.getBarCode();
+		return this.product.getBarCode();
 
 	}
 
 	@Override
 	public void setBarCode(String barCode) {
 
-		this.productType.setBarCode(barCode);
+		this.product.setBarCode(barCode);
 
 	}
 
 	@Override
 	public String getProductDescription() {
 
-		return productType.getProductDescription();
+		return this.product.getProductDescription();
 
 	}
 
 	@Override
 	public void setProductDescription(String productDescription) {
 
-		this.productType.setProductDescription(productDescription);
+		this.product.setProductDescription(productDescription);
 
 	}
 
 	@Override
 	public int getAmount() {
 
-		return amount;
+		return this.amount;
 
 	}
 
@@ -56,33 +57,35 @@ public class TicketEntryImpl implements TicketEntry {
 		this.amount = amount;
 
 	}
-
-	@Override // ->double != Double!
+	
+	@Override 
 	public double getPricePerUnit() {
 
-		return productType.getPricePerUnit();
+		return this.product.getPricePerUnit();
 
 	}
 
 	@Override
 	public void setPricePerUnit(double pricePerUnit) {
 
-		this.productType.setPricePerUnit(pricePerUnit);
+		this.product.setPricePerUnit(pricePerUnit);
 
 	}
 
 	@Override
 	public double getDiscountRate() {
-
-		return productType.getDiscountRate();
-
+		
+		return this.discountRate;
+		//return this.getDiscountRate();
+		
 	}
 
 	@Override
 	public void setDiscountRate(double discountRate) {
-
-		this.productType.setDiscountRate(discountRate);
-
+		
+		this.discountRate = discountRate;
+		//this.product.setDiscountRate(discountRate);
+		
 	}
 
 }
