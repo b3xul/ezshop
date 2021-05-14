@@ -14,6 +14,7 @@ public class TicketEntryImpl implements TicketEntry {
 		this.product = new ProductTypeImpl(note, productDescription, barCode, pricePerUnit);
 		//this.product.setDiscountRate(discountRate);
 		this.amount = amount;
+		this.discountRate = discountRate;
 	}
 
 	@Override
