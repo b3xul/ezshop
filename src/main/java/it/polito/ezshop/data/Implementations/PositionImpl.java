@@ -30,12 +30,18 @@ public class PositionImpl {
 
 // constructor with parameters
 	public PositionImpl(String location) {
-		Integer aisleNumber = Integer.parseInt(location.split(" ")[0]);
-		String alphabeticId = location.split(" ")[1];
-		Integer levelNumber = Integer.parseInt(location.split(" ")[2]);
-		this.aisleNumber = aisleNumber;
-		this.alphabeticId = alphabeticId;
-		this.levelNumber = levelNumber;
+		if (location == "") {
+			this.aisleNumber = null;
+			this.alphabeticId = "";
+			this.levelNumber = null;
+		}else {
+			Integer aisleNumber = Integer.parseInt(location.split(" ")[0]);
+			String alphabeticId = location.split(" ")[1];
+			Integer levelNumber = Integer.parseInt(location.split(" ")[2]);
+			this.aisleNumber = aisleNumber;
+			this.alphabeticId = alphabeticId;
+			this.levelNumber = levelNumber;
+		}
 	}
 	
 // getter aisle number
@@ -61,22 +67,18 @@ public class PositionImpl {
 	
 // setter entire position
 	public void setPosition(String location) {
+			if (location == "") {
+			this.aisleNumber = null;
+			this.alphabeticId = null;
+			this.levelNumber = null;
+		}else {
 			Integer aisleNumber = Integer.parseInt(location.split(" ")[0]);
 			String alphabeticId = location.split(" ")[1];
 			Integer levelNumber = Integer.parseInt(location.split(" ")[2]);
 			this.aisleNumber = aisleNumber;
 			this.alphabeticId = alphabeticId;
 			this.levelNumber = levelNumber;
-	}
-	
-	
-	
-	
-	
-	public static void main(String[] args) throws InvalidLocationException {
-		PositionImpl p = new PositionImpl("2 a 1");
-		//System.out.println(p.isStringOnlyNumbers("22a£"));
-		p.setPosition("2 a 1");
+		}
 	}
 	
 }
