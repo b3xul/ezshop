@@ -3,6 +3,7 @@ package it.polito.ezshop.data.Implementations;
 import java.util.LinkedList;
 import java.util.List;
 
+import it.polito.ezshop.data.ProductType;
 import it.polito.ezshop.data.SaleTransaction;
 import it.polito.ezshop.data.TicketEntry;
 
@@ -21,19 +22,19 @@ public class SaleTransactionImpl extends BalanceOperationImpl implements SaleTra
 
 	}
 
-	public Boolean addEntry(String productCode, int amount) {
+	public void addEntry(ProductType productType, int amount) {
 
 		Boolean updated = false;
-		for (TicketEntry tc : entries) {
-			if (tc.getBarCode() == productCode) {
-				tc.setAmount(tc.getAmount() + amount);
+		for (TicketEntry entry : entries) {
+			if (entry.getBarCode() == productType.getBarCode()) {
+				entry.setAmount(entry.getAmount() + amount);
 				updated = true;
-				System.out.println(tc);
+				System.out.println(entry);
 				break;
 			}
 		}
 		if (updated == false) {
-			entries.add(null);
+			entries.add(new TicketEntryImpl(productType, amount));
 		}
 
 	}

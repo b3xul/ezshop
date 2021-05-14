@@ -7,9 +7,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.ListIterator;
 
 import it.polito.ezshop.data.Implementations.SaleTransactionImpl;
 import it.polito.ezshop.exceptions.InvalidCreditCardException;
@@ -34,10 +32,12 @@ import it.polito.ezshop.exceptions.UnauthorizedException;
 
 public class EZShop implements EZShopInterface {
 
-	LinkedList<BalanceOperation> accountBook = new LinkedList<BalanceOperation>();
+	// LinkedList<BalanceOperation> accountBook = new
+	// LinkedList<BalanceOperation>();
 	// User loggedUser = new User();
 	Boolean loggedUser = true;
 	ArrayList<ProductType> productTypes = new ArrayList<ProductType>();
+	SaleTransactionImpl openSaleTransaction = null;
 
 	// method to open the connection to database
 	public Connection dbAccess() {
@@ -310,8 +310,8 @@ public class EZShop implements EZShopInterface {
 		}
 //		System.out.println(id);
 //		System.out.println((BalanceOperation) new SaleTransactionImpl(id));
-		accountBook.add((BalanceOperation) new SaleTransactionImpl(id)); // transaction will be added to the db only
-																			// when it ends
+		openSaleTransaction = new SaleTransactionImpl(id); // transaction will be added to the db only
+															// when it ends
 		return id;
 
 	}
@@ -321,18 +321,20 @@ public class EZShop implements EZShopInterface {
 			throws InvalidTransactionIdException, InvalidProductCodeException, InvalidQuantityException,
 			UnauthorizedException {
 
+		// if (activeSaleTransaction == null || activeSaleTransaction.getTicketNumber()
+		// != transactionId) {
+		if (transactionId == null || transactionId <= 0)
+			throw new InvalidTransactionIdException("Transaction id cannot be null or <=0");
+		if (amount <= 0)
+			throw new InvalidQuantityException("Amount to add cannot be <=0");
 		if (loggedUser == null)
 			throw new UnauthorizedException("User not logged in");
-		ListIterator<BalanceOperation> revListIterator = accountBook.listIterator(accountBook.size());
-		while (revListIterator.hasPrevious()) {
-			System.out.println(revListIterator.previous());
-			if(revListIterator.previous().get transactionId)
-		}
-		
-		SaleTransaction saleTransaction = (SaleTransactionImpl) (accountBook.get(transactionId));
 		ProductType productType = getProductTypeByBarCode(productCode); // could throw InvalidProductCodeException
-		saleTransaction.addEntry(productCode, amount);
-		return false;
+		if (productType == null || amount > productType.getQuantity()
+				|| transactionId != openSaleTransaction.getTicketNumber())
+			return false;
+		openSaleTransaction.addEntry(productType, amount);
+		return true;
 
 	}
 

@@ -2,17 +2,13 @@ package it.polito.ezshop.data.Implementations;
 
 import it.polito.ezshop.data.ProductType;
 import it.polito.ezshop.data.TicketEntry;
-import it.polito.ezshop.exceptions.InvalidPricePerUnitException;
-import it.polito.ezshop.exceptions.InvalidProductCodeException;
-import it.polito.ezshop.exceptions.InvalidProductDescriptionException;
 
 public class TicketEntryImpl implements TicketEntry {
 
 	ProductType productType;
 	int amount;
 
-	TicketEntryImpl(ProductType productType, int amount)
-			throws InvalidProductDescriptionException, InvalidProductCodeException, InvalidPricePerUnitException {
+	TicketEntryImpl(ProductType productType, int amount) {
 
 		this.productType = productType;
 		this.amount = amount;
