@@ -1,190 +1,133 @@
 package it.polito.ezshop.data.Implementations;
 
-import it.polito.ezshop.exceptions.InvalidPricePerUnitException;
-import it.polito.ezshop.exceptions.InvalidProductCodeException;
-import it.polito.ezshop.exceptions.InvalidProductDescriptionException;
+import it.polito.ezshop.data.ProductType;
 
-public class ProductTypeImpl {
+import it.polito.ezshop.exceptions.*;
 
+public class ProductTypeImpl implements ProductType{
 	private Integer quantity = 0;
-	private String location = "no location";
 	private String note;
 	private String productDescription;
 	private String barCode;
 	private Double pricePerUnit;
-	private Integer id;
+	private Integer id = -1;
+	private Double discountRate = 0.0;
+	private PositionImpl location = new PositionImpl();
 
+// constructor empty
 	public ProductTypeImpl() {
-
 		this.note = "no notes";
 		this.productDescription = "no dscription";
 		this.barCode = "xxxxxxxxxxxxxx";
 		this.pricePerUnit = 0.0;
 		this.id = null;
-
 	}
-
-	public ProductTypeImpl(String note, String productDescription, String barCode, Double pricePerUnit)
-			throws InvalidProductDescriptionException, InvalidProductCodeException, InvalidPricePerUnitException {
-
-		if (productDescription == null || productDescription == "") {
-			throw new InvalidProductDescriptionException("invalid description");
-		} else if (barCode == null || barCode == "") {
-			throw new InvalidProductCodeException("invalid barcode: barcode not inserted");
-		} else if (barCode.length() < 12 || barCode.length() > 14) {
-			Long.parseLong(barCode);
-			throw new InvalidProductCodeException("invalid barcode: wrong length");
-		} else if (pricePerUnit <= 0) {
-			throw new InvalidPricePerUnitException("invalid price");
-		} else if (false) {
-			// throw new UnauthorizedException("user error");
-		} else {
-			Long.parseLong(barCode);
+	
+// constructor with parameters
+	public ProductTypeImpl(String note, String productDescription, String barCode, Double pricePerUnit) { 
+			
+			Long.parseLong(barCode);				
 			this.note = note;
 			this.productDescription = productDescription;
 			this.barCode = barCode;
 			this.pricePerUnit = pricePerUnit;
-		}
-
-	}
-
+		
+	};
+	
+// getter quantity
 	public Integer getQuantity() {
-
 		return quantity;
-
 	};
 
-	public void setQuantity(Integer quantity) {
+// setter quantity
+    public void setQuantity(Integer quantity) {
+    	this.quantity = quantity;
+    };
 
-		try {
-			this.quantity = quantity;
-		} catch (Exception ex) {
-			System.out.println("Caught the exception");
-			System.out.println(ex.getMessage());
-		}
+// getter location
+    public String getLocation() {
+    	return location.getPosition();
+    };
 
-	};
+// setter location
+    public void setLocation(String location) {
+    	this.location.setPosition(location);
+    };
 
-	public String getLocation() {
+// getter note
+    public String getNote() {
+    	return note;
+    };
 
-		return location;
+// setter note
+    public void setNote(String note) {
+    	this.note = note;
+    };
 
-	};
+// getter product description
+    public String getProductDescription() {
+    	return productDescription;
+    };
 
-	public void setLocation(String location) {
+// setter product description
+    public void setProductDescription(String productDescription) {
+		this.productDescription = productDescription;
+    };
 
-		this.location = location;
+// setter barcode
+    public String getBarCode() {
+    	return barCode;
+    };
 
-	};
+// method to verify if a string contains only numbers
+    public static boolean isStringOnlyNumbers(String str){
+        return ((str != null)
+                && (!str.equals(""))
+                && (str.matches("^[0-9]*$")));
+    };
+    
+// setter barcode
+    public void setBarCode(String barCode) {
+    		this.barCode = barCode;
+    };
 
-	public String getNote() {
+// getter price per unit
+    public Double getPricePerUnit() {
+    	return pricePerUnit;
+    };
 
-		return note;
+// setter price per unit
+    public void setPricePerUnit(Double pricePerUnit) {
+    	this.pricePerUnit = pricePerUnit;
+    };
 
-	};
+// getter ID
+    public Integer getId() {
+    	return id;
+    };
 
-	public void setNote(String note) {
+// setter ID
+    public void setId(Integer id) {
+    	this.id = id;
+    };
+    
+// getter discount rate
+    public Double getDiscountRate() {
+    	return discountRate;
+    }
+    
+// setter discount rate
+    public void setDiscountRate(Double discountRate) {
+    	this.discountRate = discountRate;
+    }
 
-		this.note = note;
-
-	};
-
-	public String getProductDescription() {
-
-		return productDescription;
-
-	};
-
-	public void setProductDescription(String productDescription) {
-
-		try {
-			if (productDescription == null || productDescription == "") {
-				throw new InvalidProductDescriptionException("invalid description");
-			}
-			this.productDescription = productDescription;
-		} catch (Exception ex) {
-			System.out.println("Caught the exception");
-			System.out.println(ex.getMessage());
-		}
-
-	};
-
-	public String getBarCode() {
-
-		return barCode;
-
-	};
-
-	public void setBarCode(String barCode) {
-
-		try {
-			if (barCode == null || barCode == "") {
-				throw new InvalidProductCodeException("invalid barcode: barcode not inserted");
-			}
-			Long.parseLong(barCode);
-			if (barCode.length() < 12 || barCode.length() > 14) {
-				throw new InvalidProductCodeException("invalid barcode: wrong length");
-			}
-			this.barCode = barCode;
-		} catch (NumberFormatException e) {
-			System.out.println("Caught the exception");
-			System.out.println("invalid barcode: no letter in barcode");
-		} catch (Exception ex) {
-			System.out.println("Caught the exception");
-			System.out.println(ex.getMessage());
-		}
-
-	};
-
-	public Double getPricePerUnit() {
-
-		return pricePerUnit;
-
-	};
-
-	public void setPricePerUnit(Double pricePerUnit) {
-
-		try {
-			if (pricePerUnit <= 0) {
-				throw new InvalidPricePerUnitException("invalid price");
-			}
-			this.pricePerUnit = pricePerUnit;
-		} catch (Exception ex) {
-			System.out.println("Caught the exception");
-			System.out.println(ex.getMessage());
-		}
-
-	};
-
-	public Integer getId() {
-
-		return id;
-
-	};
-
-	public void setId(Integer id) {
-
-		try {
-			this.id = id;
-		} catch (Exception e) {
-		}
-
-	};
-
+// method to print all informations about the product
 	public void print() {
-
-		System.out.println(this.id + ")" + this.productDescription + ": " + this.pricePerUnit + "�" + " - "
-				+ this.barCode + ", at " + this.location + ", pieces: " + this.quantity + " (" + this.note + ")");
-
-	}
-
-	public static void main(String[] args) {
-//		ProductType p1 = new ProductType("buono", "biscotti", "00001111", 1.50);
-
-//		p1.print();
-//		p1.barCode = "111";
-//		System.out.println(p1.barCode);
-
-	}
-
+		if(this.id == -1 || this.id == null) System.out.println("no product");
+		else System.out.println(this.id + ")" + this.productDescription + 
+				": " +  this.pricePerUnit + "€" + " - " + this.barCode + ", at " +  
+				this.location.getPosition() + ", pieces: " +  this.quantity +
+				" (" + this.note + ") - [discount rate: " + this.discountRate + "%]");
+	};
+		
 }
