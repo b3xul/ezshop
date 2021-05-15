@@ -40,49 +40,52 @@ public class EZShop implements EZShopInterface {
 	// LinkedList<BalanceOperation>();
 	// User loggedUser = new User();
 	Boolean loggedUser = true;
-	ArrayList<ProductType> productTypes = new ArrayList<ProductType>();
+	// ArrayList<ProductType> productTypes = new ArrayList<ProductType>();
 	SaleTransactionImpl openSaleTransaction = null;
 
 	// method to open the connection to database
-	@SuppressWarnings("finally")
 	public Connection dbAccess() {
-		Connection conn = null;  
-		try {  
-			//String url = "jdbc:sqlite:C:\\Users\\andre\\OneDrive\\Desktop\\prova_java.db";  
-			String url = "jdbc:sqlite:prova_java.db";  
-			conn = DriverManager.getConnection(url);  
-            System.out.println("Connection to SQLite has been established.");
-		}catch (Exception ex) {  
-			System.out.println(ex.getMessage());  
-		}finally {  
-			return conn;
+
+		Connection conn = null;
+		try {
+			// String url =
+			// "jdbc:sqlite:C:\\Users\\andre\\OneDrive\\Desktop\\prova_java.db";
+			String url = "jdbc:sqlite:prova_java.db";
+			conn = DriverManager.getConnection(url);
+			System.out.println("Connection to SQLite has been established.");
+		} catch (Exception ex) {
+			System.out.println(ex.getMessage());
 		}
+		return conn;
+
 	};
-	
+
 	// method to close the connection to database
 	public void dbClose(Connection conn) {
-		try {  
-			if (conn != null) {  
+
+		try {
+			if (conn != null) {
 				conn.close();
 				System.out.println("connection closed");
-			}  
-		}catch (SQLException ex) {  
-	    	 System.out.println(ex.getMessage());  
-		}  
+			}
+		} catch (SQLException ex) {
+			System.out.println(ex.getMessage());
+		}
+
 	}
-	
+
 	// method to verify if a string contains only letters
-	public static boolean isStringOnlyAlphabet(String str){
-	     return ((str != null)
-	          && (!str.equals(""))
-	          && (str.matches("^[a-zA-Z]*$")));
+	public static boolean isStringOnlyAlphabet(String str) {
+
+		return ((str != null) && (!str.equals("")) && (str.matches("^[a-zA-Z]*$")));
+
 	}
 
 	// method to verify if a string contains only numbers
-	public static boolean isStringOnlyNumbers(String str){
-	     return ((str != null)
-	     && (!str.equals(""))
-	     && (str.matches("^[0-9]*$")));
+	public static boolean isStringOnlyNumbers(String str) {
+
+		return ((str != null) && (!str.equals("")) && (str.matches("^[0-9]*$")));
+
 	};
 
 	@Override
@@ -141,310 +144,420 @@ public class EZShop implements EZShopInterface {
 
 	}
 
-	// method to create a new product	
+	// method to create a new product
 	@Override
-	public Integer createProductType(String description, String productCode, double pricePerUnit, String note) 
-			throws InvalidProductDescriptionException, InvalidProductCodeException, InvalidPricePerUnitException, UnauthorizedException {
+	public Integer createProductType(String description, String productCode, double pricePerUnit, String note)
+			throws InvalidProductDescriptionException, InvalidProductCodeException, InvalidPricePerUnitException,
+			UnauthorizedException {
+
 		Integer id;
-		Connection conn = null;  
+		Connection conn = null;
 		try {
-			if(description == null || description == "") throw new InvalidProductDescriptionException("invalid description");
-			else if(productCode == null || productCode == "") throw new InvalidProductCodeException("invalid barcode: barcode not inserted");
-			else if(productCode.length() < 12 || productCode.length() > 14) throw new InvalidProductCodeException("invalid barcode: wrong length");
-			else if(!isStringOnlyNumbers(productCode)) throw new InvalidProductCodeException("invalid barcode: in barcode must not be letters");
-			else if(pricePerUnit <= 0) throw new InvalidPricePerUnitException("invalid price");
-			else if(false) throw new UnauthorizedException("user error");
+			if (description == null || description == "")
+				throw new InvalidProductDescriptionException("invalid description");
+			else if (productCode == null || productCode == "")
+				throw new InvalidProductCodeException("invalid barcode: barcode not inserted");
+			else if (productCode.length() < 12 || productCode.length() > 14)
+				throw new InvalidProductCodeException("invalid barcode: wrong length");
+			else if (!isStringOnlyNumbers(productCode))
+				throw new InvalidProductCodeException("invalid barcode: in barcode must not be letters");
+			else if (pricePerUnit <= 0)
+				throw new InvalidPricePerUnitException("invalid price");
+			else if (false)
+				throw new UnauthorizedException("user error");
 			else {
 				ProductTypeImpl newProduct = new ProductTypeImpl(note, description, productCode, pricePerUnit);
 				conn = dbAccess();
 				String sql1 = "SELECT barcode FROM product WHERE barcode = '" + productCode + "'";
 				Statement statement1 = conn.createStatement();
-		        ResultSet result1 = statement1.executeQuery(sql1);
-		        if(result1.next()) {
-		        	System.out.println("a product with this barcode already exists");
-		        	id = -1;
-		        }else {
-		        	//Statement to insert a new product into the database, populating its fields (except quantity and location)				
-					String sql = "INSERT INTO product (description, price, barcode, location, quantity, note, discount) VALUES ('" + description + "', '" + pricePerUnit + "', '" + productCode + "', '" + newProduct.getLocation() + "', " + newProduct.getQuantity() + ", '" + note + "', " + newProduct.getDiscountRate() + ")";
+				ResultSet result1 = statement1.executeQuery(sql1);
+				if (result1.next()) {
+					System.out.println("a product with this barcode already exists");
+					id = -1;
+				} else {
+					// Statement to insert a new product into the database, populating its fields
+					// (except quantity and location)
+					String sql = "INSERT INTO product (description, price, barcode, location, quantity, note, discount) VALUES ('"
+							+ description + "', '" + pricePerUnit + "', '" + productCode + "', '"
+							+ newProduct.getLocation() + "', " + newProduct.getQuantity() + ", '" + note + "', "
+							+ newProduct.getDiscountRate() + ")";
 					Statement statement = conn.createStatement();
-			        statement.executeUpdate(sql);
-			        System.out.println("Product created");
-			        //Statement to select the ID of the new product created, that is what the method returns: the ID is automatically generated by the database, 
-			        //which sets for each new entry a number as ID, increasing the value of the last ID created. The ID is the primary key of the database, so 
-			        //it's unique and it cannot be set at a value already used.
-			        String sql2 = "SELECT id FROM product WHERE id=(SELECT max(id) FROM product)";
-			        Statement statement2 = conn.createStatement();
-			        ResultSet result = statement2.executeQuery(sql2);
-			        id = result.getInt("id");
-		        }
-				
-				
+					statement.executeUpdate(sql);
+					System.out.println("Product created");
+					// Statement to select the ID of the new product created, that is what the
+					// method returns: the ID is automatically generated by the database,
+					// which sets for each new entry a number as ID, increasing the value of the
+					// last ID created. The ID is the primary key of the database, so
+					// it's unique and it cannot be set at a value already used.
+					String sql2 = "SELECT id FROM product WHERE id=(SELECT max(id) FROM product)";
+					Statement statement2 = conn.createStatement();
+					ResultSet result = statement2.executeQuery(sql2);
+					id = result.getInt("id");
+				}
 			}
-		}catch(Exception ex){
+		} catch (Exception ex) {
 			System.out.println(ex.getMessage());
-            id = -1;
-		}finally {  
-	       dbClose(conn);
-	    }
+			id = -1;
+		} finally {
+			dbClose(conn);
+		}
 		return id;
-    }
+
+	}
 
 	// method to update product's fields
 	@Override
-	public boolean updateProduct(Integer id, String newDescription, String newCode, double newPrice, String newNote) 
-			throws InvalidProductIdException, InvalidProductDescriptionException, InvalidProductCodeException, InvalidPricePerUnitException, UnauthorizedException{
+	public boolean updateProduct(Integer id, String newDescription, String newCode, double newPrice, String newNote)
+			throws InvalidProductIdException, InvalidProductDescriptionException, InvalidProductCodeException,
+			InvalidPricePerUnitException, UnauthorizedException {
+
 		Boolean success = false;
-		Connection conn = null;  
-	    try {  
-	    	if(id <= 0 || id == null)throw new InvalidProductIdException("invalid ID");
-	    	else if(newDescription == null || newDescription == "") throw new InvalidProductDescriptionException("invalid description");
-			else if(newCode == null || newCode == "") throw new InvalidProductCodeException("invalid barcode: barcode not inserted");
-			else if(newCode.length() < 12 || newCode.length() > 14) throw new InvalidProductCodeException("invalid barcode: wrong length");
-			else if(!isStringOnlyNumbers(newCode)) throw new InvalidProductCodeException("invalid barcode: in barcode must not be letters");
-			else if(newPrice <= 0) throw new InvalidPricePerUnitException("invalid price");
-			else if(false) throw new UnauthorizedException("user error");					
+		Connection conn = null;
+		try {
+			if (id <= 0 || id == null)
+				throw new InvalidProductIdException("invalid ID");
+			else if (newDescription == null || newDescription == "")
+				throw new InvalidProductDescriptionException("invalid description");
+			else if (newCode == null || newCode == "")
+				throw new InvalidProductCodeException("invalid barcode: barcode not inserted");
+			else if (newCode.length() < 12 || newCode.length() > 14)
+				throw new InvalidProductCodeException("invalid barcode: wrong length");
+			else if (!isStringOnlyNumbers(newCode))
+				throw new InvalidProductCodeException("invalid barcode: in barcode must not be letters");
+			else if (newPrice <= 0)
+				throw new InvalidPricePerUnitException("invalid price");
+			else if (false)
+				throw new UnauthorizedException("user error");
 			else {
 				Long.parseLong(newCode);
 				conn = dbAccess();
-				//Statement to select the barcode of a product when the id does not match: it is needed to control if the new barcode is already assigned 
+				// Statement to select the barcode of a product when the id does not match: it
+				// is needed to control if the new barcode is already assigned
 				String sql1 = "SELECT barcode FROM product WHERE barcode = '" + newCode + "'AND id != '" + id + "'";
 				Statement statement1 = conn.createStatement();
-		        ResultSet result1 = statement1.executeQuery(sql1);
-				//Statement to select the id of a product when the id matches: it is needed to control if the product exists
-		        String sql2 = "SELECT id FROM product WHERE id == '" + id + "'";
+				ResultSet result1 = statement1.executeQuery(sql1);
+				// Statement to select the id of a product when the id matches: it is needed to
+				// control if the product exists
+				String sql2 = "SELECT id FROM product WHERE id == '" + id + "'";
 				Statement statement2 = conn.createStatement();
-		        ResultSet result2 = statement2.executeQuery(sql2);
-		        if(result1.next()) {
-		        	System.out.println("a product with this barcode already exists");
-		        	success = false;
-		        }
-		        else if(!result2.next()) {
-		        	System.out.println("a product with this id does not exists");
-		        	success = false;
-		        }
-		        else {
-					//Statement to update the fields of a product when the bercode matches: the fields updated are description, barcode, price, note	
-		            String sql = "UPDATE product SET description = '" + newDescription + "', barcode = '" + newCode + "', price = " + newPrice + ", note = '" + newNote + "' WHERE id = '" + id + "'";
-			        Statement statement = conn.createStatement();
-			        statement.executeUpdate(sql);
-		        	System.out.println("product correctly updated");
-			        success = true;
-		        }
-		    }    
-	    }catch (Exception e) {  
-	        System.out.println(e.getMessage()); 
-	        success = false;
-        }finally {  
-	       dbClose(conn);
-	    }
+				ResultSet result2 = statement2.executeQuery(sql2);
+				if (result1.next()) {
+					System.out.println("a product with this barcode already exists");
+					success = false;
+				} else if (!result2.next()) {
+					System.out.println("a product with this id does not exists");
+					success = false;
+				} else {
+					// Statement to update the fields of a product when the bercode matches: the
+					// fields updated are description, barcode, price, note
+					String sql = "UPDATE product SET description = '" + newDescription + "', barcode = '" + newCode
+							+ "', price = " + newPrice + ", note = '" + newNote + "' WHERE id = '" + id + "'";
+					Statement statement = conn.createStatement();
+					statement.executeUpdate(sql);
+					System.out.println("product correctly updated");
+					success = true;
+				}
+			}
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+			success = false;
+		} finally {
+			dbClose(conn);
+		}
 		return success;
+
 	};
 
 	// method to delete a product
 	@Override
 	public boolean deleteProductType(Integer id) throws InvalidProductIdException, UnauthorizedException {
-    	Boolean success = false;
-		Connection conn = null;  
-	    try {  
-	    	if(id <= 0 || id == null) throw new InvalidProductIdException("invalid ID");
-	    	else if(false) throw new UnauthorizedException("user error");					
+
+		Boolean success = false;
+		Connection conn = null;
+		try {
+			if (id <= 0 || id == null)
+				throw new InvalidProductIdException("invalid ID");
+			else if (false)
+				throw new UnauthorizedException("user error");
 			else {
-	    	   	conn = dbAccess();
-				//Statement to delete a product from database
-	            String sql = "DELETE FROM product WHERE id =" + id;
-	            Statement statement = conn.createStatement();
-		        statement.executeUpdate(sql);
-		        success = true;
-		        System.out.println("product deleted");
+				conn = dbAccess();
+				// Statement to delete a product from database
+				String sql = "DELETE FROM product WHERE id =" + id;
+				Statement statement = conn.createStatement();
+				statement.executeUpdate(sql);
+				success = true;
+				System.out.println("product deleted");
 			}
-	    } catch (Exception e) {  
-	        System.out.println(e.getMessage()); 
-	        success = false;
-        } finally {  
-	       dbClose(conn);
-	    }
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+			success = false;
+		} finally {
+			dbClose(conn);
+		}
 		return success;
-    }
+
+	}
 
 	// method to get the list of all products
 	@Override
 	public List<ProductType> getAllProductTypes() throws UnauthorizedException {
+
 		List<ProductType> inventory = new ArrayList<ProductType>();
-		Connection conn = null;  
-	    try {  
-	    	if(false)throw new UnauthorizedException("user error");
+		Connection conn = null;
+		try {
+			if (false)
+				throw new UnauthorizedException("user error");
 			else {
 				conn = dbAccess();
-				//Statement to select all the fields from the database for each product		
-	            String sql = "SELECT * FROM product";
-		        Statement statement = conn.createStatement();
-		        ResultSet result = statement.executeQuery(sql);
-		        while(result.next()) {
-		     	   String n = result.getString("note");
-		      	   String d = result.getString("description");
-		       	   String b = result.getString("barcode");
-		       	   Double p = result.getDouble("price");
-		       	   Integer id = result.getInt("id");
-		       	   Integer q = result.getInt("quantity");
-		       	   String l = result.getString("location");
-		       	   Double dr = result.getDouble("discount");
-		       	   //Creation of a new ProductTypeImpl for each iteration: the object created is appended to the list that will be returned
-		   		   ProductTypeImpl product = new ProductTypeImpl(n, d, b, p);
-		   		   product.setId(id);
-		 		   product.setQuantity(q);
-		   		   if(!l.equals(" ")) product.setLocation(l);
-		   		   product.setDiscountRate(dr);
-		   		   inventory.add(product);
-				}   
-		        System.out.println("inventory:");
-				//for(ProductType p: inventory) p.print();
-            }
-	    } catch (Exception e) {  
-	        System.out.println(e.getMessage()); 
-        } finally {  
-	       dbClose(conn);
-	    }
+				// Statement to select all the fields from the database for each product
+				String sql = "SELECT * FROM product";
+				Statement statement = conn.createStatement();
+				ResultSet result = statement.executeQuery(sql);
+				while (result.next()) {
+					String n = result.getString("note");
+					String d = result.getString("description");
+					String b = result.getString("barcode");
+					Double p = result.getDouble("price");
+					Integer id = result.getInt("id");
+					Integer q = result.getInt("quantity");
+					String l = result.getString("location");
+					Double dr = result.getDouble("discountRate");
+					// Creation of a new ProductTypeImpl for each iteration: the object created is
+					// appended to the list that will be returned
+					ProductTypeImpl product = new ProductTypeImpl(n, d, b, p);
+					product.setId(id);
+					product.setQuantity(q);
+					if (!l.equals(" "))
+						product.setLocation(l);
+					product.setDiscountRate(dr);
+					inventory.add(product);
+				}
+				System.out.println("inventory:");
+				// for(ProductType p: inventory) p.print();
+			}
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		} finally {
+			dbClose(conn);
+		}
 		return inventory;
-    }
-	
+
+	}
+
 	// method to get a product by barcode
 	@Override
-	public ProductType getProductTypeByBarCode(String barCode) throws InvalidProductCodeException, UnauthorizedException {
-   		ProductTypeImpl product = new ProductTypeImpl();
-		Connection conn = null; 
-	    try {  
-	    	if(barCode == null || barCode == "") throw new InvalidProductCodeException("invalid barcode: barcode not inserted");
-			else if(barCode.length() < 12 || barCode.length() > 14) throw new InvalidProductCodeException("invalid barcode: wrong length");
-			else if(!isStringOnlyNumbers(barCode)) throw new InvalidProductCodeException("invalid barcode: in barcode must not be letters");
-    		else if(false) throw new UnauthorizedException("user error");
+	public ProductType getProductTypeByBarCode(String barCode)
+			throws InvalidProductCodeException, UnauthorizedException {
+
+		ProductTypeImpl product = new ProductTypeImpl();
+		Connection conn = null;
+		try {
+			if (barCode == null || barCode == "")
+				throw new InvalidProductCodeException("invalid barcode: barcode not inserted");
+			else if (barCode.length() < 12 || barCode.length() > 14)
+				throw new InvalidProductCodeException("invalid barcode: wrong length");
+			else if (!isStringOnlyNumbers(barCode))
+				throw new InvalidProductCodeException("invalid barcode: in barcode must not be letters");
+			else if (false)
+				throw new UnauthorizedException("user error");
 			else {
-	    		conn = dbAccess();
-				//Statement to select all the fields of a product when the barcode matches			
-	            String sql = "SELECT * FROM product WHERE barcode = '" + barCode + "'";
-		        Statement statement = conn.createStatement();
-		        ResultSet result = statement.executeQuery(sql);
-		        if(!result.next()) {
-		        	System.out.println("no product with this barcode");
-		        	product=null;
-		        }else {
-		        	String n = result.getString("note");
-			      	String d = result.getString("description");
-			       	String b = result.getString("barcode");
-			       	Double p = result.getDouble("price");
-			       	Integer id = result.getInt("id");
-			       	Integer q = result.getInt("quantity");
-			       	String l = result.getString("location");
-			       	Double dr = result.getDouble("discount");
-			       	//Creation of a new ProductTypeImpl: the object created is what then will be returned
-			       	product.setBarCode(b);
-			       	product.setNote(n);
-			       	product.setPricePerUnit(p);
-			       	product.setProductDescription(d);
-			   		product.setId(id);
-			 		product.setQuantity(q);
-			 		if(!l.equals(" ")) product.setLocation(l);
-			 		product.setDiscountRate(dr);
-			 		System.out.println("product found");
-			   		//product.print();
-		        }
-	    	}
-	    } catch (Exception e) {  
-	        System.out.println(e.getMessage());
-        	product=null;
-        } finally {  
-	       dbClose(conn);
-	    }
-        return product;
-    }
-	
+				conn = dbAccess();
+				// Statement to select all the fields of a product when the barcode matches
+				String sql = "SELECT * FROM product WHERE barcode = '" + barCode + "'";
+				Statement statement = conn.createStatement();
+				ResultSet result = statement.executeQuery(sql);
+				if (!result.next()) {
+					System.out.println("no product with this barcode");
+					product = null;
+				} else {
+					String n = result.getString("note");
+					String d = result.getString("description");
+					String b = result.getString("barcode");
+					Double p = result.getDouble("price");
+					Integer id = result.getInt("id");
+					Integer q = result.getInt("quantity");
+					String l = result.getString("location");
+					Double dr = result.getDouble("discountRate");
+					// Creation of a new ProductTypeImpl: the object created is what then will be
+					// returned
+					product.setBarCode(b);
+					product.setNote(n);
+					product.setPricePerUnit(p);
+					product.setProductDescription(d);
+					product.setId(id);
+					product.setQuantity(q);
+					if (!l.equals(" "))
+						product.setLocation(l);
+					product.setDiscountRate(dr);
+					System.out.println("product found");
+					// product.print();
+				}
+			}
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+			product = null;
+		} finally {
+			dbClose(conn);
+		}
+		return product;
+
+	}
+
+	public ProductTypeImpl getProductTypeImplByBarCode(String barCode)
+			throws InvalidProductCodeException, UnauthorizedException {
+
+		ProductTypeImpl product = new ProductTypeImpl();
+		Connection conn = null;
+		try {
+			if (barCode == null || barCode == "")
+				throw new InvalidProductCodeException("invalid barcode: barcode not inserted");
+			else if (barCode.length() < 12 || barCode.length() > 14)
+				throw new InvalidProductCodeException("invalid barcode: wrong length");
+			else if (!isStringOnlyNumbers(barCode))
+				throw new InvalidProductCodeException("invalid barcode: in barcode must not be letters");
+			else if (false)
+				throw new UnauthorizedException("user error");
+			else {
+				conn = dbAccess();
+				// Statement to select all the fields of a product when the barcode matches
+				String sql = "SELECT * FROM product WHERE barcode = '" + barCode + "'";
+				Statement statement = conn.createStatement();
+				ResultSet result = statement.executeQuery(sql);
+				if (!result.next()) {
+					System.out.println("no product with this barcode");
+					product = null;
+				} else {
+					String n = result.getString("note");
+					String d = result.getString("description");
+					String b = result.getString("barcode");
+					Double p = result.getDouble("price");
+					Integer id = result.getInt("id");
+					Integer q = result.getInt("quantity");
+					String l = result.getString("location");
+					Double dr = result.getDouble("discountRate");
+					// Creation of a new ProductTypeImpl: the object created is what then will be
+					// returned
+					product.setBarCode(b);
+					product.setNote(n);
+					product.setPricePerUnit(p);
+					product.setProductDescription(d);
+					product.setId(id);
+					product.setQuantity(q);
+					if (!l.equals(" "))
+						product.setLocation(l);
+					product.setDiscountRate(dr);
+					System.out.println("product found");
+					// product.print();
+				}
+			}
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+			product = null;
+		} finally {
+			dbClose(conn);
+		}
+		return product;
+
+	}
+
 	// method to get a product by description
 	@Override
 	public List<ProductType> getProductTypesByDescription(String description) throws UnauthorizedException {
+
 		List<ProductType> matchingProducts = new ArrayList<ProductType>();
-		Connection conn = null;  
-		try {  
-	    	if(false)throw new UnauthorizedException("user error");
+		Connection conn = null;
+		try {
+			if (false)
+				throw new UnauthorizedException("user error");
 			else {
-	    		conn = dbAccess();
-				//Statement to select all the fields of a product when the description matches		
-	            String sql = "SELECT DISTINCT * FROM product WHERE description LIKE '%" + description + "%'";
-		        Statement statement = conn.createStatement();
-		        ResultSet result = statement.executeQuery(sql);
-		        while(result.next()) {
-		     	   String n = result.getString("note");
-		      	   String d = result.getString("description");
-		       	   String b = result.getString("barcode");
-		       	   Double p = result.getDouble("price");
-		       	   Integer id = result.getInt("id");
-		       	   Integer q = result.getInt("quantity");
-		       	   String l = result.getString("location");
-		       	   Double dr = result.getDouble("discount");
-		       	   //Creation of a new ProductTypeImpl for each iteration: the object created is appended to the list that will be returned
-		   		   ProductTypeImpl product = new ProductTypeImpl(n , d, b, p);
-		   		   product.setId(id);
-		 		   product.setQuantity(q);
-		 		   if(!l.equals(" ")) product.setLocation(l);
-		 		   product.setDiscountRate(dr);
-		   		   matchingProducts.add(product);
-		    	}
-		        System.out.println("products found:");
-				//for(ProductType p: matchingProducts) p.print();
-	    	}
-	    } catch (Exception e) {  
-	        System.out.println(e.getMessage()); 
-        } finally {  
-	       dbClose(conn);
-	    }
+				conn = dbAccess();
+				// Statement to select all the fields of a product when the description matches
+				String sql = "SELECT DISTINCT * FROM product WHERE description LIKE '%" + description + "%'";
+				Statement statement = conn.createStatement();
+				ResultSet result = statement.executeQuery(sql);
+				while (result.next()) {
+					String n = result.getString("note");
+					String d = result.getString("description");
+					String b = result.getString("barcode");
+					Double p = result.getDouble("price");
+					Integer id = result.getInt("id");
+					Integer q = result.getInt("quantity");
+					String l = result.getString("location");
+					Double dr = result.getDouble("discount");
+					// Creation of a new ProductTypeImpl for each iteration: the object created is
+					// appended to the list that will be returned
+					ProductTypeImpl product = new ProductTypeImpl(n, d, b, p);
+					product.setId(id);
+					product.setQuantity(q);
+					if (!l.equals(" "))
+						product.setLocation(l);
+					product.setDiscountRate(dr);
+					matchingProducts.add(product);
+				}
+				System.out.println("products found:");
+				// for(ProductType p: matchingProducts) p.print();
+			}
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		} finally {
+			dbClose(conn);
+		}
 		return matchingProducts;
-    }
+
+	}
 
 	// method to update quantity of product
 	@Override
-	public boolean updateQuantity(Integer productId, int toBeAdded) throws InvalidProductIdException, UnauthorizedException {
-        boolean success = false;
-		Connection conn = null;  
-    	try {
-    		if(productId <= 0 || productId == null) throw new InvalidProductIdException("ID incorrect");
-    		else if(false) throw new UnauthorizedException("user error");	
+	public boolean updateQuantity(Integer productId, int toBeAdded)
+			throws InvalidProductIdException, UnauthorizedException {
+
+		boolean success = false;
+		Connection conn = null;
+		try {
+			if (productId <= 0 || productId == null)
+				throw new InvalidProductIdException("ID incorrect");
+			else if (false)
+				throw new UnauthorizedException("user error");
 			else {
-    			conn = dbAccess();
-				//Statement to select quantity and location of a product given its ID: those value are needed for future checks
-	            String sql = "SELECT quantity, location FROM product WHERE id = '" + productId + "'";
-		        Statement statement = conn.createStatement();
-		        ResultSet result = statement.executeQuery(sql);
-    			if(!result.next()) {
-		        	System.out.println("no product with this ID");
-		        	success=false;
-		        }else {
-        			Integer oldQuantity = result.getInt("quantity");
-        			String location = result.getString("location");
-    				if(oldQuantity+toBeAdded <= 0){
-	    				System.out.println("subtracting too much");
-			        	success=false;
-	    			}
-	    			else if(location.equals("") || location.equals(" ")) {
-	    				System.out.println("no location for that product");
-			        	success=false;
-	    			}
-	    			else {
-	    				int newQuantity = oldQuantity + toBeAdded ;
-	    				//Statement to update quantity of a product given its ID
-	    				String sql2 = "UPDATE product SET quantity = " + newQuantity + " WHERE id = '" + productId + "'";
-	    		        Statement statement2 = conn.createStatement();
-	    		        statement2.executeUpdate(sql2);
-			        	System.out.println("quantity correctly updated");
-	    				success = true;
-	    			}
-    			}
+				conn = dbAccess();
+				// Statement to select quantity and location of a product given its ID: those
+				// value are needed for future checks
+				String sql = "SELECT quantity, location FROM product WHERE id = '" + productId + "'";
+				Statement statement = conn.createStatement();
+				ResultSet result = statement.executeQuery(sql);
+				if (!result.next()) {
+					System.out.println("no product with this ID");
+					success = false;
+				} else {
+					Integer oldQuantity = result.getInt("quantity");
+					String location = result.getString("location");
+					if (oldQuantity + toBeAdded <= 0) {
+						System.out.println("subtracting too much");
+						success = false;
+					} else if (location.equals("") || location.equals(" ")) {
+						System.out.println("no location for that product");
+						success = false;
+					} else {
+						int newQuantity = oldQuantity + toBeAdded;
+						// Statement to update quantity of a product given its ID
+						String sql2 = "UPDATE product SET quantity = " + newQuantity + " WHERE id = '" + productId
+								+ "'";
+						Statement statement2 = conn.createStatement();
+						statement2.executeUpdate(sql2);
+						System.out.println("quantity correctly updated");
+						success = true;
+					}
+				}
 			}
-    	}catch(Exception ex) {
-    		System.out.println(ex.getMessage()); 
-	        success = false;
-    	}finally {
-    		 dbClose(conn);
-    	}
-        return success;
-    }
+		} catch (Exception ex) {
+			System.out.println(ex.getMessage());
+			success = false;
+		} finally {
+			dbClose(conn);
+		}
+		return success;
+
+	}
 
 	// method to update the position of a product
 	@Override
@@ -464,51 +577,53 @@ public class EZShop implements EZShopInterface {
     		else if(false) throw new UnauthorizedException("user error");	
 			else if(newPos.split(" ").length != 3) throw new InvalidLocationException("wrong format for location: wrong field(s)");
 			else if(!isStringOnlyNumbers(newPos.split(" ")[0])) throw new InvalidLocationException("wrong format for location: aisle must be a number");
-			else if(!isStringOnlyAlphabet(newPos.split(" ")[1]) || newPos.split(" ")[1].length() != 1) throw new InvalidLocationException("wrong format for location: ID must be a single character");
+						else if(!isStringOnlyAlphabet(newPos.split(" ")[1])) throw new InvalidLocationException("wrong format for location: ID must contains only alphabetic characters");
 			else if(!isStringOnlyNumbers(newPos.split(" ")[2])) throw new InvalidLocationException("wrong format for location: level must be a number");
 			else{
 				Integer aisleNumber = Integer.parseInt(newPos.split(" ")[0]);
 				String alphabeticId = newPos.split(" ")[1];
 				Integer levelNumber = Integer.parseInt(newPos.split(" ")[2]);
-				if(aisleNumber == null || alphabeticId == null || alphabeticId == "" || levelNumber == null) throw new InvalidLocationException("wrong format for location");
+				if (aisleNumber == null || alphabeticId == null || alphabeticId == "" || levelNumber == null)
+					throw new InvalidLocationException("wrong format for location");
 				else {
-					//Statement to select the location of a product given its ID
-		            String sql1 = "SELECT location FROM product WHERE id = '" + productId + "'";
-			        Statement statement1 = conn.createStatement();
-			        ResultSet result1 = statement1.executeQuery(sql1);
-			        if(!result1.next()) {
-			        	System.out.println("no product with this ID");
-			        	success = false;
-			        }
-		    		else {
-						//Statement to select the location of a product given its ID and location: those value are needed for future checks
-		    			String sql3 = "SELECT location FROM product WHERE location = '" + newPos + "' AND id != '" + productId + "'";
-				        Statement statement3 = conn.createStatement();
-				        ResultSet result3 = statement3.executeQuery(sql3);
-				        if(result3.next()) {
-				        	System.out.println("position already assigned");
-				        	success = false;
-				        }
-				        else {
-							//Statement to update the location of a product given its ID
-				        	String sql4 = "UPDATE product SET location = '" + newPos + "' WHERE id = '" + productId + "'";
-				        	Statement statement4 = conn.createStatement();
-				        	statement4.executeUpdate(sql4);
-				        	System.out.println("position correctly updated");
-				        	success = true;
-				        }
-		    		}
-	    		}
-    		}
-		}catch(Exception ex) {
-    		System.out.println(ex.getMessage()); 
-	        success = false;
-    	}finally {
-    		 dbClose(conn);
-    	}
-    	return success;
-    }
+					// Statement to select the location of a product given its ID
+					String sql1 = "SELECT location FROM product WHERE id = '" + productId + "'";
+					Statement statement1 = conn.createStatement();
+					ResultSet result1 = statement1.executeQuery(sql1);
+					if (!result1.next()) {
+						System.out.println("no product with this ID");
+						success = false;
+					} else {
+						// Statement to select the location of a product given its ID and location:
+						// those value are needed for future checks
+						String sql3 = "SELECT location FROM product WHERE location = '" + newPos + "' AND id != '"
+								+ productId + "'";
+						Statement statement3 = conn.createStatement();
+						ResultSet result3 = statement3.executeQuery(sql3);
+						if (result3.next()) {
+							System.out.println("position already assigned");
+							success = false;
+						} else {
+							// Statement to update the location of a product given its ID
+							String sql4 = "UPDATE product SET location = '" + newPos + "' WHERE id = '" + productId
+									+ "'";
+							Statement statement4 = conn.createStatement();
+							statement4.executeUpdate(sql4);
+							System.out.println("position correctly updated");
+							success = true;
+						}
+					}
+				}
+			}
+		} catch (Exception ex) {
+			System.out.println(ex.getMessage());
+			success = false;
+		} finally {
+			dbClose(conn);
+		}
+		return success;
 
+	}
 
 	@Override
 	public Integer issueOrder(String productCode, int quantity, double pricePerUnit) throws InvalidProductCodeException,
@@ -731,13 +846,13 @@ public class EZShop implements EZShopInterface {
 			throw new UnauthorizedException("User not logged in");
 		Connection c = null;
 		Statement stmt = null;
-		Integer id = -1;
+		Integer id = 0; // 0=error
 		try {
 			c = dbAccess();
 			stmt = c.createStatement();
-			String sql = "SELECT MAX(ticketNumber) from saleTransaction";
+			String sql = "SELECT seq FROM sqlite_sequence WHERE name=\"saleTransaction\"";
 			ResultSet rs = stmt.executeQuery(sql);
-			id = rs.getInt("MAX(ticketNumber)");
+			id = rs.getInt("seq") + 1;
 			rs.close();
 			stmt.close();
 			// c.setAutoCommit(false); // all operations until the next c.commit will be
@@ -760,19 +875,23 @@ public class EZShop implements EZShopInterface {
 			throws InvalidTransactionIdException, InvalidProductCodeException, InvalidQuantityException,
 			UnauthorizedException {
 
-		// if (activeSaleTransaction == null || activeSaleTransaction.getTicketNumber()
-		// != transactionId) {
 		if (transactionId == null || transactionId <= 0)
 			throw new InvalidTransactionIdException("Transaction id cannot be null or <=0");
 		if (amount <= 0)
 			throw new InvalidQuantityException("Amount to add cannot be <=0");
 		if (loggedUser == null)
 			throw new UnauthorizedException("User not logged in");
-		ProductType productType = getProductTypeByBarCode(productCode); // could throw InvalidProductCodeException
-		if (productType == null || amount > productType.getQuantity()
+		ProductTypeImpl productType = getProductTypeImplByBarCode(productCode); // could throw
+																				// InvalidProductCodeException
+		System.out.println(productType);
+		if (productType == null || amount > productType.getQuantity() || openSaleTransaction == null
 				|| transactionId != openSaleTransaction.getTicketNumber())
 			return false;
-		openSaleTransaction.addEntry(productType, amount);
+		String barCode = productType.getBarCode();
+		String productDescription = productType.getProductDescription();
+		double pricePerUnit = productType.getPricePerUnit();
+		double discountRate = productType.getDiscountRate();
+		openSaleTransaction.upsertEntry(barCode, productDescription, pricePerUnit, discountRate, amount);
 		return true;
 
 	}
@@ -782,7 +901,22 @@ public class EZShop implements EZShopInterface {
 			throws InvalidTransactionIdException, InvalidProductCodeException, InvalidQuantityException,
 			UnauthorizedException {
 
-		return false;
+		if (transactionId == null || transactionId <= 0)
+			throw new InvalidTransactionIdException("Transaction id cannot be null or <=0");
+		if (amount <= 0)
+			throw new InvalidQuantityException("Amount to remove cannot be <=0");
+		if (loggedUser == null)
+			throw new UnauthorizedException("User not logged in");
+		ProductTypeImpl productType = getProductTypeImplByBarCode(productCode); // could throw
+																				// InvalidProductCodeException
+		if (productType == null || openSaleTransaction == null
+				|| transactionId != openSaleTransaction.getTicketNumber())
+			return false;
+		String barCode = productType.getBarCode();
+		double pricePerUnit = productType.getPricePerUnit();
+		double discountRate = productType.getDiscountRate();
+		Boolean result = openSaleTransaction.removeAmountFromEntry(barCode, pricePerUnit, discountRate, amount);
+		return result;
 
 	}
 
@@ -791,7 +925,19 @@ public class EZShop implements EZShopInterface {
 			throws InvalidTransactionIdException, InvalidProductCodeException, InvalidDiscountRateException,
 			UnauthorizedException {
 
-		return false;
+		if (transactionId == null || transactionId <= 0)
+			throw new InvalidTransactionIdException("Transaction id cannot be null or <=0");
+		if (discountRate < 0 || discountRate >= 1)
+			throw new InvalidDiscountRateException("Discount Rate must be >=0 and <1");
+		if (loggedUser == null)
+			throw new UnauthorizedException("User not logged in");
+		ProductTypeImpl productType = getProductTypeImplByBarCode(productCode); // could throw
+																				// InvalidProductCodeException
+		if (productType == null || openSaleTransaction == null
+				|| transactionId != openSaleTransaction.getTicketNumber())
+			return false;
+		openSaleTransaction.setDiscountRateToProduct(productType.getBarCode(), discountRate);
+		return true;
 
 	}
 
@@ -799,14 +945,32 @@ public class EZShop implements EZShopInterface {
 	public boolean applyDiscountRateToSale(Integer transactionId, double discountRate)
 			throws InvalidTransactionIdException, InvalidDiscountRateException, UnauthorizedException {
 
-		return false;
+		if (transactionId == null || transactionId <= 0)
+			throw new InvalidTransactionIdException("Transaction id cannot be null or <=0");
+		if (discountRate < 0 || discountRate >= 1)
+			throw new InvalidDiscountRateException("Discount Rate must be >=0 and <1");
+		if (loggedUser == null)
+			throw new UnauthorizedException("User not logged in");
+		if (openSaleTransaction == null || transactionId != openSaleTransaction.getTicketNumber())
+			return false;
+		openSaleTransaction.setDiscountRate(discountRate);
+		return true;
 
 	}
 
 	@Override
 	public int computePointsForSale(Integer transactionId) throws InvalidTransactionIdException, UnauthorizedException {
 
-		return 0;
+		int points = -1;
+		if (transactionId == null || transactionId <= 0)
+			throw new InvalidTransactionIdException("Transaction id cannot be null or <=0");
+		if (loggedUser == null)
+			throw new UnauthorizedException("User not logged in");
+		if (openSaleTransaction != null && transactionId == openSaleTransaction.getTicketNumber()) {
+			points = (int) (openSaleTransaction.getPrice() / 10);
+		}
+		// else points==-1
+		return points;
 
 	}
 
@@ -814,7 +978,39 @@ public class EZShop implements EZShopInterface {
 	public boolean endSaleTransaction(Integer transactionId)
 			throws InvalidTransactionIdException, UnauthorizedException {
 
-		return false;
+		String insertSale = "INSERT INTO saleTransaction(ticketNumber,discountRate) VALUES(?,?)";
+		String insertTicketEntry = "INSERT INTO ticketEntry(ticketNumber,barCode,productDescription,pricePerUnit,discountRate,amount) VALUES(?,?,?,?,?,?)";
+		if (transactionId == null || transactionId <= 0)
+			throw new InvalidTransactionIdException("Transaction id cannot be null or <=0");
+		if (loggedUser == null)
+			throw new UnauthorizedException("User not logged in");
+		if (openSaleTransaction == null || transactionId != openSaleTransaction.getTicketNumber()
+				|| getSaleTransaction(transactionId) != null)
+			return false;
+		try (Connection conn = this.dbAccess();) {
+			PreparedStatement pstmt = conn.prepareStatement(insertSale);
+			pstmt.setInt(1, openSaleTransaction.getTicketNumber());
+			pstmt.setDouble(2, openSaleTransaction.getDiscountRate());
+			pstmt.executeUpdate();
+			pstmt.close();
+			for (TicketEntry entry : openSaleTransaction.getEntries()) {
+				pstmt = conn.prepareStatement(insertTicketEntry);
+				pstmt.setInt(1, openSaleTransaction.getTicketNumber());
+				pstmt.setString(2, entry.getBarCode());
+				pstmt.setString(3, entry.getProductDescription());
+				pstmt.setDouble(4, entry.getPricePerUnit());
+				pstmt.setDouble(5, entry.getDiscountRate());
+				pstmt.setInt(6, entry.getAmount());
+				pstmt.executeUpdate();
+				pstmt.close();
+			}
+		} catch (Exception ex) {
+			System.out.println(ex.getMessage());
+		}
+//		finally {
+//			dbClose(conn);
+//		} this is not necessary if we use the try-with-resources sintax
+		return true;
 
 	}
 
