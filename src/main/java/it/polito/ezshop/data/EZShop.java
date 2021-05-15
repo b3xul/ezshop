@@ -559,25 +559,32 @@ public class EZShop implements EZShopInterface {
 
 	// method to update the position of a product
 	@Override
-	public boolean updatePosition(Integer productId, String newPos) throws InvalidProductIdException, InvalidLocationException, UnauthorizedException {
-        boolean success = false;
-        Connection conn = null;  
-        conn = dbAccess();
-    	try {
-    		if(productId <= 0 || productId == null) throw new InvalidProductIdException("ID incorrect");
-    		else if(newPos == null || newPos == "") {
-				//Statement to update the location of a product given its ID to an empty string
-    			String sql2 = "UPDATE product SET location = '" + "" + "' WHERE id = '" + productId + "'";
-    		    Statement statement2 = conn.createStatement();
-    		    statement2.executeUpdate(sql2);
-    		    success = true;
-    		}
-    		else if(false) throw new UnauthorizedException("user error");	
-			else if(newPos.split(" ").length != 3) throw new InvalidLocationException("wrong format for location: wrong field(s)");
-			else if(!isStringOnlyNumbers(newPos.split(" ")[0])) throw new InvalidLocationException("wrong format for location: aisle must be a number");
-						else if(!isStringOnlyAlphabet(newPos.split(" ")[1])) throw new InvalidLocationException("wrong format for location: ID must contains only character");
-			else if(!isStringOnlyNumbers(newPos.split(" ")[2])) throw new InvalidLocationException("wrong format for location: level must be a number");
-			else{
+	public boolean updatePosition(Integer productId, String newPos)
+			throws InvalidProductIdException, InvalidLocationException, UnauthorizedException {
+
+		boolean success = false;
+		Connection conn = null;
+		conn = dbAccess();
+		try {
+			if (productId <= 0 || productId == null)
+				throw new InvalidProductIdException("ID incorrect");
+			else if (newPos == null || newPos == "") {
+				// Statement to update the location of a product given its ID to an empty string
+				String sql2 = "UPDATE product SET location = '" + "" + "' WHERE id = '" + productId + "'";
+				Statement statement2 = conn.createStatement();
+				statement2.executeUpdate(sql2);
+				success = true;
+			} else if (false)
+				throw new UnauthorizedException("user error");
+			else if (newPos.split(" ").length != 3)
+				throw new InvalidLocationException("wrong format for location: wrong field(s)");
+			else if (!isStringOnlyNumbers(newPos.split(" ")[0]))
+				throw new InvalidLocationException("wrong format for location: aisle must be a number");
+			else if (!isStringOnlyAlphabet(newPos.split(" ")[1]))
+				throw new InvalidLocationException("wrong format for location: ID must contains only character");
+			else if (!isStringOnlyNumbers(newPos.split(" ")[2]))
+				throw new InvalidLocationException("wrong format for location: level must be a number");
+			else {
 				Integer aisleNumber = Integer.parseInt(newPos.split(" ")[0]);
 				String alphabeticId = newPos.split(" ")[1];
 				Integer levelNumber = Integer.parseInt(newPos.split(" ")[2]);
@@ -861,7 +868,7 @@ public class EZShop implements EZShopInterface {
 	public boolean endSaleTransaction(Integer transactionId)
 			throws InvalidTransactionIdException, UnauthorizedException {
 
-		String insertSale = "INSERT INTO saleTransaction(ticketNumber,discountRate) VALUES(?,?)";
+		String insertSale = "INSERT INTO saleTransaction(ticketNumber,price,discountRate) VALUES(?,?,?)";
 		String insertTicketEntry = "INSERT INTO ticketEntry(ticketNumber,barCode,productDescription,pricePerUnit,discountRate,amount) VALUES(?,?,?,?,?,?)";
 		if (transactionId == null || transactionId <= 0)
 			throw new InvalidTransactionIdException("Transaction id cannot be null or <=0");
@@ -873,7 +880,8 @@ public class EZShop implements EZShopInterface {
 		try (Connection conn = this.dbAccess();) {
 			PreparedStatement pstmt = conn.prepareStatement(insertSale);
 			pstmt.setInt(1, openSaleTransaction.getTicketNumber());
-			pstmt.setDouble(2, openSaleTransaction.getDiscountRate());
+			pstmt.setDouble(2, openSaleTransaction.getPrice());
+			pstmt.setDouble(3, openSaleTransaction.getDiscountRate());
 			pstmt.executeUpdate();
 			pstmt.close();
 			for (TicketEntry entry : openSaleTransaction.getEntries()) {
@@ -887,8 +895,10 @@ public class EZShop implements EZShopInterface {
 				pstmt.executeUpdate();
 				pstmt.close();
 			}
+			openSaleTransaction = null;
 		} catch (Exception ex) {
 			System.out.println(ex.getMessage());
+			return false;
 		}
 //		finally {
 //			dbClose(conn);
@@ -898,10 +908,29 @@ public class EZShop implements EZShopInterface {
 	}
 
 	@Override
-	public boolean deleteSaleTransaction(Integer saleNumber)
+	public boolean deleteSaleTransaction(Integer transactionId)
 			throws InvalidTransactionIdException, UnauthorizedException {
 
-		return false;
+		String deleteSale = "DELETE FROM saleTransaction WHERE ticketNumber=?";
+		String deleteTicketEntries = "DELETE FROM ticketEntry WHERE ticketNumber=?";
+		if (transactionId == null || transactionId <= 0)
+			throw new InvalidTransactionIdException("Transaction id cannot be null or <=0");
+		if (loggedUser == null)
+			throw new UnauthorizedException("User not logged in");
+		try (Connection conn = this.dbAccess();) {
+			PreparedStatement pstmt = conn.prepareStatement(deleteSale);
+			pstmt.setInt(1, transactionId);
+			pstmt.executeUpdate();
+			pstmt.close();
+			pstmt = conn.prepareStatement(deleteTicketEntries);
+			pstmt.setInt(1, transactionId);
+			pstmt.executeUpdate();
+			pstmt.close();
+		} catch (SQLException e) {
+			System.out.println(e.getMessage());
+			return false;
+		}
+		return true;
 
 	}
 
@@ -909,7 +938,38 @@ public class EZShop implements EZShopInterface {
 	public SaleTransaction getSaleTransaction(Integer transactionId)
 			throws InvalidTransactionIdException, UnauthorizedException {
 
-		return null;
+		String getSale = "SELECT price,discountRate FROM saleTransaction WHERE ticketNumber=?";
+		String getTicketEntries = "SELECT barCode,productDescription,pricePerUnit,discountRate,amount FROM ticketEntry WHERE ticketNumber=?";
+		if (transactionId == null || transactionId <= 0)
+			throw new InvalidTransactionIdException("Transaction id cannot be null or <=0");
+		if (loggedUser == null)
+			throw new UnauthorizedException("User not logged in");
+		SaleTransactionImpl result = null;
+		try (Connection conn = this.dbAccess();) {
+			PreparedStatement pstmt = conn.prepareStatement(getSale);
+			pstmt.setInt(1, transactionId);
+			ResultSet rs = pstmt.executeQuery();
+			if (rs == null)
+				return null;
+			// only 1 result because ticketNumber is primary key
+			result = new SaleTransactionImpl(transactionId);
+			result.setPrice(rs.getDouble("price"));
+			result.setDiscountRate(rs.getDouble("discountRate"));
+			System.out.println(result.getTicketNumber() + " " + result.getDiscountRate());
+			pstmt.close();
+			pstmt = conn.prepareStatement(getTicketEntries);
+			pstmt.setInt(1, transactionId);
+			rs = pstmt.executeQuery();
+			while (rs.next()) {
+				result.addEntry(rs.getString("barCode"), rs.getString("productDescription"),
+						rs.getDouble("pricePerUnit"), rs.getDouble("discountRate"), rs.getInt("amount"));
+			}
+			System.out.println(result);
+			pstmt.close();
+		} catch (Exception ex) {
+			System.out.println(ex.getMessage());
+		}
+		return result;
 
 	}
 

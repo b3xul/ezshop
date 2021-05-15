@@ -42,6 +42,13 @@ public class SaleTransactionImpl implements SaleTransaction {
 
 	}
 
+	public void addEntry(String barCode, String productDescription, double pricePerUnit, double discountRate,
+			int amount) {
+
+		entries.add(new TicketEntryImpl(barCode, productDescription, pricePerUnit, discountRate, amount));
+
+	}
+
 	public Boolean removeAmountFromEntry(String barCode, double pricePerUnit, double discountRate, int amountToRemove) {
 
 		Boolean updated = false;

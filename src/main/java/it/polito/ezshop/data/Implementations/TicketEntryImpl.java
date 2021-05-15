@@ -91,4 +91,12 @@ public class TicketEntryImpl implements TicketEntry {
 
 	}
 
+	@Override
+	public String toString() {
+
+		return "TicketEntryImpl [barCode=" + barCode + ", productDescription=" + productDescription + ", pricePerUnit="
+				+ pricePerUnit + ", discountRate=" + discountRate + ", amount=" + amount + "]";
+
+	}
+
 }
