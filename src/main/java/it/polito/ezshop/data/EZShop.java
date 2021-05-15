@@ -86,6 +86,30 @@ public class EZShop implements EZShopInterface {
 
 	};
 
+	// method to verify the correctness of the barcode
+    public static boolean isBarcodeValid(String barcode) {
+    	boolean valid = false;
+    	
+    	List<Integer> b = new ArrayList<Integer>() ;
+		for (String c : barcode.split("")) {
+			b.add(Integer.parseInt(c));				
+		}
+		Collections.reverse(b);
+		Integer tot = 0;
+		for(int i = 1; i < b.size(); i++) {
+			if(i % 2 != 0) tot = tot + b.get(i) * 3;
+			else tot = tot + b.get(i);
+		}
+		
+		if(tot % 10 == 0) tot = 0;
+		else tot = 10 - (tot % 10);
+		
+		if(tot == b.get(0)) valid = true;
+		else valid = false;
+    	
+    	return valid;
+    }
+
 	@Override
 	public void reset() {
 
@@ -159,6 +183,8 @@ public class EZShop implements EZShopInterface {
 				throw new InvalidProductCodeException("invalid barcode: wrong length");
 			else if (!isStringOnlyNumbers(productCode))
 				throw new InvalidProductCodeException("invalid barcode: in barcode must not be letters");
+			else if(!isBarcodeValid(productCode)) 
+				throw new InvalidProductCodeException("invalid barcode: barcode does not respect GTIN specifications");
 			else if (pricePerUnit <= 0)
 				throw new InvalidPricePerUnitException("invalid price");
 			else if (false)
@@ -222,6 +248,8 @@ public class EZShop implements EZShopInterface {
 				throw new InvalidProductCodeException("invalid barcode: wrong length");
 			else if (!isStringOnlyNumbers(newCode))
 				throw new InvalidProductCodeException("invalid barcode: in barcode must not be letters");
+			else if(!isBarcodeValid(newCode)) 
+				throw new InvalidProductCodeException("invalid barcode: barcode does not respect GTIN specifications");
 			else if (newPrice <= 0)
 				throw new InvalidPricePerUnitException("invalid price");
 			else if (false)
@@ -356,6 +384,8 @@ public class EZShop implements EZShopInterface {
 				throw new InvalidProductCodeException("invalid barcode: wrong length");
 			else if (!isStringOnlyNumbers(barCode))
 				throw new InvalidProductCodeException("invalid barcode: in barcode must not be letters");
+			else if(!isBarcodeValid(barCode)) 
+				throw new InvalidProductCodeException("invalid barcode: barcode does not respect GTIN specifications");
 			else if (false)
 				throw new UnauthorizedException("user error");
 			else {
@@ -413,6 +443,8 @@ public class EZShop implements EZShopInterface {
 				throw new InvalidProductCodeException("invalid barcode: wrong length");
 			else if (!isStringOnlyNumbers(barCode))
 				throw new InvalidProductCodeException("invalid barcode: in barcode must not be letters");
+			else if(!isBarcodeValid(barCode)) 
+				throw new InvalidProductCodeException("invalid barcode: barcode does not respect GTIN specifications");
 			else if (false)
 				throw new UnauthorizedException("user error");
 			else {
