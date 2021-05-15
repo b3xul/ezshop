@@ -559,34 +559,6 @@ public class EZShop implements EZShopInterface {
 
 	// method to update the position of a product
 	@Override
-<<<<<<< HEAD
-	public boolean updatePosition(Integer productId, String newPos)
-			throws InvalidProductIdException, InvalidLocationException, UnauthorizedException {
-
-		boolean success = false;
-		Connection conn = null;
-		conn = dbAccess();
-		try {
-			if (productId <= 0 || productId == null)
-				throw new InvalidProductIdException("ID incorrect");
-			else if (newPos == null || newPos == "") {
-				// Statement to update the location of a product given its ID to an empty string
-				String sql2 = "UPDATE product SET location = '" + "" + "' WHERE id = '" + productId + "'";
-				Statement statement2 = conn.createStatement();
-				statement2.executeUpdate(sql2);
-				success = true;
-			} else if (false)
-				throw new UnauthorizedException("user error");
-			else if (newPos.split(" ").length != 3)
-				throw new InvalidLocationException("wrong format for location: wrong field(s)");
-			else if (!isStringOnlyNumbers(newPos.split(" ")[0]))
-				throw new InvalidLocationException("wrong format for location: aisle must be a number");
-			else if (!isStringOnlyAlphabet(newPos.split(" ")[1]))
-				throw new InvalidLocationException("wrong format for location: ID must contains only character");
-			else if (!isStringOnlyNumbers(newPos.split(" ")[2]))
-				throw new InvalidLocationException("wrong format for location: level must be a number");
-			else {
-=======
 	public boolean updatePosition(Integer productId, String newPos) throws InvalidProductIdException, InvalidLocationException, UnauthorizedException {
         boolean success = false;
         Connection conn = null;  
@@ -606,7 +578,6 @@ public class EZShop implements EZShopInterface {
 						else if(!isStringOnlyAlphabet(newPos.split(" ")[1])) throw new InvalidLocationException("wrong format for location: ID must contains only alphabetic characters");
 			else if(!isStringOnlyNumbers(newPos.split(" ")[2])) throw new InvalidLocationException("wrong format for location: level must be a number");
 			else{
->>>>>>> ecc551a57213ce8c71973739d9617daf609ac6c8
 				Integer aisleNumber = Integer.parseInt(newPos.split(" ")[0]);
 				String alphabeticId = newPos.split(" ")[1];
 				Integer levelNumber = Integer.parseInt(newPos.split(" ")[2]);
