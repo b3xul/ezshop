@@ -11,11 +11,11 @@ public class BalanceOperationImpl implements BalanceOperation {
 	double money;
 	String type;
 
-	BalanceOperationImpl(int balanceId, String type) {
-
+	public BalanceOperationImpl (int balanceId, LocalDate date, double money, String type) {
 		this.balanceId = balanceId;
+		this.date = date;
+		this.money = money;
 		this.type = type;
-
 	}
 
 	@Override

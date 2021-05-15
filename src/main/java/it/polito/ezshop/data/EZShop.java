@@ -2,13 +2,16 @@ package it.polito.ezshop.data;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
+import it.polito.ezshop.data.Implementations.OrderImpl;
 import it.polito.ezshop.data.Implementations.ProductTypeImpl;
 import it.polito.ezshop.data.Implementations.SaleTransactionImpl;
 import it.polito.ezshop.exceptions.InvalidCreditCardException;
@@ -511,7 +514,63 @@ public class EZShop implements EZShopInterface {
 	public Integer issueOrder(String productCode, int quantity, double pricePerUnit) throws InvalidProductCodeException,
 			InvalidQuantityException, InvalidPricePerUnitException, UnauthorizedException {
 
-		return null;
+		boolean validBarCode = false;
+		Connection conn = null;
+		conn = dbAccess();
+		int id = -1;
+		
+		try {
+			if(quantity <= 0)
+				throw new InvalidQuantityException("The quantity you've inserted is not accepted");
+
+			if(pricePerUnit <= 0)
+				throw new InvalidPricePerUnitException("The price you've inserted is not accepted");
+			
+			String sql = "SELECT id FROM product WHERE barcode = ?";
+			PreparedStatement statement = conn.prepareStatement(sql);
+			statement.setString(1, productCode);
+			ResultSet rs = statement.executeQuery();
+			
+			if (!rs.next()) 
+				System.out.println("There is no product with this barcode");
+			else
+				validBarCode = true;
+			
+			if(validBarCode == false)
+				throw new InvalidProductCodeException();
+			
+			String sql2 = "SELECT MAX(id) AS MaxId FROM order";
+			Statement statement2 = conn.createStatement();
+			ResultSet rs2 = statement2.executeQuery(sql2);
+			
+			if(!rs2.next())
+				id = 1;
+			else
+				id = rs2.getInt("MaxId");
+			
+			OrderImpl order = new OrderImpl(0, LocalDate.now(), pricePerUnit*quantity, "DEBIT", productCode, pricePerUnit, quantity, "ISSUED", id);
+			
+			String sql3 = "INSERT INTO order (balanceId, date, money, type, productCode, pricePerUnit, quantity, status, orderId) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+			PreparedStatement statement3 = conn.prepareStatement(sql3);
+			statement3.setInt(1, order.getBalanceId());
+			statement3.setDate(2, java.sql.Date.valueOf(order.getDate()));
+			statement3.setDouble(3, order.getMoney());
+			statement3.setString(4, order.getType());
+			statement3.setString(5, order.getProductCode());
+			statement3.setDouble(6, order.getPricePerUnit());
+			statement3.setInt(7, order.getQuantity());
+			statement3.setString(8, order.getStatus());
+			statement3.setInt(9, order.getOrderId());
+			statement3.executeUpdate();
+			
+		}
+		catch (Exception e) {
+			System.out.println("The code of the product is not valid");
+		}finally {
+			dbClose(conn);
+		}
+
+		return id;
 
 	}
 
@@ -520,8 +579,67 @@ public class EZShop implements EZShopInterface {
 			throws InvalidProductCodeException, InvalidQuantityException, InvalidPricePerUnitException,
 			UnauthorizedException {
 
-		return null;
+		boolean validBarCode = false;
+		Connection conn = null;
+		conn = dbAccess();
+		int id = -1;
 
+    	try {
+
+    		if(quantity <= 0)
+    			throw new InvalidQuantityException("The quantity you've inserted is not accepted");
+
+    		if(pricePerUnit <= 0)
+    			throw new InvalidPricePerUnitException("The price you've inserted is not accepted");
+    		
+    		String sql = "SELECT id FROM product WHERE barcode = ?";
+			PreparedStatement statement = conn.prepareStatement(sql);
+			statement.setString(1, productCode);
+			ResultSet rs = statement.executeQuery();
+			
+			if (!rs.next()) 
+				System.out.println("There is no product with this barcode");
+			else
+				validBarCode = true;
+			
+			if(validBarCode == false)
+				throw new InvalidProductCodeException();
+    	
+			String sql2 = "SELECT MAX(id) AS MaxId FROM order";
+			Statement statement2 = conn.createStatement();
+			ResultSet rs2 = statement2.executeQuery(sql2);
+			
+			if(!rs2.next())
+				id = 1;
+			else
+				id = rs2.getInt("MaxId");
+			
+			OrderImpl order = new OrderImpl(0, LocalDate.now(), pricePerUnit*quantity, "DEBIT", productCode, pricePerUnit, quantity, "PAYED", id);
+			
+			String sql3 = "INSERT INTO order (balanceId, date, money, type, productCode, pricePerUnit, quantity, status, orderId) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+			PreparedStatement statement3 = conn.prepareStatement(sql3);
+			statement3.setInt(1, order.getBalanceId());
+			statement3.setDate(2, java.sql.Date.valueOf(order.getDate()));
+			statement3.setDouble(3, order.getMoney());
+			statement3.setString(4, order.getType());
+			statement3.setString(5, order.getProductCode());
+			statement3.setDouble(6, order.getPricePerUnit());
+			statement3.setInt(7, order.getQuantity());
+			statement3.setString(8, order.getStatus());
+			statement3.setInt(9, order.getOrderId());
+			statement3.executeUpdate();
+			
+			recordBalanceUpdate(-order.getMoney());
+			
+		}
+		catch (Exception e) {
+			System.out.println("The code of the product is not valid");
+		}finally {
+			dbClose(conn);
+		}
+
+		return id;
+			
 	}
 
 	@Override
