@@ -369,6 +369,28 @@ public class EZShopImpl{
 
 	
 	
+	public static Integer generatoreBarcode(String firsts) {
+		List<Integer> b = new ArrayList<Integer>() ;
+		for (String c : firsts.split("")) {
+			b.add(Integer.parseInt(c));				
+		}
+		Collections.reverse(b);
+		Integer tot = 0;
+		for(int i = 0; i < b.size(); i++) {
+			if(i % 2 == 0) tot = tot + b.get(i) * 3;
+			else tot = tot + b.get(i);
+		}
+		
+		if(tot % 10 == 0) tot = 0;
+		else tot = 10 - (tot % 10);
+		
+		return tot;
+		
+		
+	}
+
+
+
 	public static void main(String[] args) throws InvalidProductDescriptionException, InvalidProductCodeException, InvalidPricePerUnitException, UnauthorizedException, InvalidProductIdException {
 		EZShopImpl shop = new EZShopImpl();
 //		System.out.println("****"  );
