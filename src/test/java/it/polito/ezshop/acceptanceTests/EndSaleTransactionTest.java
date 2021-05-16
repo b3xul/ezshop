@@ -20,6 +20,7 @@ public class EndSaleTransactionTest {
 		Integer tid = ezShop.startSaleTransaction();
 		System.out.println(tid);
 		assertTrue(ezShop.addProductToSale(tid, "98765432123456", 2));
+		assertTrue(ezShop.addProductToSale(tid, "1234467898423", 1));
 		assertTrue(ezShop.endSaleTransaction(tid));
 
 	}
