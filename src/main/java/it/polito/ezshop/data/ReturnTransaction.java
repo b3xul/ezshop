@@ -2,23 +2,24 @@ package it.polito.ezshop.data;
 
 public interface ReturnTransaction {
 
-    Integer getReturnId();
+	Integer getReturnId();
 
-    void setReturnId(Integer ticketNumber);
-    
-    String getProductCode();
+	void setReturnId(Integer ticketNumber);
 
-    void setProductCode(String productCode);
+	String getProductCode();
 
-    int getAmount();
+	void setProductCode(String productCode);
 
-    void setAmount(int quantity);
+	int getAmount();
 
-    double getPrice();
+	void setAmount(int quantity);
 
-    void setPrice(double price);
-    
-    SaleTransaction getSaleTransaction();
-    
-    void setSaleTransaction();
+	double getPrice();
+
+	void setPrice(double price);
+
+	SaleTransaction getSaleTransaction();
+
+	void setSaleTransaction(SaleTransaction saleTransaction);
+
 }

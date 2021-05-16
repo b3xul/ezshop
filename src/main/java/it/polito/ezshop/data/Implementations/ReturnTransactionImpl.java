@@ -4,63 +4,89 @@ import it.polito.ezshop.data.SaleTransaction;
 
 public class ReturnTransactionImpl implements it.polito.ezshop.data.ReturnTransaction {
 
-	@Override
-	public Integer getReturnId() {
-		// TODO Auto-generated method stub
-		return null;
+	Integer returnId;
+	String productCode;
+	int amount;
+	double price;
+	SaleTransaction saleTransaction;
+
+	public ReturnTransactionImpl(Integer returnId, SaleTransaction saleTransaction) {
+
+		this.returnId = returnId;
+		this.productCode = "";
+		this.amount = 0;
+		this.price = 0;
+		this.saleTransaction = saleTransaction;
+
 	}
 
 	@Override
-	public void setReturnId(Integer ticketNumber) {
-		// TODO Auto-generated method stub
+	public Integer getReturnId() {
+
+		return returnId;
+
+	}
+
+	@Override
+	public void setReturnId(Integer returnId) {
+
+		this.returnId = returnId;
 
 	}
 
 	@Override
 	public String getProductCode() {
-		// TODO Auto-generated method stub
-		return null;
+
+		return productCode;
+
 	}
 
 	@Override
 	public void setProductCode(String productCode) {
-		// TODO Auto-generated method stub
+
+		this.productCode = productCode;
 
 	}
 
 	@Override
 	public int getAmount() {
-		// TODO Auto-generated method stub
-		return 0;
+
+		return amount;
+
 	}
 
 	@Override
-	public void setAmount(int quantity) {
-		// TODO Auto-generated method stub
+	public void setAmount(int amount) {
+
+		this.amount = amount;
 
 	}
 
 	@Override
 	public double getPrice() {
-		// TODO Auto-generated method stub
-		return 0;
+
+		return price;
+
 	}
 
 	@Override
 	public void setPrice(double price) {
-		// TODO Auto-generated method stub
+
+		this.price = price;
 
 	}
 
 	@Override
 	public SaleTransaction getSaleTransaction() {
-		// TODO Auto-generated method stub
-		return null;
+
+		return saleTransaction;
+
 	}
 
 	@Override
-	public void setSaleTransaction() {
-		// TODO Auto-generated method stub
+	public void setSaleTransaction(SaleTransaction saleTransaction) {
+
+		this.saleTransaction = saleTransaction;
 
 	}
 

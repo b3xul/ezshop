@@ -8,9 +8,11 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import it.polito.ezshop.data.Implementations.ProductTypeImpl;
+import it.polito.ezshop.data.Implementations.ReturnTransactionImpl;
 import it.polito.ezshop.data.Implementations.SaleTransactionImpl;
 import it.polito.ezshop.exceptions.InvalidCreditCardException;
 import it.polito.ezshop.exceptions.InvalidCustomerCardException;
@@ -40,6 +42,7 @@ public class EZShop implements EZShopInterface {
 	Boolean loggedUser = true;
 	// ArrayList<ProductType> productTypes = new ArrayList<ProductType>();
 	SaleTransactionImpl openSaleTransaction = null;
+	ReturnTransactionImpl openReturnTransaction = null;
 
 	// method to open the connection to database
 	public Connection dbAccess() {
@@ -87,28 +90,32 @@ public class EZShop implements EZShopInterface {
 	};
 
 	// method to verify the correctness of the barcode
-    public static boolean isBarcodeValid(String barcode) {
-    	boolean valid = false;
-    	
-    	List<Integer> b = new ArrayList<Integer>() ;
+	public static boolean isBarcodeValid(String barcode) {
+
+		boolean valid = false;
+		List<Integer> b = new ArrayList<Integer>();
 		for (String c : barcode.split("")) {
-			b.add(Integer.parseInt(c));				
+			b.add(Integer.parseInt(c));
 		}
 		Collections.reverse(b);
 		Integer tot = 0;
-		for(int i = 1; i < b.size(); i++) {
-			if(i % 2 != 0) tot = tot + b.get(i) * 3;
-			else tot = tot + b.get(i);
+		for (int i = 1; i < b.size(); i++) {
+			if (i % 2 != 0)
+				tot = tot + b.get(i) * 3;
+			else
+				tot = tot + b.get(i);
 		}
-		
-		if(tot % 10 == 0) tot = 0;
-		else tot = 10 - (tot % 10);
-		
-		if(tot == b.get(0)) valid = true;
-		else valid = false;
-    	
-    	return valid;
-    }
+		if (tot % 10 == 0)
+			tot = 0;
+		else
+			tot = 10 - (tot % 10);
+		if (tot == b.get(0))
+			valid = true;
+		else
+			valid = false;
+		return valid;
+
+	}
 
 	@Override
 	public void reset() {
@@ -183,7 +190,7 @@ public class EZShop implements EZShopInterface {
 				throw new InvalidProductCodeException("invalid barcode: wrong length");
 			else if (!isStringOnlyNumbers(productCode))
 				throw new InvalidProductCodeException("invalid barcode: in barcode must not be letters");
-			else if(!isBarcodeValid(productCode)) 
+			else if (!isBarcodeValid(productCode))
 				throw new InvalidProductCodeException("invalid barcode: barcode does not respect GTIN specifications");
 			else if (pricePerUnit <= 0)
 				throw new InvalidPricePerUnitException("invalid price");
@@ -248,7 +255,7 @@ public class EZShop implements EZShopInterface {
 				throw new InvalidProductCodeException("invalid barcode: wrong length");
 			else if (!isStringOnlyNumbers(newCode))
 				throw new InvalidProductCodeException("invalid barcode: in barcode must not be letters");
-			else if(!isBarcodeValid(newCode)) 
+			else if (!isBarcodeValid(newCode))
 				throw new InvalidProductCodeException("invalid barcode: barcode does not respect GTIN specifications");
 			else if (newPrice <= 0)
 				throw new InvalidPricePerUnitException("invalid price");
@@ -384,7 +391,7 @@ public class EZShop implements EZShopInterface {
 				throw new InvalidProductCodeException("invalid barcode: wrong length");
 			else if (!isStringOnlyNumbers(barCode))
 				throw new InvalidProductCodeException("invalid barcode: in barcode must not be letters");
-			else if(!isBarcodeValid(barCode)) 
+			else if (!isBarcodeValid(barCode))
 				throw new InvalidProductCodeException("invalid barcode: barcode does not respect GTIN specifications");
 			else if (false)
 				throw new UnauthorizedException("user error");
@@ -443,7 +450,7 @@ public class EZShop implements EZShopInterface {
 				throw new InvalidProductCodeException("invalid barcode: wrong length");
 			else if (!isStringOnlyNumbers(barCode))
 				throw new InvalidProductCodeException("invalid barcode: in barcode must not be letters");
-			else if(!isBarcodeValid(barCode)) 
+			else if (!isBarcodeValid(barCode))
 				throw new InvalidProductCodeException("invalid barcode: barcode does not respect GTIN specifications");
 			else if (false)
 				throw new UnauthorizedException("user error");
@@ -591,25 +598,33 @@ public class EZShop implements EZShopInterface {
 
 	// method to update the position of a product
 	@Override
-	public boolean updatePosition(Integer productId, String newPos) throws InvalidProductIdException, InvalidLocationException, UnauthorizedException {
-        boolean success = false;
-        Connection conn = null;  
-        conn = dbAccess();
-    	try {
-    		if(productId <= 0 || productId == null) throw new InvalidProductIdException("ID incorrect");
-    		else if(newPos == null || newPos == "") {
-				//Statement to update the location of a product given its ID to an empty string
-    			String sql2 = "UPDATE product SET location = '" + "" + "' WHERE id = '" + productId + "'";
-    		    Statement statement2 = conn.createStatement();
-    		    statement2.executeUpdate(sql2);
-    		    success = true;
-    		}
-    		else if(false) throw new UnauthorizedException("user error");	
-			else if(newPos.split(" ").length != 3) throw new InvalidLocationException("wrong format for location: wrong field(s)");
-			else if(!isStringOnlyNumbers(newPos.split(" ")[0])) throw new InvalidLocationException("wrong format for location: aisle must be a number");
-						else if(!isStringOnlyAlphabet(newPos.split(" ")[1])) throw new InvalidLocationException("wrong format for location: ID must contains only alphabetic characters");
-			else if(!isStringOnlyNumbers(newPos.split(" ")[2])) throw new InvalidLocationException("wrong format for location: level must be a number");
-			else{
+	public boolean updatePosition(Integer productId, String newPos)
+			throws InvalidProductIdException, InvalidLocationException, UnauthorizedException {
+
+		boolean success = false;
+		Connection conn = null;
+		conn = dbAccess();
+		try {
+			if (productId <= 0 || productId == null)
+				throw new InvalidProductIdException("ID incorrect");
+			else if (newPos == null || newPos == "") {
+				// Statement to update the location of a product given its ID to an empty string
+				String sql2 = "UPDATE product SET location = '" + "" + "' WHERE id = '" + productId + "'";
+				Statement statement2 = conn.createStatement();
+				statement2.executeUpdate(sql2);
+				success = true;
+			} else if (false)
+				throw new UnauthorizedException("user error");
+			else if (newPos.split(" ").length != 3)
+				throw new InvalidLocationException("wrong format for location: wrong field(s)");
+			else if (!isStringOnlyNumbers(newPos.split(" ")[0]))
+				throw new InvalidLocationException("wrong format for location: aisle must be a number");
+			else if (!isStringOnlyAlphabet(newPos.split(" ")[1]))
+				throw new InvalidLocationException(
+						"wrong format for location: ID must contains only alphabetic characters");
+			else if (!isStringOnlyNumbers(newPos.split(" ")[2]))
+				throw new InvalidLocationException("wrong format for location: level must be a number");
+			else {
 				Integer aisleNumber = Integer.parseInt(newPos.split(" ")[0]);
 				String alphabeticId = newPos.split(" ")[1];
 				Integer levelNumber = Integer.parseInt(newPos.split(" ")[2]);
@@ -759,20 +774,12 @@ public class EZShop implements EZShopInterface {
 
 		if (loggedUser == null)
 			throw new UnauthorizedException("User not logged in");
-		Connection c = null;
-		Statement stmt = null;
+		String getNextAutoincrement = "SELECT seq FROM sqlite_sequence WHERE name=\"saleTransaction\"";
 		Integer id = 0; // 0=error
-		try {
-			c = dbAccess();
-			stmt = c.createStatement();
-			String sql = "SELECT seq FROM sqlite_sequence WHERE name=\"saleTransaction\"";
-			ResultSet rs = stmt.executeQuery(sql);
+		try (Connection conn = this.dbAccess();
+				Statement stmt = conn.createStatement();
+				ResultSet rs = stmt.executeQuery(getNextAutoincrement)) {
 			id = rs.getInt("seq") + 1;
-			rs.close();
-			stmt.close();
-			// c.setAutoCommit(false); // all operations until the next c.commit will be
-			// included in a single db
-			// transaction
 		} catch (Exception e) {
 			System.err.println(e.getClass().getName() + ": " + e.getMessage());
 			System.exit(0);
@@ -895,6 +902,7 @@ public class EZShop implements EZShopInterface {
 
 		String insertSale = "INSERT INTO saleTransaction(ticketNumber,price,discountRate) VALUES(?,?,?)";
 		String insertTicketEntry = "INSERT INTO ticketEntry(ticketNumber,barCode,productDescription,pricePerUnit,discountRate,amount) VALUES(?,?,?,?,?,?)";
+		String decreaseProductQuantity = "UPDATE product SET quantity=quantity - ? WHERE barcode=?";
 		if (transactionId == null || transactionId <= 0)
 			throw new InvalidTransactionIdException("Transaction id cannot be null or <=0");
 		if (loggedUser == null)
@@ -917,6 +925,11 @@ public class EZShop implements EZShopInterface {
 				pstmt.setDouble(4, entry.getPricePerUnit());
 				pstmt.setDouble(5, entry.getDiscountRate());
 				pstmt.setInt(6, entry.getAmount());
+				pstmt.executeUpdate();
+				pstmt.close();
+				pstmt = conn.prepareStatement(decreaseProductQuantity);
+				pstmt.setInt(1, entry.getAmount());
+				pstmt.setString(2, entry.getBarCode());
 				pstmt.executeUpdate();
 				pstmt.close();
 			}
@@ -999,10 +1012,29 @@ public class EZShop implements EZShopInterface {
 	}
 
 	@Override
-	public Integer startReturnTransaction(Integer saleNumber)
+	public Integer startReturnTransaction(Integer transactionId)
 			throws /* InvalidTicketNumberException, */InvalidTransactionIdException, UnauthorizedException {
 
-		return null;
+		if (transactionId == null || transactionId <= 0)
+			throw new InvalidTransactionIdException("Transaction id cannot be null or <=0");
+		if (loggedUser == null)
+			throw new UnauthorizedException("User not logged in");
+		SaleTransaction saleTransaction = getSaleTransaction(transactionId);
+		if (saleTransaction == null)
+			return -1;
+		Integer returnId = 0; // 0=error
+		String getNextAutoincrement = "SELECT seq FROM sqlite_sequence WHERE name=\"returnTransaction\"";
+		try (Connection conn = this.dbAccess();
+				Statement stmt = conn.createStatement();
+				ResultSet rs = stmt.executeQuery(getNextAutoincrement)) {
+			returnId = rs.getInt("seq") + 1;
+		} catch (Exception e) {
+			System.err.println(e.getClass().getName() + ": " + e.getMessage());
+			System.exit(0);
+		}
+		openReturnTransaction = new ReturnTransactionImpl(returnId, saleTransaction); // transaction will be added to
+																						// the db only when it ends
+		return returnId;
 
 	}
 
