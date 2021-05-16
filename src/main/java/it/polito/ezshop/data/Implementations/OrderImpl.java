@@ -1,19 +1,22 @@
 package it.polito.ezshop.data.Implementations;
 
 import java.time.LocalDate;
+
+import it.polito.ezshop.data.BalanceOperation;
 import it.polito.ezshop.data.Order;
 
 
-public class OrderImpl extends BalanceOperationImpl implements Order {
+public class OrderImpl implements Order {
 	
 	private String productCode;
 	private double pricePerUnit;
 	private int quantity;
 	private String status;
 	private Integer orderId;
+	private BalanceOperation bo;
 	
-	public OrderImpl(int balanceId, LocalDate date, double money, String type, String productCode, double pricePerUnit, int quantity, String status, Integer orderId){
-		super(balanceId, date, money, type);
+	public OrderImpl(int orderId, int balanceId, LocalDate date, double money, String productCode, double pricePerUnit, int quantity, String status){
+		bo = new BalanceOperationImpl(balanceId, date, money, "DEBIT");
 		this.productCode = productCode;
 		this.pricePerUnit = pricePerUnit;
 		this.quantity = quantity;
@@ -21,16 +24,26 @@ public class OrderImpl extends BalanceOperationImpl implements Order {
 		this.orderId = orderId;
 	}
 	
+	public LocalDate getDate() {
+		
+		return bo.getDate();
+	}
+	
+	public double getMoney() {
+		
+		return bo.getMoney();
+	}
+	
 	@Override
 	public Integer getBalanceId() {
 		
-		return super.getBalanceId();
+		return bo.getBalanceId();
 	}
 
 	@Override
 	public void setBalanceId(Integer balanceId) {
 		
-		this.balanceId = balanceId;
+		bo.setBalanceId(balanceId);
 
 	}
 

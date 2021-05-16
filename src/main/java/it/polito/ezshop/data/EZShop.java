@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import it.polito.ezshop.data.Implementations.BalanceOperationImpl;
 import it.polito.ezshop.data.Implementations.OrderImpl;
 import it.polito.ezshop.data.Implementations.ProductTypeImpl;
 import it.polito.ezshop.data.Implementations.SaleTransactionImpl;
@@ -42,7 +43,7 @@ public class EZShop implements EZShopInterface {
 	Boolean loggedUser = true;
 	// ArrayList<ProductType> productTypes = new ArrayList<ProductType>();
 	SaleTransactionImpl openSaleTransaction = null;
-
+	
 	// method to open the connection to database
 	public Connection dbAccess() {
 
@@ -629,7 +630,6 @@ public class EZShop implements EZShopInterface {
 	public Integer issueOrder(String productCode, int quantity, double pricePerUnit) throws InvalidProductCodeException,
 			InvalidQuantityException, InvalidPricePerUnitException, UnauthorizedException {
 
-		boolean validBarCode = false;
 		Connection conn = null;
 		conn = dbAccess();
 		int id = -1;
@@ -641,46 +641,47 @@ public class EZShop implements EZShopInterface {
 			if(pricePerUnit <= 0)
 				throw new InvalidPricePerUnitException("The price you've inserted is not accepted");
 			
+			if(!this.loggedUser)
+				throw new UnauthorizedException("The user doesn't have the rights to perform this action");
+			
 			String sql = "SELECT id FROM product WHERE barcode = ?";
 			PreparedStatement statement = conn.prepareStatement(sql);
 			statement.setString(1, productCode);
 			ResultSet rs = statement.executeQuery();
+			System.out.println("* * *");
 			
 			if (!rs.next()) 
-				System.out.println("There is no product with this barcode");
-			else
-				validBarCode = true;
+				throw new InvalidProductCodeException("There is no product with this barcode");
 			
-			if(validBarCode == false)
-				throw new InvalidProductCodeException();
 			
-			String sql2 = "SELECT MAX(id) AS MaxId FROM order";
+			String sql2 = "SELECT MAX(orderId) AS MaxId FROM order_";
 			Statement statement2 = conn.createStatement();
 			ResultSet rs2 = statement2.executeQuery(sql2);
+			System.out.println("* * *");
 			
 			if(!rs2.next())
 				id = 1;
 			else
-				id = rs2.getInt("MaxId");
+				id = rs2.getInt("MaxId") + 1;
 			
-			OrderImpl order = new OrderImpl(0, LocalDate.now(), pricePerUnit*quantity, "DEBIT", productCode, pricePerUnit, quantity, "ISSUED", id);
+			OrderImpl order = new OrderImpl(id, -1, LocalDate.now(), pricePerUnit*quantity, productCode, pricePerUnit, quantity, "ISSUED");
 			
-			String sql3 = "INSERT INTO order (balanceId, date, money, type, productCode, pricePerUnit, quantity, status, orderId) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+			String sql3 = "INSERT INTO order_ (orderId, balanceId, date, money, productCode, pricePerUnit, quantity, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 			PreparedStatement statement3 = conn.prepareStatement(sql3);
-			statement3.setInt(1, order.getBalanceId());
-			statement3.setDate(2, java.sql.Date.valueOf(order.getDate()));
-			statement3.setDouble(3, order.getMoney());
-			statement3.setString(4, order.getType());
+			statement3.setInt(1, order.getOrderId());
+			statement3.setInt(2, order.getBalanceId());
+			statement3.setString(3, order.getDate().toString());
+			statement3.setDouble(4, order.getMoney());
 			statement3.setString(5, order.getProductCode());
 			statement3.setDouble(6, order.getPricePerUnit());
 			statement3.setInt(7, order.getQuantity());
 			statement3.setString(8, order.getStatus());
-			statement3.setInt(9, order.getOrderId());
 			statement3.executeUpdate();
+			System.out.println("* * *");
 			
 		}
 		catch (Exception e) {
-			System.out.println("The code of the product is not valid");
+			System.out.println(e.getMessage());
 		}finally {
 			dbClose(conn);
 		}
@@ -694,10 +695,10 @@ public class EZShop implements EZShopInterface {
 			throws InvalidProductCodeException, InvalidQuantityException, InvalidPricePerUnitException,
 			UnauthorizedException {
 
-		boolean validBarCode = false;
 		Connection conn = null;
 		conn = dbAccess();
-		int id = -1;
+		int orderId = -1;
+		int balanceId = 0;
 
     	try {
 
@@ -707,60 +708,116 @@ public class EZShop implements EZShopInterface {
     		if(pricePerUnit <= 0)
     			throw new InvalidPricePerUnitException("The price you've inserted is not accepted");
     		
+    		if(!this.loggedUser)
+				throw new UnauthorizedException("The user doesn't have the rights to perform this action");
+    		
     		String sql = "SELECT id FROM product WHERE barcode = ?";
 			PreparedStatement statement = conn.prepareStatement(sql);
 			statement.setString(1, productCode);
 			ResultSet rs = statement.executeQuery();
 			
 			if (!rs.next()) 
-				System.out.println("There is no product with this barcode");
-			else
-				validBarCode = true;
+				throw new InvalidProductCodeException("There is no product with this barcode");
 			
-			if(validBarCode == false)
-				throw new InvalidProductCodeException();
-    	
-			String sql2 = "SELECT MAX(id) AS MaxId FROM order";
+			dbClose(conn);
+			recordBalanceUpdate(-pricePerUnit*quantity);
+			conn = dbAccess();
+			
+			String sql2 = "SELECT MAX(balanceId) AS MaxBId FROM balanceOperation";
 			Statement statement2 = conn.createStatement();
 			ResultSet rs2 = statement2.executeQuery(sql2);
+			balanceId = rs2.getInt("MaxBId");
+    	
+			String sql3 = "SELECT MAX(orderId) AS MaxId FROM order_";
+			Statement statement3 = conn.createStatement();
+			ResultSet rs3 = statement3.executeQuery(sql3);
 			
-			if(!rs2.next())
-				id = 1;
+			if(!rs3.next())
+				orderId = 1;
 			else
-				id = rs2.getInt("MaxId");
+				orderId = rs3.getInt("MaxId") + 1;
 			
-			OrderImpl order = new OrderImpl(0, LocalDate.now(), pricePerUnit*quantity, "DEBIT", productCode, pricePerUnit, quantity, "PAYED", id);
+			OrderImpl order = new OrderImpl(orderId, balanceId, LocalDate.now(), pricePerUnit*quantity, productCode, pricePerUnit, quantity, "PAYED");
 			
-			String sql3 = "INSERT INTO order (balanceId, date, money, type, productCode, pricePerUnit, quantity, status, orderId) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
-			PreparedStatement statement3 = conn.prepareStatement(sql3);
-			statement3.setInt(1, order.getBalanceId());
-			statement3.setDate(2, java.sql.Date.valueOf(order.getDate()));
-			statement3.setDouble(3, order.getMoney());
-			statement3.setString(4, order.getType());
-			statement3.setString(5, order.getProductCode());
-			statement3.setDouble(6, order.getPricePerUnit());
-			statement3.setInt(7, order.getQuantity());
-			statement3.setString(8, order.getStatus());
-			statement3.setInt(9, order.getOrderId());
-			statement3.executeUpdate();
-			
-			recordBalanceUpdate(-order.getMoney());
+			String sql4 = "INSERT INTO order_ (orderId, balanceId, date, money, productCode, pricePerUnit, quantity, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+			PreparedStatement statement4 = conn.prepareStatement(sql4);
+			statement4.setInt(1, order.getOrderId());
+			statement4.setInt(2, order.getBalanceId());
+			statement4.setString(3, order.getDate().toString());
+			statement4.setDouble(4, order.getMoney());
+			statement4.setString(5, order.getProductCode());
+			statement4.setDouble(6, order.getPricePerUnit());
+			statement4.setInt(7, order.getQuantity());
+			statement4.setString(8, order.getStatus());
+			statement4.executeUpdate();
 			
 		}
 		catch (Exception e) {
-			System.out.println("The code of the product is not valid");
+			System.out.println(e.getMessage());
 		}finally {
 			dbClose(conn);
 		}
 
-		return id;
+		return orderId;
 			
 	}
 
 	@Override
 	public boolean payOrder(Integer orderId) throws InvalidOrderIdException, UnauthorizedException {
 
-		return false;
+		boolean validOrderId = false;
+		Connection conn = null;
+		conn = dbAccess();
+		int balanceId = 0;
+    	
+    	try {
+    		
+    		if(!this.loggedUser)
+				throw new UnauthorizedException("The user doesn't have the rights to perform this action");
+    		
+    		String sql = "SELECT orderId FROM order_ WHERE orderId = ?";
+			PreparedStatement statement = conn.prepareStatement(sql);
+			statement.setInt(1, orderId);
+			ResultSet rs = statement.executeQuery();
+			
+			if(!rs.next())
+				throw new InvalidOrderIdException("There is no order with this id");
+			else
+				validOrderId = true;
+    		
+    		String sql2 = "UPDATE order_ SET status = ? WHERE orderId = ?";
+			PreparedStatement statement2 = conn.prepareStatement(sql2);
+			statement2.setString(1, "PAYED");
+			statement2.setInt(2, orderId);
+			statement2.executeUpdate();
+			
+			String sql3 = "SELECT money FROM order_ WHERE orderId = ?";
+			PreparedStatement statement3 = conn.prepareStatement(sql3);
+			statement3.setInt(1, orderId);
+			ResultSet rs3 = statement3.executeQuery();
+			
+			dbClose(conn);
+			recordBalanceUpdate(-(rs3.getDouble("money")));
+			conn = dbAccess();
+			
+			String sql4 = "SELECT MAX(balanceId) AS MaxBId FROM balanceOperation";
+			Statement statement4 = conn.createStatement();
+			ResultSet rs4 = statement4.executeQuery(sql4);
+			balanceId = rs4.getInt("MaxBId");
+			
+			String sql5 = "UPDATE order_ SET balanceId = ? WHERE orderId = ?";
+			PreparedStatement statement5 = conn.prepareStatement(sql5);
+			statement5.setInt(1, balanceId);
+			statement5.setInt(2, orderId);
+			statement5.executeUpdate();
+    		
+    	} catch (Exception e){
+    		System.out.println(e.getMessage());
+    	} finally {
+			dbClose(conn);
+		}
+    	
+    	return validOrderId;
 
 	}
 
@@ -768,14 +825,93 @@ public class EZShop implements EZShopInterface {
 	public boolean recordOrderArrival(Integer orderId)
 			throws InvalidOrderIdException, UnauthorizedException, InvalidLocationException {
 
-		return false;
+		boolean valid = false;
+		Connection conn = null;
+		conn = dbAccess();
+		String barcode = null;
+		int qty = 0;
+		String location = null;
+    	
+    	try {
+    		
+    		if(!this.loggedUser)
+				throw new UnauthorizedException("The user doesn't have the rights to perform this action");
+    		
+    		if(orderId <= 0 || orderId == null)
+    			throw new InvalidOrderIdException("The order id is not valid");
+    		
+    		String sql = "SELECT productCode, quantity, status FROM order_ WHERE orderId = ? AND status = ?";
+			PreparedStatement statement = conn.prepareStatement(sql);
+			statement.setInt(1, orderId);
+			statement.setString(2, "PAYED");
+			ResultSet rs = statement.executeQuery();
+    		
+			if(rs.next()) {
+				barcode = rs.getString("productCode");
+				qty = rs.getInt("quantity");
+			}
+			
+			
+			String sql2 = "SELECT location FROM product WHERE barcode = ?";
+			PreparedStatement statement2 = conn.prepareStatement(sql2);
+			statement2.setString(1, barcode);
+			ResultSet rs2 = statement2.executeQuery();
+			location = rs2.getString("location");
+
+			if(location.equals("no location"))
+				throw new InvalidLocationException("The product type has no location assigned");
+
+
+			String sql3 = "UPDATE order_ SET status = ? WHERE orderId = ?";
+			PreparedStatement statement3 = conn.prepareStatement(sql3);
+			statement3.setString(1, "COMPLETED");
+			statement3.setInt(2, orderId);
+			statement3.executeUpdate();
+
+			String sql4 = "UPDATE product SET quantity = quantity + ? WHERE barcode = ?";
+			PreparedStatement statement4 = conn.prepareStatement(sql4);
+			statement4.setInt(1, qty);
+			statement4.setString(2, barcode);
+			statement4.executeUpdate();
+
+			valid = true;
+			
+    	} catch (Exception e){
+    		System.out.println(e.getMessage());
+    	} finally {
+			dbClose(conn);
+		}
+    	
+    	return valid;
 
 	}
 
 	@Override
 	public List<Order> getAllOrders() throws UnauthorizedException {
 
-		return null;
+		List<Order> orders = new ArrayList<Order>();
+		Connection conn = null;
+		conn = dbAccess();
+		
+		try {
+			if(!this.loggedUser)
+				throw new UnauthorizedException("The user doesn't have the rights to perform this action");
+			
+			String sql = "SELECT * FROM order_";
+			Statement statement = conn.createStatement();
+			ResultSet rs = statement.executeQuery(sql);
+			
+			while(rs.next()) {
+				orders.add(new OrderImpl(rs.getInt("orderId"), rs.getInt("balanceId"), LocalDate.parse(rs.getString("date")), rs.getDouble("money"), rs.getString("productCode"), rs.getDouble("pricePerUnit"), rs.getInt("quantity"), rs.getString("status")));
+			}
+		} catch (Exception e){
+			System.out.println(e.getMessage());
+		} finally {
+			dbClose(conn);
+		}
+		
+		
+		return orders;
 
 	}
 
@@ -1095,22 +1231,118 @@ public class EZShop implements EZShopInterface {
 
 	@Override
 	public boolean recordBalanceUpdate(double toBeAdded) throws UnauthorizedException {
-
-		return false;
+		
+		Connection conn = null;
+		boolean positiveBalance = false;
+		int id = 1;
+		
+		if(computeBalance() + toBeAdded < 0) {
+			System.out.println("The operation can't be performed due to negative balance");
+			return positiveBalance;
+		}
+		
+		conn = dbAccess();
+		
+		try {
+			if(!this.loggedUser)
+				throw new UnauthorizedException("The user doesn't have the rights to perform this action");
+			
+			String sql = "SELECT MAX(balanceId) AS MaxId FROM balanceOperation";
+			Statement statement = conn.createStatement();
+			ResultSet rs = statement.executeQuery(sql);
+			
+			if(rs.next())
+				id = rs.getInt("MaxId") + 1;
+			
+			String sql2 = "INSERT INTO balanceOperation (balanceId, date, money, type) VALUES (?,?,?,?)";
+			PreparedStatement statement2 = conn.prepareStatement(sql2);
+			statement2.setInt(1, id);
+			statement2.setString(2, LocalDate.now().toString());
+			statement2.setDouble(3, toBeAdded < 0 ? -toBeAdded : toBeAdded);
+			statement2.setString(4, toBeAdded < 0 ? "DEBIT" : "CREDIT");
+			statement2.executeUpdate();
+			positiveBalance = true;
+			
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		} finally {
+			dbClose(conn);
+		}
+		
+		return positiveBalance;
 
 	}
 
 	@Override
 	public List<BalanceOperation> getCreditsAndDebits(LocalDate from, LocalDate to) throws UnauthorizedException {
+			
+		List<BalanceOperation> bo = new ArrayList<BalanceOperation>();
+		LocalDate tmp;
+		Connection conn = null;
+		conn = dbAccess();
 
-		return null;
+		if(from != null && to != null && from.isAfter(to)) {
+			tmp = to;
+			to = from;
+			from = tmp;
+		}
+		try {
+			if(!this.loggedUser)
+				throw new UnauthorizedException("The user doesn't have the rights to perform this action");
+			
+			String sql = "SELECT * FROM balanceOperation WHERE date >= ? AND date <= ?";
+			PreparedStatement statement = conn.prepareStatement(sql);
+			statement.setString(1, from == null ? "0001-01-01" : from.toString());
+			statement.setString(2, to == null ? "9999-12-31" : to.toString());
+			ResultSet rs = statement.executeQuery();
+			
+			while(rs.next())
+				bo.add(new BalanceOperationImpl(rs.getInt("balanceId"), LocalDate.parse(rs.getString("date")), rs.getDouble("money"), rs.getString("type")));
+			
+			for(BalanceOperation b : bo) 
+				System.out.println(b);
+			
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		} finally {
+			dbClose(conn);
+		}
+		
+		return bo;
 
 	}
 
 	@Override
 	public double computeBalance() throws UnauthorizedException {
-
-		return 0;
+		
+		Connection conn = null;
+		conn = dbAccess();
+		double balance = 0;
+		String type = null;
+		double money = 0;
+		
+		try {
+			if(!this.loggedUser)
+				throw new UnauthorizedException("The user doesn't have the rights to perform this action");
+			
+			String sql = "SELECT money, type FROM balanceOperation";
+			Statement statement = conn.createStatement();
+			ResultSet rs = statement.executeQuery(sql);
+			
+			while(rs.next()) {
+				type = rs.getString("type");
+				if(type.equals("DEBIT"))
+					money = -rs.getDouble("money");
+				balance += money;
+			}
+			
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		} finally {
+			dbClose(conn);
+		}
+		
+		return balance;
 
 	}
 
