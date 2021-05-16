@@ -1,4 +1,4 @@
-package it.polito.ezshop.acceptanceTests;
+package it.polito.ezshop;
 
 import static org.junit.Assert.assertTrue;
 
@@ -10,7 +10,7 @@ import it.polito.ezshop.exceptions.InvalidQuantityException;
 import it.polito.ezshop.exceptions.InvalidTransactionIdException;
 import it.polito.ezshop.exceptions.UnauthorizedException;
 
-public class EndSaleTransactionTest {
+public class AddProductToSaleTest {
 
 	@Test
 	public void testCase1() throws InvalidTransactionIdException, InvalidProductCodeException, InvalidQuantityException,
@@ -20,8 +20,6 @@ public class EndSaleTransactionTest {
 		Integer tid = ezShop.startSaleTransaction();
 		System.out.println(tid);
 		assertTrue(ezShop.addProductToSale(tid, "98765432123456", 2));
-		assertTrue(ezShop.addProductToSale(tid, "1234467898423", 1));
-		assertTrue(ezShop.endSaleTransaction(tid));
 
 	}
 

@@ -1,4 +1,4 @@
-package it.polito.ezshop.acceptanceTests;
+package it.polito.ezshop;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite.SuiteClasses;
