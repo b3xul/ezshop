@@ -12,6 +12,7 @@ import java.util.Date;
 import java.util.Collections;
 import java.util.List;
 
+import it.polito.ezshop.data.Implementations.UserImpl;
 import it.polito.ezshop.data.Implementations.BalanceOperationImpl;
 import it.polito.ezshop.data.Implementations.OrderImpl;
 import it.polito.ezshop.data.Implementations.ProductTypeImpl;
