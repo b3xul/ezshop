@@ -866,31 +866,19 @@ public class EZShop implements EZShopInterface {
 			PreparedStatement statement = conn.prepareStatement(sql);
 			statement.setString(1, productCode);
 			ResultSet rs = statement.executeQuery();
-			System.out.println("* * *");
 			if (!rs.next())
 				throw new InvalidProductCodeException("There is no product with this barcode");
-			String sql2 = "SELECT MAX(orderId) AS MaxId FROM order_";
-			Statement statement2 = conn.createStatement();
-			ResultSet rs2 = statement2.executeQuery(sql2);
-			System.out.println("* * *");
-			if (!rs2.next())
-				id = 1;
-			else
-				id = rs2.getInt("MaxId") + 1;
-			OrderImpl order = new OrderImpl(id, -1, LocalDate.now(), pricePerUnit * quantity, productCode, pricePerUnit,
-					quantity, "ISSUED");
-			String sql3 = "INSERT INTO order_ (orderId, balanceId, date, money, productCode, pricePerUnit, quantity, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+			OrderImpl order = new OrderImpl(id, -1, LocalDate.now(), pricePerUnit * quantity, productCode, pricePerUnit, quantity, "ISSUED");
+			String sql3 = "INSERT INTO order_ (balanceId, date, money, productCode, pricePerUnit, quantity, status) VALUES (?, ?, ?, ?, ?, ?, ?)";
 			PreparedStatement statement3 = conn.prepareStatement(sql3);
-			statement3.setInt(1, order.getOrderId());
-			statement3.setInt(2, order.getBalanceId());
-			statement3.setString(3, order.getDate().toString());
-			statement3.setDouble(4, order.getMoney());
-			statement3.setString(5, order.getProductCode());
-			statement3.setDouble(6, order.getPricePerUnit());
-			statement3.setInt(7, order.getQuantity());
-			statement3.setString(8, order.getStatus());
-			statement3.executeUpdate();
-			System.out.println("* * *");
+			statement3.setInt(1, -1);
+			statement3.setString(2, LocalDate.now().toString());
+			statement3.setDouble(3, pricePerUnit*quantity);
+			statement3.setString(4, productCode);
+			statement3.setDouble(5, pricePerUnit);
+			statement3.setInt(6, quantity);
+			statement3.setString(7, "ISSUED");
+			statement3.executeUpdate();	
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
 		} finally {
@@ -929,25 +917,15 @@ public class EZShop implements EZShopInterface {
 			Statement statement2 = conn.createStatement();
 			ResultSet rs2 = statement2.executeQuery(sql2);
 			balanceId = rs2.getInt("MaxBId");
-			String sql3 = "SELECT MAX(orderId) AS MaxId FROM order_";
-			Statement statement3 = conn.createStatement();
-			ResultSet rs3 = statement3.executeQuery(sql3);
-			if (!rs3.next())
-				orderId = 1;
-			else
-				orderId = rs3.getInt("MaxId") + 1;
-			OrderImpl order = new OrderImpl(orderId, balanceId, LocalDate.now(), pricePerUnit * quantity, productCode,
-					pricePerUnit, quantity, "PAYED");
-			String sql4 = "INSERT INTO order_ (orderId, balanceId, date, money, productCode, pricePerUnit, quantity, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+			String sql4 = "INSERT INTO order_ (balanceId, date, money, productCode, pricePerUnit, quantity, status) VALUES (?, ?, ?, ?, ?, ?, ?)";
 			PreparedStatement statement4 = conn.prepareStatement(sql4);
-			statement4.setInt(1, order.getOrderId());
-			statement4.setInt(2, order.getBalanceId());
-			statement4.setString(3, order.getDate().toString());
-			statement4.setDouble(4, order.getMoney());
-			statement4.setString(5, order.getProductCode());
-			statement4.setDouble(6, order.getPricePerUnit());
-			statement4.setInt(7, order.getQuantity());
-			statement4.setString(8, order.getStatus());
+			statement4.setInt(1, balanceId);
+			statement4.setString(2, LocalDate.now().toString());
+			statement4.setDouble(3, pricePerUnit * quantity);
+			statement4.setString(4, productCode);
+			statement4.setDouble(5, pricePerUnit);
+			statement4.setInt(6, quantity);
+			statement4.setString(7, "PAYED");
 			statement4.executeUpdate();
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
@@ -1493,17 +1471,11 @@ public class EZShop implements EZShopInterface {
 		try {
 			if (userLoggedIn == null)
 				throw new UnauthorizedException("The user doesn't have the rights to perform this action");
-			String sql = "SELECT MAX(balanceId) AS MaxId FROM balanceOperation";
-			Statement statement = conn.createStatement();
-			ResultSet rs = statement.executeQuery(sql);
-			if (rs.next())
-				id = rs.getInt("MaxId") + 1;
-			String sql2 = "INSERT INTO balanceOperation (balanceId, date, money, type) VALUES (?,?,?,?)";
+			String sql2 = "INSERT INTO balanceOperation (date, money, type) VALUES (?,?,?)";
 			PreparedStatement statement2 = conn.prepareStatement(sql2);
-			statement2.setInt(1, id);
-			statement2.setString(2, LocalDate.now().toString());
-			statement2.setDouble(3, toBeAdded < 0 ? -toBeAdded : toBeAdded);
-			statement2.setString(4, toBeAdded < 0 ? "DEBIT" : "CREDIT");
+			statement2.setString(1, LocalDate.now().toString());
+			statement2.setDouble(2, toBeAdded < 0 ? -toBeAdded : toBeAdded);
+			statement2.setString(3, toBeAdded < 0 ? "DEBIT" : "CREDIT");
 			statement2.executeUpdate();
 			positiveBalance = true;
 		} catch (Exception e) {
