@@ -4,6 +4,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+import it.polito.ezshop.data.BalanceOperation;
 import it.polito.ezshop.data.SaleTransaction;
 import it.polito.ezshop.data.TicketEntry;
 
@@ -13,6 +14,7 @@ public class SaleTransactionImpl implements SaleTransaction {
 	double price;
 	LinkedList<TicketEntry> entries;
 	double discountRate;
+	private BalanceOperation balanceOperation;
 
 	public SaleTransactionImpl(Integer ticketNumber) {
 
@@ -20,6 +22,7 @@ public class SaleTransactionImpl implements SaleTransaction {
 		this.price = 0;
 		this.entries = new LinkedList<TicketEntry>();
 		this.discountRate = 0;
+		this.balanceOperation = null;
 
 	}
 
@@ -49,7 +52,7 @@ public class SaleTransactionImpl implements SaleTransaction {
 
 	}
 
-	public Boolean removeAmountFromEntry(String barCode, double pricePerUnit, double discountRate, int amountToRemove) {
+	public Boolean removeAmountFromEntry(String barCode, int amountToRemove) {
 
 		Boolean updated = false;
 		Iterator<TicketEntry> iter = entries.iterator();
@@ -139,6 +142,18 @@ public class SaleTransactionImpl implements SaleTransaction {
 	public void setDiscountRate(double discountRate) {
 
 		this.discountRate = discountRate;
+
+	}
+
+	public BalanceOperation getBalanceOperation() {
+
+		return balanceOperation;
+
+	}
+
+	public void setBalanceOperation(BalanceOperation balanceOperation) {
+
+		this.balanceOperation = balanceOperation;
 
 	}
 
