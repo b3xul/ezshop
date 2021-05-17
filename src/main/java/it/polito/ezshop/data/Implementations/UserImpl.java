@@ -1,3 +1,6 @@
+package it.polito.ezshop.data.Implementations;
+
+import it.polito.ezshop.data.User;
 
 public class UserImpl implements User {
 	private Integer id;
