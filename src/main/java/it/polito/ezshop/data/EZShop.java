@@ -42,7 +42,8 @@ public class EZShop implements EZShopInterface {
 	// LinkedList<BalanceOperation> accountBook = new
 	// LinkedList<BalanceOperation>();
 	// User loggedUser = new User();
-	Boolean loggedUser = true;
+	//Boolean loggedUser = true;
+	User userLoggedIn = new UserImpl();	
 	// ArrayList<ProductType> productTypes = new ArrayList<ProductType>();
 	SaleTransactionImpl openSaleTransaction = null;
 	ReturnTransactionImpl openReturnTransaction = null;
@@ -127,51 +128,228 @@ public class EZShop implements EZShopInterface {
 	@Override
 	public Integer createUser(String username, String password, String role)
 			throws InvalidUsernameException, InvalidPasswordException, InvalidRoleException {
-
-		return null;
+    	Connection conn = null;  
+	    try {
+	    	if(username != null && username.isEmpty()==false) {
+    			if(password != null &&  password.isEmpty()==false) {
+			    	if(role != null && (role.equals("Administrator") || role.equals("Cashier") || 
+					role.equals("ShopManage"))) {
+			    		conn = dbAccess();
+			    		String sql = "SELECT seq FROM sqlite_sequence WHERE name = 'Users'";
+			    		Statement statement = conn.createStatement();
+				        ResultSet rs = statement.executeQuery(sql);
+			    	    int id = rs.getInt("seq") + 1;
+			    		sql = "INSERT INTO Users (id, username, password, role) VALUES(?,?,?,?)";			             
+				        PreparedStatement pstmt = conn.prepareStatement(sql);
+					    pstmt.setInt(1,id);
+					    pstmt.setString(2, username);
+			            pstmt.setString(3, password);
+			            pstmt.setString(4, role);       
+					    int res = pstmt.executeUpdate();
+					    if(res == 0) {		// no modified row
+					    	return -1;
+					    }
+					    else {
+					    	return id;
+					    }		    		
+			    	}
+			    	else throw new InvalidRoleException("Invalid role");
+			    }
+    			else throw new InvalidPasswordException("Invalid password");
+	    	}
+	    	else throw new InvalidUsernameException("Invalid username");
+	    		
+	    } catch (Exception e) {  
+	    	
+	        System.out.println(e.getMessage()); 
+	        return -1;
+	        
+        } finally {  
+        	
+        	dbClose(conn);
+	    }		
 
 	}
 
 	@Override
 	public boolean deleteUser(Integer id) throws InvalidUserIdException, UnauthorizedException {
-
-		return false;
+	
+		Connection conn = null;    
+	    try {
+	    	if(userLoggedIn.getRole().equals("Administrator")) {
+	    		if(id != null && id > 0) {
+					conn = dbAccess();
+		            String sql = "DELETE FROM Users WHERE id = ?";
+		            PreparedStatement pstmt = conn.prepareStatement(sql);
+	        		pstmt.setInt(1, id);
+	        		int rs = pstmt.executeUpdate(); 
+		            if(rs == 0) { 					//  no modified row
+		            	return false;
+		            }
+		            else {
+		            	return true;
+		            }
+	    		}
+	    		else throw new InvalidUserIdException("Invalid User");
+	    	}
+	    	else throw new UnauthorizedException("Permission denied");
+	    	
+	    } catch (Exception e) {  
+	        System.out.println(e.getMessage()); 
+	        return false;
+	        
+        } finally {  
+        	dbClose(conn);
+	    } 	    
 
 	}
-
+	 // ritornare la lista vuota o null in caso di eccezione?
 	@Override
 	public List<User> getAllUsers() throws UnauthorizedException {
 
-		return null;
+		Connection conn = null;   
+		List<User> users = new ArrayList<User>();
+	    try {  
+	    	if(userLoggedIn.getRole().equals("Administrator")) {
+				conn = dbAccess();
+	            String sql = "SELECT id, username, password, role FROM Users";
+		        Statement statement = conn.createStatement();
+		        ResultSet rs = statement.executeQuery(sql);
+		        while (rs.next()) {
+	                users.add(new UserImpl(rs.getInt("id"),rs.getString("username"),rs.getString("password"),
+					rs.getString("role")));
+	            }
+		        return users;
+	    	}else throw new UnauthorizedException("Permission denied");
+  
+	    } catch (Exception e) {  
+	        System.out.println(e.getMessage());
+	        return null;
+	        
+        } finally {  
+        	dbClose(conn);
+	    }
+	   
 
 	}
-
+    //  ritornare null se scateno l'eccezione?
 	@Override
 	public User getUser(Integer id) throws InvalidUserIdException, UnauthorizedException {
-
-		return null;
+	Connection conn = null;  
+	    try {  
+	    	if(userLoggedIn.getRole().equals("Administrator")) {
+	    		if(id != null && id > 0) {
+					conn = dbAccess();
+		            String sql = "SELECT id, username, password, role FROM Users WHERE id = "+id;
+			        Statement statement = conn.createStatement();
+			        ResultSet rs = statement.executeQuery(sql);
+			        if(rs.next()) {
+			        	 return new UserImpl(rs.getInt("id"),rs.getString("username"),rs.getString("password"),
+						 rs.getString("role"));
+		            }
+			        else {
+			        	return null;
+			        }
+	    		}
+	    		else throw new InvalidUserIdException("Invalid user");
+	    	}
+	    	else throw new UnauthorizedException("Permission denied");
+	    	
+	    } catch (Exception e) {  
+	        System.out.println(e.getMessage());
+		    return null;
+		    
+        } finally {  	
+        	dbClose(conn);
+	    }
 
 	}
 
 	@Override
 	public boolean updateUserRights(Integer id, String role)
 			throws InvalidUserIdException, InvalidRoleException, UnauthorizedException {
-
-		return false;
-
+	
+		Connection conn = null;  
+	    try {  
+	    	if(userLoggedIn.getRole().equals("Administrator")) {
+	    		if(id != null && id > 0) {
+		    		if(role != null && (role.equals("Administrator") || role.equals("Cashier") || 
+					role.equals("ShopManage"))) {
+		    			conn = dbAccess();
+			            String sql = "UPDATE Users SET role = ? WHERE id = ?";
+			            PreparedStatement pstmt = conn.prepareStatement(sql);
+				        pstmt.setString(1, role);
+			            pstmt.setInt(2, id);
+			            int rs = pstmt.executeUpdate(); 					            
+			            if(rs == 0) { 					//  no modified row
+			            	return false;
+			            }
+			            else {
+			            	return true;
+			            }
+		    		} 
+		    		else throw new InvalidRoleException("Invalid role");
+	    		}
+	    		else throw new InvalidUserIdException("Invalid user");
+	    	}
+	    	else throw new UnauthorizedException("Permission denied");
+	    	
+	    } catch (Exception e) {  
+	        System.out.println(e.getMessage());
+	        return false;
+	        
+        } finally {  	
+        	dbClose(conn);
+        }
 	}
 
 	@Override
 	public User login(String username, String password) throws InvalidUsernameException, InvalidPasswordException {
+		Connection conn = null;
+    	try {  
+    		if(username != null && username.isEmpty()==false) {
+    			if(password != null &&  password.isEmpty()==false) {
+					conn = dbAccess();
+		            String sql = "SELECT id, username, password, role FROM Users WHERE username = '"+username+"'";
+			        Statement statement = conn.createStatement();
+			        ResultSet rs = statement.executeQuery(sql);
 
-		return null;
-
+			        if(rs.next()==true && password.equals(rs.getString("password"))) {
+		                	//System.out.println("Log in");
+		                	userLoggedIn.setId(rs.getInt("id")); userLoggedIn.setUsername(rs.getString("username"));
+		                	userLoggedIn.setPassword(rs.getString("password"));  
+							userLoggedIn.setRole(rs.getString("role"));
+		                	return new UserImpl(rs.getInt("id"),rs.getString("username"),rs.getString("password"),
+							rs.getString("role"));
+		            }
+		            else{
+		                return null;
+		            }	  
+    			}
+    			else 
+    				throw new InvalidPasswordException("Password not valid");
+    		}
+    		else 
+    			throw new InvalidUsernameException("Username not valid");
+    		
+	    } catch (Exception e) {  
+	        System.out.println(e.getMessage()); 
+	        return null;
+	        
+	    } finally {  
+	    	dbClose(conn);
+	    }
 	}
 
 	@Override
 	public boolean logout() {
-
-		return false;
+		if(userLoggedIn.getId()!=-1) {	// no users already logged in
+	    	userLoggedIn.setId(-1); userLoggedIn.setUsername("");
+	    	userLoggedIn.setPassword("");  userLoggedIn.setRole("");
+	    	//System.out.println("Log out");
+	    	return true;
+    	}else
+    		return false;  
 
 	}
 
