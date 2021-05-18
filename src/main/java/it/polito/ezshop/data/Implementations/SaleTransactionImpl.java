@@ -34,7 +34,7 @@ public class SaleTransactionImpl implements SaleTransaction {
 			if (entry.getBarCode() == barCode) {
 				entry.setAmount(entry.getAmount() + amount);
 				updated = true;
-				System.out.println(entry);
+				// System.out.println(entry);
 				break;
 			}
 		}
@@ -68,7 +68,7 @@ public class SaleTransactionImpl implements SaleTransaction {
 					updated = true;
 				}
 				// else if (amountToRemove > previousAmount) updated=false;
-				System.out.println(entry);
+				System.out.println("Found item to remove" + entry);
 				break;
 			}
 		}
@@ -86,6 +86,16 @@ public class SaleTransactionImpl implements SaleTransaction {
 				break;
 			}
 		}
+
+	}
+
+	public void computePrice() {
+
+		double price = 0;
+		for (TicketEntry entry : entries)
+			price += entry.getPricePerUnit() * entry.getAmount() * (1 - entry.getDiscountRate());
+		price = price * (1 - this.getDiscountRate());
+		this.setDiscountRate(price);
 
 	}
 

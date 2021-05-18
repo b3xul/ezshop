@@ -9,6 +9,7 @@ import java.sql.Statement;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 import it.polito.ezshop.data.Implementations.BalanceOperationImpl;
@@ -868,17 +869,18 @@ public class EZShop implements EZShopInterface {
 			ResultSet rs = statement.executeQuery();
 			if (!rs.next())
 				throw new InvalidProductCodeException("There is no product with this barcode");
-			OrderImpl order = new OrderImpl(id, -1, LocalDate.now(), pricePerUnit * quantity, productCode, pricePerUnit, quantity, "ISSUED");
+			OrderImpl order = new OrderImpl(id, -1, LocalDate.now(), pricePerUnit * quantity, productCode, pricePerUnit,
+					quantity, "ISSUED");
 			String sql3 = "INSERT INTO order_ (balanceId, date, money, productCode, pricePerUnit, quantity, status) VALUES (?, ?, ?, ?, ?, ?, ?)";
 			PreparedStatement statement3 = conn.prepareStatement(sql3);
 			statement3.setInt(1, -1);
 			statement3.setString(2, LocalDate.now().toString());
-			statement3.setDouble(3, pricePerUnit*quantity);
+			statement3.setDouble(3, pricePerUnit * quantity);
 			statement3.setString(4, productCode);
 			statement3.setDouble(5, pricePerUnit);
 			statement3.setInt(6, quantity);
 			statement3.setString(7, "ISSUED");
-			statement3.executeUpdate();	
+			statement3.executeUpdate();
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
 		} finally {
@@ -1244,7 +1246,7 @@ public class EZShop implements EZShopInterface {
 	public boolean endSaleTransaction(Integer transactionId)
 			throws InvalidTransactionIdException, UnauthorizedException {
 
-		String insertSale = "INSERT INTO saleTransaction(ticketNumber,price,discountRate) VALUES(?,?,?)";
+		String insertSale = "INSERT INTO saleTransaction(price,discountRate) VALUES(?,?)";
 		String insertTicketEntry = "INSERT INTO ticketEntry(ticketNumber,barCode,productDescription,pricePerUnit,discountRate,amount) VALUES(?,?,?,?,?,?)";
 		String decreaseProductQuantity = "UPDATE product SET quantity=quantity - ? WHERE barcode=?";
 		if (transactionId == null || transactionId <= 0)
@@ -1254,13 +1256,14 @@ public class EZShop implements EZShopInterface {
 		if (openSaleTransaction == null || transactionId != openSaleTransaction.getTicketNumber()
 				|| getSaleTransaction(transactionId) != null)
 			return false;
-		// openSaleTransaction.setBalanceOperation(new BalanceOperationImpl(balanceId,
+		// gigopenSaleTransaction.setBalanceOperation(new
+		// BalanceOperationImpl(balanceId,
 		// date, money, "DEBIT")); ???
+		openSaleTransaction.computePrice();
 		try (Connection conn = this.dbAccess();) {
 			PreparedStatement pstmt = conn.prepareStatement(insertSale);
-			pstmt.setInt(1, openSaleTransaction.getTicketNumber());
-			pstmt.setDouble(2, openSaleTransaction.getPrice());
-			pstmt.setDouble(3, openSaleTransaction.getDiscountRate());
+			pstmt.setDouble(1, openSaleTransaction.getPrice());
+			pstmt.setDouble(2, openSaleTransaction.getDiscountRate());
 			pstmt.executeUpdate();
 			pstmt.close();
 			for (TicketEntry entry : openSaleTransaction.getEntries()) {
@@ -1390,9 +1393,34 @@ public class EZShop implements EZShopInterface {
 
 		if (returnId == null || returnId <= 0)
 			throw new InvalidTransactionIdException("Return id cannot be null or <=0");
+		if (amount <= 0)
+			throw new InvalidQuantityException("Amount to add cannot be <=0");
 		if (userLoggedIn == null)
 			throw new UnauthorizedException("User not logged in");
-		if (openReturnTransaction == null || returnId != openReturnTransaction.getReturnId())
+		if (openReturnTransaction == null || returnId != openReturnTransaction.getReturnId()) // the transaction does
+																								// not exist
+			return false;
+		ProductTypeImpl productType = getProductTypeImplByBarCode(productCode); // could throw
+																				// InvalidProductCodeException
+		System.out.println(productType);
+		if (productType == null) // the product to be returned does not exists
+			return false;
+		List<TicketEntry> entries = openReturnTransaction.getSaleTransaction().getEntries();
+		Boolean updated = false;
+		for (TicketEntry entry : entries) {
+			if (entry.getBarCode() == productCode) {
+				if (amount > entry.getAmount()) // the amount is higher than the one in the sale transaction
+					return false;
+				// else
+				openReturnTransaction.setProductId(productType.getId());
+				openReturnTransaction.setProductCode(productCode);
+				openReturnTransaction.setAmount(amount);
+				updated = true;
+				System.out.println(entry);
+				break;
+			}
+		}
+		if (updated == false) // productCode was not in the transaction
 			return false;
 		return true;
 
@@ -1408,7 +1436,83 @@ public class EZShop implements EZShopInterface {
 			throw new UnauthorizedException("User not logged in");
 		if (openReturnTransaction == null || returnId != openReturnTransaction.getReturnId())
 			return false;
-		return false;
+		if (commit == false) {
+			openReturnTransaction = null;
+			return true;
+		}
+		// commit==true
+		// openReturnTransaction.computePrice();
+		String insertReturn = "INSERT INTO returnTransaction(price,productCode,amount,transactionId) VALUES(?,?,?,?)";
+		String updateTicket = "UPDATE ticketEntry SET amount = ? WHERE ticketNumber = ?";
+		String removeTicket = "DELETE FROM ticketEntry WHERE ticketNumber=?";
+		String updateSale = "UPDATE saleTransition SET price = ? WHERE ticketNumber = ?";
+		// openSaleTransaction.setBalanceOperation(new
+		// BalanceOperationImpl(balanceId,
+		// date, money, "DEBIT")); ???
+		try (Connection conn = this.dbAccess();) {
+			PreparedStatement pstmt = conn.prepareStatement(insertReturn);
+			pstmt.setDouble(1, openReturnTransaction.getPrice());
+			pstmt.setString(2, openReturnTransaction.getProductCode());
+			pstmt.setInt(3, openReturnTransaction.getAmount());
+			pstmt.setInt(4, openReturnTransaction.getSaleTransaction().getTicketNumber());
+			pstmt.executeUpdate();
+			pstmt.close();
+		} catch (Exception ex) {
+			System.out.println(ex.getMessage());
+			return false;
+		}
+		updateQuantity(openReturnTransaction.getProductId(), openReturnTransaction.getAmount());
+		Boolean updated = false;
+		Iterator<TicketEntry> iter = openReturnTransaction.getSaleTransaction().getEntries().iterator();
+		while (iter.hasNext()) {
+			TicketEntry entry = iter.next();
+			if (entry.getBarCode() == openReturnTransaction.getProductCode()) { // product present in the
+																				// saleTransaction
+				int previousAmount = entry.getAmount();
+				int amountToRemove = openReturnTransaction.getAmount();
+				if (amountToRemove < previousAmount) {
+					try (Connection conn = this.dbAccess();) {
+						PreparedStatement pstmt = conn.prepareStatement(updateTicket);
+						pstmt.setDouble(1, previousAmount - amountToRemove);
+						pstmt.setInt(2, openReturnTransaction.getSaleTransaction().getTicketNumber());
+						pstmt.executeUpdate();
+						pstmt.close();
+					} catch (Exception ex) {
+						System.out.println(ex.getMessage());
+						return false;
+					}
+					updated = true;
+				} else if (amountToRemove == previousAmount) {
+					try (Connection conn = this.dbAccess();) {
+						PreparedStatement pstmt = conn.prepareStatement(removeTicket);
+						pstmt.setInt(1, openReturnTransaction.getSaleTransaction().getTicketNumber());
+						pstmt.executeUpdate();
+						pstmt.close();
+					} catch (Exception ex) {
+						System.out.println(ex.getMessage());
+						return false;
+					}
+					updated = true;
+				}
+				// else if (amountToRemove > previousAmount) updated=false;
+				System.out.println("Found item to remove" + entry);
+				break;
+			}
+		}
+		try (Connection conn = this.dbAccess();) {
+			PreparedStatement pstmt = conn.prepareStatement(updateSale);
+			pstmt.setDouble(1, openReturnTransaction.getSaleTransaction().computePrice());
+			pstmt.setInt(2, openReturnTransaction.getSaleTransaction().getTicketNumber());
+			pstmt.executeUpdate();
+			pstmt.close();
+		} catch (Exception ex) {
+			System.out.println(ex.getMessage());
+			return false;
+		}
+//		finally {
+//			dbClose(conn);
+//		} this is not necessary if we use the try-with-resources sintax
+		return true;
 
 	}
 
@@ -1422,6 +1526,16 @@ public class EZShop implements EZShopInterface {
 			throw new UnauthorizedException("User not logged in");
 		if (openReturnTransaction == null || returnId != openReturnTransaction.getReturnId())
 			return false;
+		try (Connection conn = this.dbAccess();) {
+//			PreparedStatement pstmt = conn.prepareStatement(updateSale);
+//			pstmt.setDouble(1, openReturnTransaction.getSaleTransaction().computePrice());
+//			pstmt.setInt(2, openReturnTransaction.getSaleTransaction().getTicketNumber());
+//			pstmt.executeUpdate();
+//			pstmt.close();
+		} catch (Exception ex) {
+			System.out.println(ex.getMessage());
+			return false;
+		}
 		return false;
 
 	}
