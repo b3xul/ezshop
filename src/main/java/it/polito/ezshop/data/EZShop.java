@@ -1244,6 +1244,7 @@ public class EZShop implements EZShopInterface {
 
 	@Override
 	public List<Customer> getAllCustomers() throws UnauthorizedException {
+		
 		Connection conn = null;   
 		List<Customer> customers = new ArrayList<Customer>(); 
 		if(userLoggedIn.getRole().equals("Administrator") || userLoggedIn.getRole().equals("Cashier") || userLoggedIn.getRole().equals("ShopManage")) {
@@ -1270,14 +1271,55 @@ public class EZShop implements EZShopInterface {
 
 	@Override
 	public String createCard() throws UnauthorizedException {
-
-		return null;
-
+		
+		Connection conn = null;  	
+		if(userLoggedIn.getRole().equals("Administrator") || userLoggedIn.getRole().equals("Cashier") || userLoggedIn.getRole().equals("ShopManage")) {
+			try {
+	    	
+	    			String cardId;
+	    			conn = dbAccess();
+		    		String sql = "SELECT COALESCE(MAX(id),'') AS lastId FROM Cards";
+		    		Statement statement = conn.createStatement();
+			        ResultSet rs = statement.executeQuery(sql);
+			        rs.next();
+			        if(rs.getString("lastId").isEmpty()) {			        	
+			        	//System.out.println("first element");
+			        	cardId = "1000000000";
+			        }
+			        else {
+			        	//System.out.println("next element");
+			        	Integer id = Integer.parseInt(rs.getString("lastId"))+1;
+			        	cardId = Integer.toString(id);
+			        }
+		    		
+		    		sql = "INSERT INTO Cards (id, points) VALUES(?,0)";			             
+			        PreparedStatement pstmt = conn.prepareStatement(sql);
+				    pstmt.setString(1,cardId);
+				    int res = pstmt.executeUpdate();
+				    if(res == 0) { 					 
+		            	return "";
+		            }
+		            else {
+		            	return cardId;
+		            }			    							    			
+	    	
+		    } catch (Exception e) {  	    	
+		        System.out.println(e.getMessage()); 
+				return "";
+		        
+	        } finally {   	
+	        	dbClose(conn);
+		       
+		    }
+		}
+    	else throw new UnauthorizedException("Permission denied");
+			
 	}
 
 	@Override
 	public boolean attachCardToCustomer(String customerCard, Integer customerId)
 			throws InvalidCustomerIdException, InvalidCustomerCardException, UnauthorizedException {
+		
 		Connection conn = null;   
 		if(userLoggedIn.getRole().equals("Administrator") || userLoggedIn.getRole().equals("Cashier") || userLoggedIn.getRole().equals("ShopManage")) {
     		if(customerId != null && customerId > 0) {
@@ -1315,8 +1357,44 @@ public class EZShop implements EZShopInterface {
 	@Override
 	public boolean modifyPointsOnCard(String customerCard, int pointsToBeAdded)
 			throws InvalidCustomerCardException, UnauthorizedException {
+		
+		Connection conn = null;   
+    	if(userLoggedIn.getRole().equals("Administrator") || userLoggedIn.getRole().equals("Cashier") || userLoggedIn.getRole().equals("ShopManage")) {
+			Pattern p = Pattern.compile("\\d+");
+			if(customerCard != null && customerCard.isEmpty() == false && customerCard.length() >= 10 && p.matcher(customerCard).matches()) {
+				try { 
+					conn = dbAccess();
+					String sql = "SELECT points FROM Cards WHERE id = '"+customerCard+"'";
+    				Statement statement = conn.createStatement();
+				    ResultSet rs = statement.executeQuery(sql);
+				    if(rs.next() && rs.getInt("points") + pointsToBeAdded >= 0) {
+				    	int points = rs.getInt("points") + pointsToBeAdded;
+				    	sql = "UPDATE Cards SET points = ? WHERE id = ?";
+			            PreparedStatement pstmt = conn.prepareStatement(sql);
+			            pstmt.setInt(1, points);
+				        pstmt.setString(2, customerCard);				
+			            int res = pstmt.executeUpdate();
+			            if(res == 0) {
+			            	return false;
+			            }else {
+			            	return true;
+			            }
+				    }
+				    else{
+				    	return false;
+				    } 	    				         				
 
-		return false;
+			    } catch (Exception e) {  
+			        System.out.println(e.getMessage());
+			        return false;
+			        
+		        } finally {  
+		        	dbClose(conn);
+			    }
+			}else 
+	        	throw new InvalidCustomerCardException("Invalid card"); 
+    	}else 
+    		throw new UnauthorizedException("Permission denied");
 
 	}
 
