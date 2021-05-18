@@ -862,12 +862,20 @@ public class EZShop implements EZShopInterface {
 				throw new InvalidPricePerUnitException("The price you've inserted is not accepted");
 			if (userLoggedIn == null)
 				throw new UnauthorizedException("The user doesn't have the rights to perform this action");
+			if (productCode == null ||  productCode == "")
+	            throw new InvalidProductCodeException("invalid barcode: barcode not inserted");
+	        if (productCode.length() < 12 || productCode.length() > 14)
+	            throw new InvalidProductCodeException("invalid barcode: wrong length");
+	        if (!isStringOnlyNumbers(productCode))
+	            throw new InvalidProductCodeException("invalid barcode: in barcode must not be letters");
+	        if (!isBarcodeValid(productCode))
+	            throw new InvalidProductCodeException("invalid barcode: barcode does not respect GTIN specifications");
 			String sql = "SELECT id FROM product WHERE barcode = ?";
 			PreparedStatement statement = conn.prepareStatement(sql);
 			statement.setString(1, productCode);
 			ResultSet rs = statement.executeQuery();
 			if (!rs.next())
-				throw new InvalidProductCodeException("There is no product with this barcode");
+				return id;
 			OrderImpl order = new OrderImpl(id, -1, LocalDate.now(), pricePerUnit * quantity, productCode, pricePerUnit, quantity, "ISSUED");
 			String sql3 = "INSERT INTO order_ (balanceId, date, money, productCode, pricePerUnit, quantity, status) VALUES (?, ?, ?, ?, ?, ?, ?)";
 			PreparedStatement statement3 = conn.prepareStatement(sql3);
@@ -879,6 +887,10 @@ public class EZShop implements EZShopInterface {
 			statement3.setInt(6, quantity);
 			statement3.setString(7, "ISSUED");
 			statement3.executeUpdate();	
+			String sql4 = "SELECT MAX(orderId) AS MaxId FROM order_";
+			Statement statement4 = conn.createStatement();
+			ResultSet rs4 = statement4.executeQuery(sql4);
+			id = rs4.getInt("MaxId");
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
 		} finally {
@@ -904,12 +916,20 @@ public class EZShop implements EZShopInterface {
 				throw new InvalidPricePerUnitException("The price you've inserted is not accepted");
 			if (userLoggedIn == null)
 				throw new UnauthorizedException("The user doesn't have the rights to perform this action");
+			if (productCode == null ||  productCode == "")
+	            throw new InvalidProductCodeException("invalid barcode: barcode not inserted");
+	        if (productCode.length() < 12 || productCode.length() > 14)
+	            throw new InvalidProductCodeException("invalid barcode: wrong length");
+	        if (!isStringOnlyNumbers(productCode))
+	            throw new InvalidProductCodeException("invalid barcode: in barcode must not be letters");
+	        if (!isBarcodeValid(productCode))
+	            throw new InvalidProductCodeException("invalid barcode: barcode does not respect GTIN specifications");
 			String sql = "SELECT id FROM product WHERE barcode = ?";
 			PreparedStatement statement = conn.prepareStatement(sql);
 			statement.setString(1, productCode);
 			ResultSet rs = statement.executeQuery();
 			if (!rs.next())
-				throw new InvalidProductCodeException("There is no product with this barcode");
+				return orderId;
 			dbClose(conn);
 			recordBalanceUpdate(-pricePerUnit * quantity);
 			conn = dbAccess();
@@ -927,6 +947,10 @@ public class EZShop implements EZShopInterface {
 			statement4.setInt(6, quantity);
 			statement4.setString(7, "PAYED");
 			statement4.executeUpdate();
+			String sql5 = "SELECT MAX(orderId) AS MaxId FROM order_";
+			Statement statement5 = conn.createStatement();
+			ResultSet rs5 = statement5.executeQuery(sql5);
+			orderId = rs5.getInt("MaxId");
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
 		} finally {
