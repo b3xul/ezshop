@@ -14,23 +14,9 @@ public class PositionImpl {
 		this.levelNumber = null;
 	}
 	
-// method to verify if a string contains only letters
-	public static boolean isStringOnlyAlphabet(String str){
-        return ((str != null)
-                && (!str.equals(""))
-                && (str.matches("^[a-zA-Z]*$")));
-    }
-	
-// method to verify if a string contains only numbers
-	public static boolean isStringOnlyNumbers(String str){
-        return ((str != null)
-                && (!str.equals(""))
-                && (str.matches("^[0-9]*$")));
-    }
-
 // constructor with parameters
 	public PositionImpl(String location) {
-		if (location == "") {
+		if (location == "" || location.split(" ").length != 3) {
 			this.aisleNumber = null;
 			this.alphabeticId = "";
 			this.levelNumber = null;
@@ -67,7 +53,7 @@ public class PositionImpl {
 	
 // setter entire position
 	public void setPosition(String location) {
-			if (location == "") {
+			if (location == "" || location.split(" ").length != 3) {
 			this.aisleNumber = null;
 			this.alphabeticId = null;
 			this.levelNumber = null;
