@@ -26,6 +26,7 @@ Version:
     to start tests
     >
 
+<<<<<<< HEAD
 ### **Class EZShop**
 #### createProductType
 **Criteria for method *createProductType*:**
@@ -75,25 +76,46 @@ Version:
 | "                                              | "                                  | Invalid                                        | -                                  | -                                           | -                                            | -                            | Invalid         | T6("valid descr", null, 2.5, "note") &rarr; error                                   | testCase6                             |
 | *                                              | = 0                                | -                                              | -                                  | -                                           | -                                            | -                            | Invalid         | T7("", "12637482635892", 2.5, "note") &rarr; error                                  | testCase7                             |
 | NULL                                           | -                                  | -                                              | -                                  | -                                           | -                                            | -                            | Invalid         | T8(null, "12637482635892", 2.5, "note") &rarr; error                                | testCase8                             |
+=======
+### Class ProductTypeImpl
+#### constructor
+**Criteria for method *constructor*:**
 
+ - Validity of the String *note*
+ - Validity of the String *description*
+ - Validity of the String *barcode*
+ - Validity of the Double *pricePerUnit*
 
-
-#### updateProduct
-**Criteria for method *updateProduct*:**
-	
- - Sign of the Integer *productId*
- - Validity of the String parameter *description*
- - Length of the String *description* 
- - Validity of the String parameter *productCode*
- - Length of the String *productCode* 
- - Sign of the Double parameter *pricePerUnit* 
- - User logged in has authority 
- - Existence of product with same *barcode* in db
- - Existence of product with matching *productId* in db 
-
-**Predicates for method *updateProduct*:**
+**Predicates for method *constructor*:**
 
 | Criteria                                             | Predicate |
+| --------                                             | --------- |
+| Validity of the String *note*                        |  Valid    |
+| Validity of the String *description*                 |  Valid    |
+| Validity of the String *barcode*                     |  Valid    |
+| Validity of the Double *pricePerUnit*                |  Valid    |
+
+**Boundaries**:
+
+| Criteria                          | Boundary values    |
+| --------                          | ---------------    |
+
+**Combination of predicates**:
+
+|Validity of the String *note*|Validity of the String *description*|Validity of the String *barcode*|Validity of the Double *pricePerUnit*| Valid / Invalid | Description of the test case | JUnit test case ProductTypeClassTest|
+|-------|-------|-------|-------|-------|-------|-------|
+|Valid  |Valid  |Valid  |Valid  |Valid  |product = new ProductTypeImpl("note","description","12637482635892",2.5);|testCase1|
+>>>>>>> 0a0da029e29ecb128e1d5ed48895148caa6764be
+
+#### setId
+**Criteria for method *setId*:**
+
+ - Validity of the Integer *id*
+
+**Predicates for method *setId*:**
+
+| Criteria                                             | Predicate |
+<<<<<<< HEAD
 | ---------------------------------------------------- | --------- |
 | Sign of the Integer *productId*                      | > 0       |
 |                                                      | <= 0      |
@@ -135,17 +157,52 @@ Version:
 | "                               | "                                              | = 0                                | -                                              | -                                  | -                                           | -                            | -                                              | -                                                    | Invalid         | T8(1, "", "12343212343219", 2.5, "note") &rarr; error                                    | testCase8                         |
 | "                               | NULL                                           | -                                  | -                                              | -                                  | -                                           | -                            | -                                              | -                                                    | Invalid         | T9(1, null, "12343212343219", 2.5, "note") &rarr; error                                  | testCase9                         |
 | <= 0                            | -                                              | -                                  | -                                              | -                                  | -                                           | -                            | -                                              | -                                                    | Invalid         | T10(-1, "valid descr", "12343212343219", 2.5, "note") &rarr; error                       | testCase10                        |
+=======
+| --------                                             | --------- |
+| Validity of the Integer *id*                         |  Valid    |
 
+**Boundaries**:
 
+| Criteria                          | Boundary values    |
+| --------                          | ---------------    |
 
-#### deleteProductType
-**Criteria for method *deleteProduct*:**
+**Combination of predicates**:
 
- - Sign of the Integer *productId*
- - User logged in has authority
+|Validity of the Integer *id*| Valid / Invalid | Description of the test case | JUnit test case ProductTypeClassTest|
+|-------|-------|-------|-------|
+|Valid  |Valid  |product.setId(1);     |testCase2       |
 
-**Predicates for method *deleteProduct*:**
+#### setProductDescription
+**Criteria for method *setProductDescription*:**
 
+ - Validity of the String *description*
+
+**Predicates for method *setProductDescription*:**
+
+| Criteria                                             | Predicate |
+| --------                                             | --------- |
+| Validity of the String *description*                 |  Valid    |
+
+**Boundaries**:
+
+| Criteria                          | Boundary values    |
+| --------                          | ---------------    |
+>>>>>>> 0a0da029e29ecb128e1d5ed48895148caa6764be
+
+**Combination of predicates**:
+
+|Validity of the String *description*| Valid / Invalid | Description of the test case | JUnit test case ProductTypeClassTest|
+|-------|-------|-------|-------|
+|Valid  |Valid  |product.setProductDescription("new desc");     |testCase3       |
+
+#### setBarCode
+**Criteria for method *setBarCode*:**
+
+ - Validity of the String *barCode*
+
+**Predicates for method *setBarCode*:**
+
+<<<<<<< HEAD
 | Criteria                        | Predicate |
 | ------------------------------- | --------- |
 | Sign of the Integer *productId* | > 0       |
@@ -166,18 +223,41 @@ Version:
 | "                               | False                        | Invalid         | Unauthorized user logged in &rarr; error | testCase2                             |
 | <= 0                            | -                            | Invalid         | T3(-1) &rarr; error                      | testCase3                             |
 
+=======
+| Criteria                                             | Predicate |
+| --------                                             | --------- |
+| Validity of the String *barCode*                     |  Valid    |
 
-#### getAllProductTypes
-**Criteria for method *getAllProductTypes*:**
+**Boundaries**:
 
- - User logged in has authority
+| Criteria                          | Boundary values    |
+| --------                          | ---------------    |
 
-**Predicates for method *getAllProductTypes*:**
+**Combination of predicates**:
 
+|Validity of the String *varCode*| Valid / Invalid | Description of the test case | JUnit test case ProductTypeClassTest|
+|-------|-------|-------|-------|
+|Valid  |Valid  |product.setBarCode("6253478956438");     |testCase4      |
+>>>>>>> 0a0da029e29ecb128e1d5ed48895148caa6764be
+
+#### setPricePerUnit
+**Criteria for method *setPricePerUnit*:**
+
+ - Validity of the Double *pricePerUnit*
+
+**Predicates for method *setPricePerUnit*:**
+
+<<<<<<< HEAD
 | Criteria                     | Predicate |
 | ---------------------------- | --------- |
 | User logged in has authority | True      |
 |                              | False     |
+=======
+| Criteria                                             | Predicate |
+| --------                                             | --------- |
+| Validity of the Double *pricePerUnit*                |  Valid    |
+
+>>>>>>> 0a0da029e29ecb128e1d5ed48895148caa6764be
 **Boundaries**:
 
 | Criteria | Boundary values |
@@ -185,23 +265,48 @@ Version:
 
 **Combination of predicates**:
 
+<<<<<<< HEAD
 | User logged in has authority | Valid / Invalid | Description of the test case             | JUnit test case GetAllProductTypesTest |
 | ---------------------------- | --------------- | ---------------------------------------- | -------------------------------------- |
 | True                         | Valid           | T1() &rarr; List<ProductTypes>           | testCase1                              |
 | False                        | Invalid         | Unauthorized user logged in &rarr; error | testCase2                              |
+=======
+|Validity of the Double *pricePerUnit*| Valid / Invalid | Description of the test case | JUnit test case ProductTypeClassTest|
+|-------|-------|-------|-------|
+|Valid  |Valid  |product.setPricePerUnit(25.0);     |testCase5      |
 
+#### setNote
+**Criteria for method *setNote*:**
 
-#### getProductTypeByBarCode
-**Criteria for method *getProductTypeByBarCode*:**
+ - Validity of the String *note*
 
- - Validity of the String parameter *productCode* 
- - Length of the String *productCode*
- - User logged in has authority
- - Existence of product with matching *productId* in db
-
-**Predicates for method *getProductTypeByBarCode*:**
+**Predicates for method *setNote*:**
 
 | Criteria                                             | Predicate |
+| --------                                             | --------- |
+| Validity of the Double *note*                        |  Valid    |
+
+**Boundaries**:
+
+| Criteria                          | Boundary values    |
+| --------                          | ---------------    |
+
+**Combination of predicates**:
+>>>>>>> 0a0da029e29ecb128e1d5ed48895148caa6764be
+
+|Validity of the String *note*| Valid / Invalid | Description of the test case | JUnit test case ProductTypeClassTest|
+|-------|-------|-------|-------|
+|Valid  |Valid  |product.setNote("new note");     |testCase6     |
+
+#### setLocation
+**Criteria for method *setLocation*:**
+
+ - Validity of the String *location*
+
+**Predicates for method *setLocation*:**
+
+| Criteria                                             | Predicate |
+<<<<<<< HEAD
 | ---------------------------------------------------- | --------- |
 | Validity of the String parameter *productCode*       | Valid     |
 |                                                      | Invalid   |
@@ -211,6 +316,10 @@ Version:
 |                                                      | False     |
 | Existence of product with matching *productId* in db | True      |
 |                                                      | False     |
+=======
+| --------                                             | --------- |
+| Validity of the String *location*                    |  Valid    |
+>>>>>>> 0a0da029e29ecb128e1d5ed48895148caa6764be
 
 **Boundaries**:
 
@@ -219,6 +328,7 @@ Version:
 
 **Combination of predicates**:
 
+<<<<<<< HEAD
 | Validity of the String parameter *productCode* | Length of the String *productCode* | User logged in has authority | Existence of product with matching *productId* in db | Valid / Invalid | Description of the test case             | JUnit test case GetProductTypeByBarCodeTest |
 | ---------------------------------------------- | ---------------------------------- | ---------------------------- | ---------------------------------------------------- | --------------- | ---------------------------------------- | ------------------------------------------- |
 | Valid                                          | > 0                                | True                         | True                                                 | Valid           | T1("12343212343219") &rarr; ProductTypes | testCase1                                   |
@@ -226,19 +336,46 @@ Version:
 | "                                              | "                                  | False                        | -                                                    | Invalid         | Unauthorized user logged in &rarr; error | testCase3                                   |
 | "                                              | = 0                                | -                            | -                                                    | Invalid         | T4("") &rarr; error                      | testCase4                                   |
 | Invalid                                        | -                                  | -                            | -                                                    | Invalid         | T4(null) &rarr; error                    | testCase5                                   |
+=======
+|Validity of the String *location*| Valid / Invalid | Description of the test case | JUnit test case ProductTypeClassTest|
+|-------|-------|-------|-------|
+|Valid  |Valid  |product.setLocation("3 aisle 3");   |testCase7      |
+>>>>>>> 0a0da029e29ecb128e1d5ed48895148caa6764be
 
+#### setQuantity
+**Criteria for method *setQuantity*:**
 
+ - Validity of the Integer *quantity*
 
+**Predicates for method *setQuantity*:**
 
-#### getProductTypesByDescription
-**Criteria for method *getProductTypesByDescription*:**
+| Criteria                                             | Predicate |
+| --------                                             | --------- |
+| Validity of the Integer *quantity*                   |  Valid    |
 
- - User logged in has authority
- - Length of the String *description*  
- - Validity of the String parameter *description*
+**Boundaries**:
 
-**Predicates for method *getProductTypesByDescription*:**
+| Criteria                          | Boundary values    |
+| --------                          | ---------------    |
 
+**Combination of predicates**:
+
+|Validity of the Integer *quantity*| Valid / Invalid | Description of the test case | JUnit test case ProductTypeClassTest|
+|-------|-------|-------|-------|
+|Valid  |Valid  |product.setQuantity(4);   |testCase7      |
+
+#### setDiscountRate
+**Criteria for method *setDiscountRate*:**
+
+ - Validity of the Integer *discountRate*
+
+**Predicates for method *setDiscountRate*:**
+
+| Criteria                                             | Predicate |
+| --------                                             | --------- |
+| Validity of the Integer *discountRate*               |  Valid    |
+
+<<<<<<< HEAD
 | Criteria                                       | Predicate        |
 | ---------------------------------------------- | ---------------- |
 | User logged in has authority                   | True             |
@@ -247,6 +384,8 @@ Version:
 |                                                | = 0 ("" or NULL) |
 | Validity of the String parameter *description* | Valid            |
 |                                                | NULL             |
+=======
+>>>>>>> 0a0da029e29ecb128e1d5ed48895148caa6764be
 **Boundaries**:
 
 | Criteria | Boundary values |
@@ -254,24 +393,34 @@ Version:
 
 **Combination of predicates**:
 
+<<<<<<< HEAD
 | User logged in has authority | Length of the String *description* | Validity of the String parameter *description* | Valid / Invalid | Description of the test case                   | JUnit test case GetProductTypeByDescriptionTest |
 | ---------------------------- | ---------------------------------- | ---------------------------------------------- | --------------- | ---------------------------------------------- | ----------------------------------------------- |
 | TRUE                         | > =                                | Valid                                          | Valid           | T1("description") &rarr; List<ProductTypes>    | testCase1                                       |
 | "                            | = 0                                | NULL                                           | Valid           | T2("") &rarr; List<ProductTypes> with size = 0 | testCase2                                       |
 | FALSE                        | -                                  |                                                | Invalid         | Unauthorized user logged in &rarr; error       | testCase3                                       |
+=======
+|Validity of the Integer *discountRate*| Valid / Invalid | Description of the test case | JUnit test case ProductTypeClassTest|
+|-------|-------|-------|-------|
+|Valid  |Valid  |ProductTypeImpl product2 = new ProductTypeImpl();  product2.setDiscountRate(20.0);  |testCase7      |
 
+>>>>>>> 0a0da029e29ecb128e1d5ed48895148caa6764be
 
-#### updateQuantity
-**Criteria for method *updateQuantity*:**
+### Class TicketEntryImpl
 
- - Sign of the Integer *productId*
- - User logged in has authority   
- - Existence of product with matching *productId* in db
- - Sign of the int *toBeAdded*
+#### constructor
+**Criteria for method *constructor*:**
 
-**Predicates for method *updateQuantity*:**
+ - Validity of the String *barcode*
+ - Validity of the String *description*
+ - Validity of the Double *pricePerUnit*
+ - Validity of the Double *discountRate*
+ - Validity of the Integer *amount*
+
+**Predicates for method *constructor*:**
 
 | Criteria                                             | Predicate |
+<<<<<<< HEAD
 | ---------------------------------------------------- | --------- |
 | Sign of the Integer *productId*                      | > 0       |
 |                                                      | <= 0      |
@@ -389,6 +538,186 @@ Version:
 |            |            |     |                 |                              |                 |
 |            |            |     |                 |                              |                 |
 |            |            |     |                 |                              |                 |
+=======
+| --------                                             | --------- |
+| Validity of the String *barcode*                     |  Valid    |
+| Validity of the String *description*                 |  Valid    |
+| Validity of the Double *pricePerUnit*                |  Valid    |
+| Validity of the Double *discountRate*                |  Valid    |
+| Validity of the Integer *amount*                     |  Valid   |
+
+**Boundaries**:
+
+| Criteria                          | Boundary values    |
+| --------                          | ---------------    |
+
+**Combination of predicates**:
+
+|Validity of the String *barcode*|Validity of the String *description*|Validity of the Double *pricePerUnit*|Validity of the Double *discountRate*|Validity of the Integer *amount*| Valid / Invalid | Description of the test case | JUnit test case TicketEntryClassTest|
+|-------|-------|-------|-------|-------|-------|-------|-------|
+|Valid  |Valid  |Valid  |Valid  |Valid  |Valid  |product = product = new TicketEntryImpl("12637482635892", "description", 2.0, 0.0, 10);|testCase1|
+
+
+#### setProductDescription
+**Criteria for method *setProductDescription*:**
+
+ - Validity of the String *description*
+
+**Predicates for method *setProductDescription*:**
+
+| Criteria                                             | Predicate |
+| --------                                             | --------- |
+| Validity of the String *description*                 |  Valid    |
+
+**Boundaries**:
+
+| Criteria                          | Boundary values    |
+| --------                          | ---------------    |
+
+**Combination of predicates**:
+
+|Validity of the String *description*| Valid / Invalid | Description of the test case | JUnit test case TicketEntryClassTest|
+|-------|-------|-------|-------|
+|Valid  |Valid  |product.setProductDescription("new desc");     |testCase2       |
+
+#### setBarCode
+**Criteria for method *setBarCode*:**
+
+ - Validity of the String *barCode*
+
+**Predicates for method *setBarCode*:**
+
+| Criteria                                             | Predicate |
+| --------                                             | --------- |
+| Validity of the String *barCode*                     |  Valid    |
+
+**Boundaries**:
+
+| Criteria                          | Boundary values    |
+| --------                          | ---------------    |
+
+**Combination of predicates**:
+
+|Validity of the String *varCode*| Valid / Invalid | Description of the test case | JUnit test case TicketEntryClassTest|
+|-------|-------|-------|-------|
+|Valid  |Valid  |product.setBarCode("6253478956438");     |testCase3      |
+
+#### setPricePerUnit
+**Criteria for method *setPricePerUnit*:**
+
+ - Validity of the Double *pricePerUnit*
+
+**Predicates for method *setPricePerUnit*:**
+
+| Criteria                                             | Predicate |
+| --------                                             | --------- |
+| Validity of the Double *pricePerUnit*                |  Valid    |
+
+**Boundaries**:
+
+| Criteria                          | Boundary values    |
+| --------                          | ---------------    |
+
+**Combination of predicates**:
+
+|Validity of the Double *pricePerUnit*| Valid / Invalid | Description of the test case | JUnit test case TicketEntryClassTest|
+|-------|-------|-------|-------|
+|Valid  |Valid  |product.setPricePerUnit(25.0);     |testCase4      |
+
+#### setDiscountRate
+**Criteria for method *setDiscountRate*:**
+
+ - Validity of the Integer *discountRate*
+
+**Predicates for method *setDiscountRate*:**
+
+| Criteria                                             | Predicate |
+| --------                                             | --------- |
+| Validity of the Integer *discountRate*               |  Valid    |
+
+**Boundaries**:
+
+| Criteria                          | Boundary values    |
+| --------                          | ---------------    |
+
+**Combination of predicates**:
+
+|Validity of the Integer *discountRate*| Valid / Invalid | Description of the test case | JUnit test case TicketEntryClassTest|
+|-------|-------|-------|-------|
+|Valid  |Valid  |ProductTypeImpl product2 = new ProductTypeImpl();  product2.setDiscountRate(20.0);  |testCase5      |
+
+#### setAmount
+**Criteria for method *setAmount*:**
+
+ - Validity of the Integer *amount*
+
+**Predicates for method *setAmount*:**
+
+| Criteria                                             | Predicate |
+| --------                                             | --------- |
+| Validity of the Integer *amount*                     |  Valid    |
+
+**Boundaries**:
+
+| Criteria                          | Boundary values    |
+| --------                          | ---------------    |
+
+**Combination of predicates**:
+
+|Validity of the Integer *amount*| Valid / Invalid | Description of the test case | JUnit test case TicketEntryClassTest|
+|-------|-------|-------|-------|
+|Valid  |Valid  |product.setAmount(15);   |testCase6      |
+
+### Class PositionImpl
+
+#### constructor
+*Criteria for method *constructor*:**
+
+ - Validity of the String *position*
+
+**Predicates for method *constructor*:**
+
+| Criteria                                             | Predicate |
+| --------                                             | --------- |
+| Length of the String *position.split(" ")*           | = 3       |
+|                                                      | != 3      |
+
+**Boundaries**:
+
+| Criteria                          | Boundary values    |
+| --------                          | ---------------    |
+
+**Combination of predicates**:
+
+|Length of the String *position.split(" ")* | Valid / Invalid | Description of the test case | JUnit test case TicketEntryClassTest|
+|-------|-------|-------|-------|
+| = 3   |Valid  |PositionImpl position4 = new PositionImpl("3 aisle 4");   |testCase1      |
+| != 3  |Valid  |PositionImpl position3 = new PositionImpl("corridor");    |testCase2      |
+
+#### setPosition
+*Criteria for method *setPosition*:**
+
+ - Validity of the String *position*
+
+**Predicates for method *setPosition*:**
+
+| Criteria                                             | Predicate |
+| --------                                             | --------- |
+| Length of the String *position.split(" ")*           | = 3       |
+|                                                      | != 3      |
+
+**Boundaries**:
+
+| Criteria                          | Boundary values    |
+| --------                          | ---------------    |
+
+**Combination of predicates**:
+
+|Length of the String *position.split(" ")* | Valid / Invalid | Description of the test case | JUnit test case TicketEntryClassTest|
+|-------|-------|-------|-------|
+| = 3   |Valid  |PositionImpl position = new PositionImpl(); position.setPosition("2 corridor 3");   |testCase3      |
+| != 3  |Valid  |PositionImpl position = new PositionImpl(); position.setPosition("");    |testCase4      |
+>>>>>>> 0a0da029e29ecb128e1d5ed48895148caa6764be
 
 
 
