@@ -13,7 +13,7 @@ public class StartSaleTransactionTest {
 	public void testCase1() throws UnauthorizedException {
 
 		EZShopInterface ezShop = new it.polito.ezshop.data.EZShop();
-		assertEquals(ezShop.startSaleTransaction(), Integer.valueOf(0));
+		assertEquals(Integer.valueOf(0), ezShop.startSaleTransaction());
 
 	}
 

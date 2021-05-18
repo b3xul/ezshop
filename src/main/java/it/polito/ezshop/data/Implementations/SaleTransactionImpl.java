@@ -26,22 +26,36 @@ public class SaleTransactionImpl implements SaleTransaction {
 
 	}
 
-	public void upsertEntry(String barCode, String productDescription, double pricePerUnit, double discountRate,
-			int amount) { // update or insert entry if it doesn't exist
+	public TicketEntry upsertEntry(String barCode, String productDescription, double pricePerUnit, double discountRate,
+			int amount) { // update in entry or insert new entry if it doesn't exist
 
-		Boolean updated = false;
 		for (TicketEntry entry : entries) {
 			if (entry.getBarCode() == barCode) {
 				entry.setAmount(entry.getAmount() + amount);
-				updated = true;
-				System.out.println(entry);
+				entry.setDiscountRate(discountRate);
+				return entry;
+			}
+		}
+
+		TicketEntry newEntry = new TicketEntryImpl(barCode, productDescription, pricePerUnit, discountRate, amount);
+		entries.add(newEntry);
+
+		// this.setPrice(this.price + amount * pricePerUnit * (1 - discountRate));
+
+		return newEntry;
+
+	}
+
+	public TicketEntry getEntry(String barCode) {
+
+		TicketEntry entry = null;
+		for (TicketEntry e : entries) {
+			if (e.getBarCode() == barCode) {
+				entry = e;
 				break;
 			}
 		}
-		if (updated == false) {
-			entries.add(new TicketEntryImpl(barCode, productDescription, pricePerUnit, discountRate, amount));
-		}
-		// this.setPrice(this.price + amount * pricePerUnit * (1 - discountRate));
+		return entry;
 
 	}
 
@@ -53,6 +67,8 @@ public class SaleTransactionImpl implements SaleTransaction {
 	}
 
 	public Boolean removeAmountFromEntry(String barCode, int amountToRemove) {
+		// remove amount from entry if amount<previous amount, deletes entry if
+		// amount==previous amount, return false if amount>previous amount
 
 		Boolean updated = false;
 		Iterator<TicketEntry> iter = entries.iterator();
@@ -63,12 +79,14 @@ public class SaleTransactionImpl implements SaleTransaction {
 				if (amountToRemove < previousAmount) {
 					entry.setAmount(previousAmount - amountToRemove);
 					updated = true;
+					break;
 				} else if (amountToRemove == previousAmount) {
 					iter.remove();
 					updated = true;
+					break;
 				}
 				// else if (amountToRemove > previousAmount) updated=false;
-				System.out.println(entry);
+				System.out.println("Found item to remove" + entry);
 				break;
 			}
 		}
@@ -86,6 +104,17 @@ public class SaleTransactionImpl implements SaleTransaction {
 				break;
 			}
 		}
+
+	}
+
+	public double computePrice() {
+
+		double price = 0;
+		for (TicketEntry entry : entries)
+			price += entry.getPricePerUnit() * entry.getAmount() * (1 - entry.getDiscountRate());
+		price = price * (1 - this.getDiscountRate());
+		this.setDiscountRate(price);
+		return price;
 
 	}
 

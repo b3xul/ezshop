@@ -5,6 +5,7 @@ import it.polito.ezshop.data.SaleTransaction;
 public class ReturnTransactionImpl implements it.polito.ezshop.data.ReturnTransaction {
 
 	Integer returnId;
+	Integer productId;
 	String productCode;
 	int amount;
 	double price;
@@ -13,6 +14,7 @@ public class ReturnTransactionImpl implements it.polito.ezshop.data.ReturnTransa
 	public ReturnTransactionImpl(Integer returnId, SaleTransaction saleTransaction) {
 
 		this.returnId = returnId;
+		this.productId = -1;
 		this.productCode = "";
 		this.amount = 0;
 		this.price = 0;
@@ -31,6 +33,18 @@ public class ReturnTransactionImpl implements it.polito.ezshop.data.ReturnTransa
 	public void setReturnId(Integer returnId) {
 
 		this.returnId = returnId;
+
+	}
+
+	public Integer getProductId() {
+
+		return productId;
+
+	}
+
+	public void setProductId(Integer productId) {
+
+		this.productId = productId;
 
 	}
 
@@ -87,6 +101,15 @@ public class ReturnTransactionImpl implements it.polito.ezshop.data.ReturnTransa
 	public void setSaleTransaction(SaleTransaction saleTransaction) {
 
 		this.saleTransaction = saleTransaction;
+
+	}
+
+	@Override
+	public String toString() {
+
+		return "ReturnTransactionImpl [returnId=" + returnId + ", productId=" + productId + ", productCode="
+				+ productCode + ", amount=" + amount + ", price=" + price + ", saleTransaction=" + saleTransaction
+				+ "]";
 
 	}
 

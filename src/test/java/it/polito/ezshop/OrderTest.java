@@ -39,6 +39,5 @@ public class OrderTest {
 		assertTrue(order.getQuantity() == 12);
 		assertTrue(order.getStatus().equals("PAYED"));
 		
-		
 	}
 }
