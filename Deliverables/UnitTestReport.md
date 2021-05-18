@@ -428,6 +428,130 @@ Version:
 
 
 
+ ### **Class *SaleTransactionImpl*
+#### constructor
+**Criteria for method *constructor*:**
+
+ - Validity of the Integer *ticketNumber*
+
+**Predicates for method *constructor*:**
+
+| Criteria                               | Predicate |
+| -------------------------------------- | --------- |
+| Validity of the Integer *ticketNumber* | Valid     |
+
+**Boundaries**:
+
+| Criteria | Boundary values |
+| -------- | --------------- |
+
+**Combination of predicates**:
+
+| Validity of the Integer *ticketNumber* | Valid / Invalid | Description of the test case                  | JUnit test case ProductTypeClassTest |
+| -------------------------------------- | --------------- | --------------------------------------------- | ------------------------------------ |
+| Valid                                  | Valid           | saleTransaction = new SaleTransactionImpl(1); | testCase1                            |
+
+#### setId
+**Criteria for method *setTicketNumber*:**
+
+ - Validity of the Integer *ticketNumber*
+
+**Predicates for method *setTicketNumber*:**
+
+| Criteria                               | Predicate |
+| -------------------------------------- | --------- |
+| Validity of the Integer *ticketNumber* | Valid     |
+
+**Boundaries**:
+
+| Criteria | Boundary values |
+| -------- | --------------- |
+
+**Combination of predicates**:
+
+| Validity of the Integer *ticketNumber* | Valid / Invalid | Description of the test case        | JUnit test case ProductTypeClassTest |
+| -------------------------------------- | --------------- | ----------------------------------- | ------------------------------------ |
+| Valid                                  | Valid           | saleTransaction.setTicketNumber(2); | testCase1                            |
+
+
+
+#### upsertEntry
+**Criteria for method *upsertEntry*:**
+
+ - Validity of the String *barcode*
+ - Validity of the String *description*
+ - Validity of the Double *pricePerUnit*
+ - Validity of the Double *discountRate*
+ - Validity of the Integer *amount*
+
+**Predicates for method *upsertEntry*:**
+
+| Criteria                              | Predicate |
+| ------------------------------------- | --------- |
+| Validity of the String *barcode*      | Valid     |
+| Validity of the String *description*  | Valid     |
+| Validity of the Double *pricePerUnit* | Valid     |
+| Validity of the Double *discountRate* | Valid     |
+| Validity of the Integer *amount*      | Valid     |
+
+**Boundaries**:
+
+| Criteria | Boundary values |
+| -------- | --------------- |
+
+**Combination of predicates**:
+
+| Validity of the String *barcode* | Validity of the String *description* | Validity of the Double *pricePerUnit* | Validity of the Double *discountRate* | Validity of the Integer *amount* | Valid / Invalid | Description of the test case                                                                                                                                                                                                       | JUnit test case TicketEntryClassTest |
+| -------------------------------- | ------------------------------------ | ------------------------------------- | ------------------------------------- | -------------------------------- | --------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------ |
+| Valid                            | Valid                                | Valid                                 | Valid                                 | Valid                            | Valid           | saleTransaction.upsertEntry("12637482635892", "description1", 4.0, 5.1, 6); TicketEntryImpl t1 = new TicketEntryImpl("12637482635892", "description1", 4.0, 5.1, 6); assertEquals(t1, saleTransaction.getEntry("12637482635892")); | testCase2                            |
+
+
+
+**Criteria for method *name*:**
+	
+
+ - 
+ - 
+
+
+
+
+
+**Predicates for method *name*:**
+
+| Criteria | Predicate |
+| -------- | --------- |
+|          |           |
+|          |           |
+|          |           |
+|          |           |
+
+
+
+
+
+**Boundaries**:
+
+| Criteria | Boundary values |
+| -------- | --------------- |
+|          |                 |
+|          |                 |
+
+
+
+**Combination of predicates**:
+
+
+| Criteria 1 | Criteria 2 | ... | Valid / Invalid | Description of the test case | JUnit test case |
+| ---------- | ---------- | --- | --------------- | ---------------------------- | --------------- |
+|            |            |     |                 |                              |                 |
+|            |            |     |                 |                              |                 |
+|            |            |     |                 |                              |                 |
+|            |            |     |                 |                              |                 |
+|            |            |     |                 |                              |                 |
+
+
+
 
 
  ### **Class *class_name* - method *name***

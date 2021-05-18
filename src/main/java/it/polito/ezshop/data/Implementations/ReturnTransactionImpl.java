@@ -104,4 +104,13 @@ public class ReturnTransactionImpl implements it.polito.ezshop.data.ReturnTransa
 
 	}
 
+	@Override
+	public String toString() {
+
+		return "ReturnTransactionImpl [returnId=" + returnId + ", productId=" + productId + ", productCode="
+				+ productCode + ", amount=" + amount + ", price=" + price + ", saleTransaction=" + saleTransaction
+				+ "]";
+
+	}
+
 }

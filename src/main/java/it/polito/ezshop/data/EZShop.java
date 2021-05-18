@@ -1126,6 +1126,7 @@ public class EZShop implements EZShopInterface {
 	@Override
 	public Integer startSaleTransaction() throws UnauthorizedException {
 
+		System.out.println("Executing startSaleTransaction...");
 		if (userLoggedIn == null)
 			throw new UnauthorizedException("User not logged in");
 		String getNextAutoincrement = "SELECT seq FROM sqlite_sequence WHERE name=\"saleTransaction\"";
@@ -1138,8 +1139,6 @@ public class EZShop implements EZShopInterface {
 			System.err.println(e.getClass().getName() + ": " + e.getMessage());
 			System.exit(0);
 		}
-//		System.out.println(id);
-//		System.out.println((BalanceOperation) new SaleTransactionImpl(id));
 		openSaleTransaction = new SaleTransactionImpl(id); // transaction will be added to the db only
 															// when it ends
 		return id;
