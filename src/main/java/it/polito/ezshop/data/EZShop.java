@@ -1817,10 +1817,16 @@ public class EZShop implements EZShopInterface {
 	@Override
 	public double receiveCashPayment(Integer ticketNumber, double cash)
 			throws InvalidTransactionIdException, InvalidPaymentException, UnauthorizedException {
+		
+		if(ticketNumber <= 0 || ticketNumber == null) throw new InvalidTransactionIdException();
+		//else if(!userLoggedIn.getRole().equals("Administrator") || userLoggedIn.getRole().equals("Cashier") ||  userLoggedIn.getRole().equals("ShopManage")) throw new UnauthorizedException("Permission denied");
+		else if(cash < 0) throw new InvalidPaymentException();
+		else if(false) return -1; //transaction don't exist
+		else {
+			return cash - transaction.getPrice() ;
+		}
 
-		return 0;
-
-	}
+	} 
 
 	@Override
 	public boolean receiveCreditCardPayment(Integer ticketNumber, String creditCard)
