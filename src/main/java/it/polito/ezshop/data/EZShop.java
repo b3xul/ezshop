@@ -1150,6 +1150,7 @@ public class EZShop implements EZShopInterface {
 			throws InvalidTransactionIdException, InvalidProductCodeException, InvalidQuantityException,
 			UnauthorizedException {
 
+		System.out.println("Executing addProductToSale...");
 		if (transactionId == null || transactionId <= 0)
 			throw new InvalidTransactionIdException("Transaction id cannot be null or <=0");
 		if (amount <= 0)
@@ -1177,6 +1178,7 @@ public class EZShop implements EZShopInterface {
 			throws InvalidTransactionIdException, InvalidProductCodeException, InvalidQuantityException,
 			UnauthorizedException {
 
+		System.out.println("Executing deleteProductFromSale...");
 		if (transactionId == null || transactionId <= 0)
 			throw new InvalidTransactionIdException("Transaction id cannot be null or <=0");
 		if (amount <= 0)
@@ -1195,6 +1197,7 @@ public class EZShop implements EZShopInterface {
 			throws InvalidTransactionIdException, InvalidProductCodeException, InvalidDiscountRateException,
 			UnauthorizedException {
 
+		System.out.println("Executing applyDiscountRateToProduct...");
 		if (transactionId == null || transactionId <= 0)
 			throw new InvalidTransactionIdException("Transaction id cannot be null or <=0");
 		if (discountRate < 0 || discountRate >= 1)
@@ -1212,6 +1215,7 @@ public class EZShop implements EZShopInterface {
 	public boolean applyDiscountRateToSale(Integer transactionId, double discountRate)
 			throws InvalidTransactionIdException, InvalidDiscountRateException, UnauthorizedException {
 
+		System.out.println("Executing applyDiscountRateToSale...");
 		if (transactionId == null || transactionId <= 0)
 			throw new InvalidTransactionIdException("Transaction id cannot be null or <=0");
 		if (discountRate < 0 || discountRate >= 1)
@@ -1228,6 +1232,7 @@ public class EZShop implements EZShopInterface {
 	@Override
 	public int computePointsForSale(Integer transactionId) throws InvalidTransactionIdException, UnauthorizedException {
 
+		System.out.println("Executing computePointsForSale...");
 		int points = -1;
 		if (transactionId == null || transactionId <= 0)
 			throw new InvalidTransactionIdException("Transaction id cannot be null or <=0");
@@ -1245,6 +1250,7 @@ public class EZShop implements EZShopInterface {
 	public boolean endSaleTransaction(Integer transactionId)
 			throws InvalidTransactionIdException, UnauthorizedException {
 
+		System.out.println("Executing endSaleTransaction...");
 		String insertSale = "INSERT INTO saleTransaction(price,discountRate) VALUES(?,?)";
 		String insertTicketEntry = "INSERT INTO ticketEntry(ticketNumber,barCode,productDescription,pricePerUnit,discountRate,amount) VALUES(?,?,?,?,?,?)";
 		String decreaseProductQuantity = "UPDATE product SET quantity=quantity - ? WHERE barcode=?";
@@ -1297,6 +1303,7 @@ public class EZShop implements EZShopInterface {
 	public boolean deleteSaleTransaction(Integer transactionId)
 			throws InvalidTransactionIdException, UnauthorizedException {
 
+		System.out.println("Executing deleteSaleTransaction...");
 		String deleteSale = "DELETE FROM saleTransaction WHERE ticketNumber=?";
 		String deleteTicketEntries = "DELETE FROM ticketEntry WHERE ticketNumber=?";
 		if (transactionId == null || transactionId <= 0)
@@ -1324,6 +1331,7 @@ public class EZShop implements EZShopInterface {
 	public SaleTransaction getSaleTransaction(Integer transactionId)
 			throws InvalidTransactionIdException, UnauthorizedException {
 
+		System.out.println("Executing getSaleTransaction...");
 		String getSale = "SELECT price,discountRate FROM saleTransaction WHERE ticketNumber=?";
 		String getTicketEntries = "SELECT barCode,productDescription,pricePerUnit,discountRate,amount FROM ticketEntry WHERE ticketNumber=?";
 		if (transactionId == null || transactionId <= 0)
@@ -1363,6 +1371,7 @@ public class EZShop implements EZShopInterface {
 	public Integer startReturnTransaction(Integer transactionId)
 			throws /* InvalidTicketNumberException, */InvalidTransactionIdException, UnauthorizedException {
 
+		System.out.println("Executing startReturnTransaction...");
 		if (transactionId == null || transactionId <= 0)
 			throw new InvalidTransactionIdException("Transaction id cannot be null or <=0");
 		if (userLoggedIn == null)
@@ -1390,6 +1399,7 @@ public class EZShop implements EZShopInterface {
 	public boolean returnProduct(Integer returnId, String productCode, int amount) throws InvalidTransactionIdException,
 			InvalidProductCodeException, InvalidQuantityException, UnauthorizedException {
 
+		System.out.println("Executing returnProduct...");
 		if (returnId == null || returnId <= 0)
 			throw new InvalidTransactionIdException("Return id cannot be null or <=0");
 		if (amount <= 0)
@@ -1429,6 +1439,7 @@ public class EZShop implements EZShopInterface {
 	public boolean endReturnTransaction(Integer returnId, boolean commit)
 			throws InvalidTransactionIdException, UnauthorizedException {
 
+		System.out.println("Executing endReturnTransaction...");
 		if (returnId == null || returnId <= 0)
 			throw new InvalidTransactionIdException("Return id cannot be null or <=0");
 		if (userLoggedIn == null)
@@ -1519,6 +1530,7 @@ public class EZShop implements EZShopInterface {
 	public boolean deleteReturnTransaction(Integer returnId)
 			throws InvalidTransactionIdException, UnauthorizedException {
 
+		System.out.println("Executing deleteReturnTransaction...");
 		if (returnId == null || returnId <= 0)
 			throw new InvalidTransactionIdException("Return id cannot be null or <=0");
 		if (userLoggedIn == null)
@@ -1543,6 +1555,7 @@ public class EZShop implements EZShopInterface {
 	public double receiveCashPayment(Integer ticketNumber, double cash)
 			throws InvalidTransactionIdException, InvalidPaymentException, UnauthorizedException {
 
+		System.out.println("Executing receiveCashPayment...");
 		return 0;
 
 	}
@@ -1551,6 +1564,7 @@ public class EZShop implements EZShopInterface {
 	public boolean receiveCreditCardPayment(Integer ticketNumber, String creditCard)
 			throws InvalidTransactionIdException, InvalidCreditCardException, UnauthorizedException {
 
+		System.out.println("Executing receiveCreditCardPayment...");
 		return false;
 
 	}
@@ -1558,6 +1572,7 @@ public class EZShop implements EZShopInterface {
 	@Override
 	public double returnCashPayment(Integer returnId) throws InvalidTransactionIdException, UnauthorizedException {
 
+		System.out.println("Executing returnCashPayment...");
 		return 0;
 
 	}
@@ -1566,6 +1581,7 @@ public class EZShop implements EZShopInterface {
 	public double returnCreditCardPayment(Integer returnId, String creditCard)
 			throws InvalidTransactionIdException, InvalidCreditCardException, UnauthorizedException {
 
+		System.out.println("Executing returnCreditCardPayment...");
 		return 0;
 
 	}
@@ -1573,6 +1589,7 @@ public class EZShop implements EZShopInterface {
 	@Override
 	public boolean recordBalanceUpdate(double toBeAdded) throws UnauthorizedException {
 
+		System.out.println("Executing recordBalanceUpdate...");
 		Connection conn = null;
 		boolean positiveBalance = false;
 		int id = 1;
@@ -1603,6 +1620,7 @@ public class EZShop implements EZShopInterface {
 	@Override
 	public List<BalanceOperation> getCreditsAndDebits(LocalDate from, LocalDate to) throws UnauthorizedException {
 
+		System.out.println("Executing getCreditsAndDebits...");
 		List<BalanceOperation> bo = new ArrayList<BalanceOperation>();
 		LocalDate tmp;
 		Connection conn = null;
@@ -1637,6 +1655,7 @@ public class EZShop implements EZShopInterface {
 	@Override
 	public double computeBalance() throws UnauthorizedException {
 
+		System.out.println("Executing computeBalance...");
 		Connection conn = null;
 		conn = dbAccess();
 		double balance = 0;
