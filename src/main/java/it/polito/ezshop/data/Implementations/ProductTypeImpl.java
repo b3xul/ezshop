@@ -20,7 +20,7 @@ public class ProductTypeImpl implements ProductType{
 		this.productDescription = "no dscription";
 		this.barCode = "xxxxxxxxxxxxxx";
 		this.pricePerUnit = 0.0;
-		this.id = null;
+		this.id = -1;
 	}
 	
 // constructor with parameters
