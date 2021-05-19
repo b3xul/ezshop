@@ -4,6 +4,7 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
+import it.polito.ezshop.data.User;
 import it.polito.ezshop.data.Implementations.UserImpl;
 
 
