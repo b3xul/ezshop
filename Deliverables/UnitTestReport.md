@@ -506,7 +506,7 @@ Version:
 | Valid                            | Valid                                | Valid                                 | Valid                                 | Valid                            | Valid           | saleTransaction.upsertEntry("12637482635892", "description1", 4.0, 5.1, 6); TicketEntryImpl t1 = new TicketEntryImpl("12637482635892", "description1", 4.0, 5.1, 6); assertEquals(t1, saleTransaction.getEntry("12637482635892")); | testCase2                            |
 
 
-### **Class *BalanceOperationImpl*
+### **Class *BalanceOperationImpl* **
 #### constructor
 **Criteria for method *constructor*:**
 	
@@ -642,10 +642,203 @@ Version:
 
 **Combination of predicates**:
 
+| Validity of the String *type* | Valid / Invalid | Description of the test case | JUnit test case |
+| ----------------------------- | --------------- | ---------------------------- | --------------- |
+| Valid                         | Valid           | bo.setType("DEBIT");         | testCase5       |
+
+
+### **Class *OrderImpl* **
+#### constructor
+**Criteria for method *constructor*:**
+	
+- Validity of the Integer *orderId*
+- Validity of the Integer *balanceId*
+- Validity of the LocalDate *date*
+- Validity of the double *money*  
+- Validity of the String *prodcutCode*
+- Validity of the double *pricePerUnit* 
+- Validity of the int *quantity*
+- Validity of the String *status*
+
+
+**Predicates for method *name*:**
+
+| Criteria                              | Predicate |
+| ------------------------------------- | --------- |
+| Validity of the Integer *orderId*     | Valid     |
+| Validity of the Integer *balanceId*   | Valid     |
+| Validity of the LocalDate *date*      | Valid     |
+| Validity of the double *money*        | Valid     |
+| Validity of the String *prodcutCode*  | Valid     |
+| Validity of the double *pricePerUnit* | Valid     |
+| Validity of the int *quantity*        | Valid     |
+| Validity of the String *status*       | Valid     |
+
+**Boundaries**:
+
+| Criteria | Boundary values |
+| -------- | --------------- |
+
+**Combination of predicates**:
+
+| Validity of the Integer *orderId* | Validity of the Integer *balanceId* | Validity of the LocalDate *date* | Validity of the double *money* | Validity of the String *prodcutCode* | Validity of the double *pricePerUnit* | Validity of the int *quantity* | Validity of the String *status* | Valid / Invalid | Description of the test case                                                                     | JUnit test case |
+| --------------------------------- | ----------------------------------- | -------------------------------- | ------------------------------ | ------------------------------------ | ------------------------------------- | ------------------------------ | ------------------------------- | --------------- | ------------------------------------------------------------------------------------------------ | --------------- |
+| Valid                             | Valid                               | Valid                            | Valid                          | Valid                                | Valid                                 | Valid                          | Valid                           | Valid           | OrderImpl order = new OrderImpl(1, 1, LocalDate.now(), 20.10, "12637482635892", 5, 4, "ISSUED"); | testCase1       |
+
+
+ #### setBalanceId
+**Criteria for method *setBalanceId*:**
+	
+- Validity of the Integer *balanceId*
+  
+
+**Predicates for method *setBalanceId*:**
+
+| Criteria                            | Predicate |
+| ----------------------------------- | --------- |
+| Validity of the Integer *balanceId* | Valid     |
+
+**Boundaries**:
+
+| Criteria | Boundary values |
+| -------- | --------------- |
+
+
+**Combination of predicates**:
 
 | Validity of the Integer *balanceId* | Valid / Invalid | Description of the test case | JUnit test case |
 | ----------------------------------- | --------------- | ---------------------------- | --------------- |
-| Valid                               | Valid           | bo.setType("DEBIT");         | testCase5       |
+| Valid                               | Valid           | order.setBalanceId(5);       | testCase2       |
+
+
+ #### setOrderId
+**Criteria for method *setOrderId*:**
+	
+- Validity of the Integer *OrderId*
+  
+
+**Predicates for method *setOrderId*:**
+
+| Criteria                          | Predicate |
+| --------------------------------- | --------- |
+| Validity of the Integer *OrderId* | Valid     |
+
+**Boundaries**:
+
+| Criteria | Boundary values |
+| -------- | --------------- |
+
+
+**Combination of predicates**:
+
+| Validity of the Integer *orderId* | Valid / Invalid | Description of the test case | JUnit test case |
+| --------------------------------- | --------------- | ---------------------------- | --------------- |
+| Valid                             | Valid           | order.setOrderId(5);         | testCase3       |
+
+
+ #### setPricePerUnit
+**Criteria for method *setPricePerUnit*:**
+	
+- Validity of the double *pricePerUnit*
+  
+
+**Predicates for method *setPricePerUnit*:**
+
+| Criteria                              | Predicate |
+| ------------------------------------- | --------- |
+| Validity of the double *pricePerUnit* | Valid     |
+
+**Boundaries**:
+
+| Criteria | Boundary values |
+| -------- | --------------- |
+
+
+**Combination of predicates**:
+
+| Validity of the double *pricePerUnit* | Valid / Invalid | Description of the test case  | JUnit test case |
+| ------------------------------------- | --------------- | ----------------------------- | --------------- |
+| Valid                                 | Valid           | order.setPricePerUnit(12.15); | testCase4       |
+
+
+
+ #### setQuantity
+**Criteria for method *setQuantity*:**
+	
+- Validity of the int *quantity*
+  
+
+**Predicates for method *setQuantity*:**
+
+| Criteria                       | Predicate |
+| ------------------------------ | --------- |
+| Validity of the int *quantity* | Valid     |
+
+**Boundaries**:
+
+| Criteria | Boundary values |
+| -------- | --------------- |
+
+
+**Combination of predicates**:
+
+| Validity of the int *quantity* | Valid / Invalid | Description of the test case | JUnit test case |
+| ------------------------------ | --------------- | ---------------------------- | --------------- |
+| Valid                          | Valid           | order.setQuantity(12);       | testCase5       |
+
+
+
+
+ #### setProductCode
+**Criteria for method *setProductCode*:**
+	
+- Validity of the String *productCode*
+  
+
+**Predicates for method *setProductCode*:**
+
+| Criteria                             | Predicate |
+| ------------------------------------ | --------- |
+| Validity of the String *productCode* | Valid     |
+
+**Boundaries**:
+
+| Criteria | Boundary values |
+| -------- | --------------- |
+
+
+**Combination of predicates**:
+
+| Validity of the String *productCode* | Valid / Invalid | Description of the test case            | JUnit test case |
+| ------------------------------------ | --------------- | --------------------------------------- | --------------- |
+| Valid                                | Valid           | order.setProductCode("12637482635892"); | testCase6       |
+
+
+
+
+ #### setStatus
+**Criteria for method *setStatus*:**
+	
+- Validity of the String *Status*
+  
+
+**Predicates for method *setStatus*:**
+
+| Criteria                        | Predicate |
+| ------------------------------- | --------- |
+| Validity of the String *Status* | Valid     |
+
+**Boundaries**:
+
+| Criteria | Boundary values |
+| -------- | --------------- |
+
+
+**Combination of predicates**:
+
+| Validity of the String *Status* | Valid / Invalid | Description of the test case | JUnit test case |
+| ------------------------------- | --------------- | ---------------------------- | --------------- |
+| Valid                           | Valid           | order.setStatus("PAYED");    | testCase7       |
 
 
 # White Box Unit Tests
@@ -678,6 +871,6 @@ Version:
 | --------- | --------- | -------------------- | --------------- |
 |           |           |                      |                 |
 |           |           |                      |                 |
-|           |           |                      |                 |  |
+|           |           |                      |                 |
 
 

@@ -10,6 +10,13 @@ public class BalanceOperationImpl implements BalanceOperation {
 	LocalDate date;
 	double money;
 	String type;
+	
+	public BalanceOperationImpl() {
+		this.balanceId = 0;
+		this.date = null;
+		this.money = 0;
+		this.type = null;
+	}
 
 	public BalanceOperationImpl (int balanceId, LocalDate date, double money, String type) {
 		this.balanceId = balanceId;

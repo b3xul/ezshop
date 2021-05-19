@@ -15,6 +15,15 @@ public class OrderImpl implements Order {
 	private Integer orderId;
 	private BalanceOperation bo;
 	
+	public OrderImpl() {
+		bo = new BalanceOperationImpl();
+		this.productCode = "";
+		this.pricePerUnit = 0;
+		this.quantity = 0;
+		this.status = "";
+		this.orderId = 0;
+	}
+	
 	public OrderImpl(int orderId, int balanceId, LocalDate date, double money, String productCode, double pricePerUnit, int quantity, String status){
 		bo = new BalanceOperationImpl(balanceId, date, money, "DEBIT");
 		this.productCode = productCode;
