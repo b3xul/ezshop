@@ -1258,8 +1258,15 @@ public class EZShop implements EZShopInterface {
 					if (rs.next()) {
 						return new CustomerImpl(rs.getInt("id"), rs.getString("name"), rs.getString("card"),
 								rs.getInt("points"));
-					} else {
-						return null;
+					} else {	// search for a customer without an associated card
+						sql = "SELECT id, name FROM Customers WHERE card IS NULL";	
+						statement = conn.createStatement();
+						rs = statement.executeQuery(sql);
+						if (rs.next()) {
+							return new CustomerImpl(rs.getInt("id"), rs.getString("name"), null, null);
+						}
+						else
+							return null;
 					}
 
 				} catch (Exception e) {
@@ -1292,6 +1299,7 @@ public class EZShop implements EZShopInterface {
 					customers.add(new CustomerImpl(rs.getInt("id"), rs.getString("name"), rs.getString("card"),
 							rs.getInt("points")));
 				}
+				// add all customer without an associated card
 				sql = "SELECT id, name FROM Customers WHERE card IS NULL";
 				statement = conn.createStatement();
 				rs = statement.executeQuery(sql);
