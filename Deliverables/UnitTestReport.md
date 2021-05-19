@@ -26,6 +26,244 @@ Version:
     to start tests
     >
 
+### Class UserImpl
+#### constructor
+**Criteria for method *constructor*:**
+
+ - Validity of the Integer *id*
+ - Validity of the String *username*
+ - Validity of the String *password*
+ - Validity of the String *role*
+
+**Predicates for method *constructor*:**
+
+| Criteria                              | Predicate |
+| ------------------------------------- | --------- |
+| Validity of the Integer *id*          | Valid     |
+| Validity of the String *username*     | Valid     |
+| Validity of the String *password*     | Valid     |
+| Validity of the String *role*         | Valid     |
+
+**Boundaries**:
+
+| Criteria | Boundary values |
+| -------- | --------------- |
+
+**Combination of predicates**:
+
+| Validity of the Integer *id* | Validity of the String *username* | Validity of the String *password* | Validity of the String *role* | Valid / Invalid | Description of the test case                                              | JUnit test case UserClassTest |
+| ----------------------------- | ------------------------------------ | -------------------------------- | ------------------------------------- | --------------- | ------------------------------------------------------------------------- | ------------------------------------ |
+| Valid                         | Valid                                | Valid                            | Valid                                 | Valid           | user = new UserImpl(10,"Marco","xxx","Adminitrator"); | testCase1                            |
+
+#### setId
+**Criteria for method *setId*:**
+
+ - Validity of the Integer *id*
+
+**Predicates for method *setId*:**
+
+| Criteria                     | Predicate |
+| ---------------------------- | --------- |
+| Validity of the Integer *id* | Valid     |
+
+**Boundaries**:
+
+| Criteria | Boundary values |
+| -------- | --------------- |
+
+**Combination of predicates**:
+
+| Validity of the Integer *id* | Valid / Invalid | Description of the test case | JUnit test case UserClassTest |
+| ---------------------------- | --------------- | ---------------------------- | ------------------------------------ |
+| Valid                        | Valid           | user.setId(25);            | testCase2                            |
+
+#### setUsername
+**Criteria for method *setUsername*:**
+
+ - Validity of the String *username*
+
+**Predicates for method *setUsername*:**
+
+| Criteria                             | Predicate |
+| ------------------------------------ | --------- |
+| Validity of the String *username*    | Valid     |
+
+**Boundaries**:
+
+| Criteria | Boundary values |
+| -------- | --------------- |
+
+**Combination of predicates**:
+
+| Validity of the String *username* | Valid / Invalid | Description of the test case               | JUnit test case UserClassTest |
+| ------------------------------------ | --------------- | ------------------------------------------ | ------------------------------------ |
+| Valid                                | Valid           | user.setUsername("Pippo"); | testCase3                            |
+
+#### setPassword
+**Criteria for method *setPassword*:**
+
+ - Validity of the String *password*
+
+**Predicates for method *setPassword*:**
+
+| Criteria                             | Predicate |
+| ------------------------------------ | --------- |
+| Validity of the String *password*    | Valid     |
+
+**Boundaries**:
+
+| Criteria | Boundary values |
+| -------- | --------------- |
+
+**Combination of predicates**:
+
+| Validity of the String *password* | Valid / Invalid | Description of the test case               | JUnit test case UserClassTest |
+| ------------------------------------ | --------------- | ------------------------------------------ | ------------------------------------ |
+| Valid                                | Valid           | user.setPassword("pass"); | testCase4                            |
+
+
+#### setRole
+**Criteria for method *setRole*:**
+
+ - Validity of the String *role*
+
+**Predicates for method *setRole*:**
+
+| Criteria                             | Predicate |
+| ------------------------------------ | --------- |
+| Validity of the String *role*    | Valid     |
+
+**Boundaries**:
+
+| Criteria | Boundary values |
+| -------- | --------------- |
+
+**Combination of predicates**:
+
+| Validity of the String *role* | Valid / Invalid | Description of the test case               | JUnit test case UserClassTest |
+| ------------------------------------ | --------------- | ------------------------------------------ | ------------------------------------ |
+| Valid                                | Valid           | user.setRole("Cashier"); | testCase5                           |
+
+
+### Class CustomerImpl 
+#### constructor
+**Criteria for method *constructor*:**
+
+ - Validity of the Integer *id*
+ - Validity of the String *name*
+ - Validity of the String *card*
+ - Validity of the Integer *points*
+
+**Predicates for method *constructor*:**
+
+| Criteria                              | Predicate |
+| ------------------------------------- | --------- |
+| Validity of the Integer *id*          | Valid     |
+| Validity of the String *name*         | Valid     |
+| Validity of the String *card*         | Valid     |
+| Validity of the Integer *points*      | Valid     |
+
+**Boundaries**:
+
+| Criteria | Boundary values |
+| -------- | --------------- |
+
+**Combination of predicates**:
+
+| Validity of the Integer *id* | Validity of the String *name* | Validity of the String *card* | Validity of the Integer *points* | Valid / Invalid | Description of the test case                                              | JUnit test case CustomerClassTest |
+| ----------------------------- | ------------------------------------ | -------------------------------- | ------------------------------------- | --------------- | ------------------------------------------------------------------------- | ------------------------------------ |
+| Valid                         | Valid                                | Valid                            | Valid                                 | Valid           | customer = new CustomerImpl(2,"Giulia","1124432525",15); | testCase1                            |
+
+#### setId
+**Criteria for method *setId*:**
+
+ - Validity of the Integer *id*
+
+**Predicates for method *setId*:**
+
+| Criteria                     | Predicate |
+| ---------------------------- | --------- |
+| Validity of the Integer *id* | Valid     |
+
+**Boundaries**:
+
+| Criteria | Boundary values |
+| -------- | --------------- |
+
+**Combination of predicates**:
+
+| Validity of the Integer *id* | Valid / Invalid | Description of the test case | JUnit test case CustomerClassTest |
+| ---------------------------- | --------------- | ---------------------------- | ------------------------------------ |
+| Valid                        | Valid           | customer.setId(1);            | testCase2                            |
+
+#### setUsername
+**Criteria for method *setCustomerName*:**
+
+ - Validity of the String *name*
+
+**Predicates for method *setCustomerName*:**
+
+| Criteria                             | Predicate |
+| ------------------------------------ | --------- |
+| Validity of the String *name*    | Valid     |
+
+**Boundaries**:
+
+| Criteria | Boundary values |
+| -------- | --------------- |
+
+**Combination of predicates**:
+
+| Validity of the String *name* | Valid / Invalid | Description of the test case               | JUnit test case CustomerClassTest |
+| ------------------------------------ | --------------- | ------------------------------------------ | ------------------------------------ |
+| Valid                                | Valid           | customer.setCustomerName("Chiara"); | testCase3                            |
+
+#### setCustomerCard
+**Criteria for method *setCustomerCard*:**
+
+ - Validity of the String *card*
+
+**Predicates for method *setCustomerCard*:**
+
+| Criteria                             | Predicate |
+| ------------------------------------ | --------- |
+| Validity of the String *card*    | Valid     |
+
+**Boundaries**:
+
+| Criteria | Boundary values |
+| -------- | --------------- |
+
+**Combination of predicates**:
+
+| Validity of the String *card* | Valid / Invalid | Description of the test case               | JUnit test case CustomerClassTest |
+| ------------------------------------ | --------------- | ------------------------------------------ | ------------------------------------ |
+| Valid                                | Valid           | customer.setCustomerCard("1234567890"); | testCase4                            |
+
+
+#### setPoints
+**Criteria for method *setPoints*:**
+
+ - Validity of the Integer *points*
+
+**Predicates for method *setPoints*:**
+
+| Criteria                             | Predicate |
+| ------------------------------------ | --------- |
+| Validity of the Integer *points*    | Valid     |
+
+**Boundaries**:
+
+| Criteria | Boundary values |
+| -------- | --------------- |
+
+**Combination of predicates**:
+
+| Validity of the Integer *points* | Valid / Invalid | Description of the test case               | JUnit test case CustomerClassTest |
+| ------------------------------------ | --------------- | ------------------------------------------ | ------------------------------------ |
+| Valid                                | Valid           | customer.setPoints(10); | testCase5                           |
+
+
 ### Class ProductTypeImpl
 #### constructor
 **Criteria for method *constructor*:**
