@@ -27,6 +27,12 @@ public class ReturnTransactionClassTest {
 		returnTransaction.setProductCode("12637482635892");
 		assertEquals("12637482635892", returnTransaction.getProductCode());
 
+		returnTransaction.setPricePerUnit(25.0);
+		assertEquals(25.0, returnTransaction.getPricePerUnit(), 0.001);
+
+		returnTransaction.setDiscountRate(0.4);
+		assertEquals(0.4, returnTransaction.getDiscountRate(), 0.001);
+
 		returnTransaction.setAmount(4);
 		assertEquals(4, returnTransaction.getAmount());
 

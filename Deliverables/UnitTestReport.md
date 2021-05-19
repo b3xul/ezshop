@@ -37,12 +37,12 @@ Version:
 
 **Predicates for method *constructor*:**
 
-| Criteria                              | Predicate |
-| ------------------------------------- | --------- |
-| Validity of the Integer *id*          | Valid     |
-| Validity of the String *username*     | Valid     |
-| Validity of the String *password*     | Valid     |
-| Validity of the String *role*         | Valid     |
+| Criteria                          | Predicate |
+| --------------------------------- | --------- |
+| Validity of the Integer *id*      | Valid     |
+| Validity of the String *username* | Valid     |
+| Validity of the String *password* | Valid     |
+| Validity of the String *role*     | Valid     |
 
 **Boundaries**:
 
@@ -51,9 +51,9 @@ Version:
 
 **Combination of predicates**:
 
-| Validity of the Integer *id* | Validity of the String *username* | Validity of the String *password* | Validity of the String *role* | Valid / Invalid | Description of the test case                                              | JUnit test case UserClassTest |
-| ----------------------------- | ------------------------------------ | -------------------------------- | ------------------------------------- | --------------- | ------------------------------------------------------------------------- | ------------------------------------ |
-| Valid                         | Valid                                | Valid                            | Valid                                 | Valid           | user = new UserImpl(10,"Marco","xxx","Adminitrator"); | testCase1                            |
+| Validity of the Integer *id* | Validity of the String *username* | Validity of the String *password* | Validity of the String *role* | Valid / Invalid | Description of the test case                          | JUnit test case UserClassTest |
+| ---------------------------- | --------------------------------- | --------------------------------- | ----------------------------- | --------------- | ----------------------------------------------------- | ----------------------------- |
+| Valid                        | Valid                             | Valid                             | Valid                         | Valid           | user = new UserImpl(10,"Marco","xxx","Adminitrator"); | testCase1                     |
 
 #### setId
 **Criteria for method *setId*:**
@@ -74,8 +74,8 @@ Version:
 **Combination of predicates**:
 
 | Validity of the Integer *id* | Valid / Invalid | Description of the test case | JUnit test case UserClassTest |
-| ---------------------------- | --------------- | ---------------------------- | ------------------------------------ |
-| Valid                        | Valid           | user.setId(25);            | testCase2                            |
+| ---------------------------- | --------------- | ---------------------------- | ----------------------------- |
+| Valid                        | Valid           | user.setId(25);              | testCase2                     |
 
 #### setUsername
 **Criteria for method *setUsername*:**
@@ -84,9 +84,9 @@ Version:
 
 **Predicates for method *setUsername*:**
 
-| Criteria                             | Predicate |
-| ------------------------------------ | --------- |
-| Validity of the String *username*    | Valid     |
+| Criteria                          | Predicate |
+| --------------------------------- | --------- |
+| Validity of the String *username* | Valid     |
 
 **Boundaries**:
 
@@ -95,9 +95,9 @@ Version:
 
 **Combination of predicates**:
 
-| Validity of the String *username* | Valid / Invalid | Description of the test case               | JUnit test case UserClassTest |
-| ------------------------------------ | --------------- | ------------------------------------------ | ------------------------------------ |
-| Valid                                | Valid           | user.setUsername("Pippo"); | testCase3                            |
+| Validity of the String *username* | Valid / Invalid | Description of the test case | JUnit test case UserClassTest |
+| --------------------------------- | --------------- | ---------------------------- | ----------------------------- |
+| Valid                             | Valid           | user.setUsername("Pippo");   | testCase3                     |
 
 #### setPassword
 **Criteria for method *setPassword*:**
@@ -106,9 +106,9 @@ Version:
 
 **Predicates for method *setPassword*:**
 
-| Criteria                             | Predicate |
-| ------------------------------------ | --------- |
-| Validity of the String *password*    | Valid     |
+| Criteria                          | Predicate |
+| --------------------------------- | --------- |
+| Validity of the String *password* | Valid     |
 
 **Boundaries**:
 
@@ -117,9 +117,9 @@ Version:
 
 **Combination of predicates**:
 
-| Validity of the String *password* | Valid / Invalid | Description of the test case               | JUnit test case UserClassTest |
-| ------------------------------------ | --------------- | ------------------------------------------ | ------------------------------------ |
-| Valid                                | Valid           | user.setPassword("pass"); | testCase4                            |
+| Validity of the String *password* | Valid / Invalid | Description of the test case | JUnit test case UserClassTest |
+| --------------------------------- | --------------- | ---------------------------- | ----------------------------- |
+| Valid                             | Valid           | user.setPassword("pass");    | testCase4                     |
 
 
 #### setRole
@@ -129,9 +129,9 @@ Version:
 
 **Predicates for method *setRole*:**
 
-| Criteria                             | Predicate |
-| ------------------------------------ | --------- |
-| Validity of the String *role*    | Valid     |
+| Criteria                      | Predicate |
+| ----------------------------- | --------- |
+| Validity of the String *role* | Valid     |
 
 **Boundaries**:
 
@@ -140,9 +140,9 @@ Version:
 
 **Combination of predicates**:
 
-| Validity of the String *role* | Valid / Invalid | Description of the test case               | JUnit test case UserClassTest |
-| ------------------------------------ | --------------- | ------------------------------------------ | ------------------------------------ |
-| Valid                                | Valid           | user.setRole("Cashier"); | testCase5                           |
+| Validity of the String *role* | Valid / Invalid | Description of the test case | JUnit test case UserClassTest |
+| ----------------------------- | --------------- | ---------------------------- | ----------------------------- |
+| Valid                         | Valid           | user.setRole("Cashier");     | testCase5                     |
 
 
 ### Class CustomerImpl 
@@ -156,12 +156,12 @@ Version:
 
 **Predicates for method *constructor*:**
 
-| Criteria                              | Predicate |
-| ------------------------------------- | --------- |
-| Validity of the Integer *id*          | Valid     |
-| Validity of the String *name*         | Valid     |
-| Validity of the String *card*         | Valid     |
-| Validity of the Integer *points*      | Valid     |
+| Criteria                         | Predicate |
+| -------------------------------- | --------- |
+| Validity of the Integer *id*     | Valid     |
+| Validity of the String *name*    | Valid     |
+| Validity of the String *card*    | Valid     |
+| Validity of the Integer *points* | Valid     |
 
 **Boundaries**:
 
@@ -170,9 +170,9 @@ Version:
 
 **Combination of predicates**:
 
-| Validity of the Integer *id* | Validity of the String *name* | Validity of the String *card* | Validity of the Integer *points* | Valid / Invalid | Description of the test case                                              | JUnit test case CustomerClassTest |
-| ----------------------------- | ------------------------------------ | -------------------------------- | ------------------------------------- | --------------- | ------------------------------------------------------------------------- | ------------------------------------ |
-| Valid                         | Valid                                | Valid                            | Valid                                 | Valid           | customer = new CustomerImpl(2,"Giulia","1124432525",15); | testCase1                            |
+| Validity of the Integer *id* | Validity of the String *name* | Validity of the String *card* | Validity of the Integer *points* | Valid / Invalid | Description of the test case                             | JUnit test case CustomerClassTest |
+| ---------------------------- | ----------------------------- | ----------------------------- | -------------------------------- | --------------- | -------------------------------------------------------- | --------------------------------- |
+| Valid                        | Valid                         | Valid                         | Valid                            | Valid           | customer = new CustomerImpl(2,"Giulia","1124432525",15); | testCase1                         |
 
 #### setId
 **Criteria for method *setId*:**
@@ -193,8 +193,8 @@ Version:
 **Combination of predicates**:
 
 | Validity of the Integer *id* | Valid / Invalid | Description of the test case | JUnit test case CustomerClassTest |
-| ---------------------------- | --------------- | ---------------------------- | ------------------------------------ |
-| Valid                        | Valid           | customer.setId(1);            | testCase2                            |
+| ---------------------------- | --------------- | ---------------------------- | --------------------------------- |
+| Valid                        | Valid           | customer.setId(1);           | testCase2                         |
 
 #### setUsername
 **Criteria for method *setCustomerName*:**
@@ -203,9 +203,9 @@ Version:
 
 **Predicates for method *setCustomerName*:**
 
-| Criteria                             | Predicate |
-| ------------------------------------ | --------- |
-| Validity of the String *name*    | Valid     |
+| Criteria                      | Predicate |
+| ----------------------------- | --------- |
+| Validity of the String *name* | Valid     |
 
 **Boundaries**:
 
@@ -214,9 +214,9 @@ Version:
 
 **Combination of predicates**:
 
-| Validity of the String *name* | Valid / Invalid | Description of the test case               | JUnit test case CustomerClassTest |
-| ------------------------------------ | --------------- | ------------------------------------------ | ------------------------------------ |
-| Valid                                | Valid           | customer.setCustomerName("Chiara"); | testCase3                            |
+| Validity of the String *name* | Valid / Invalid | Description of the test case        | JUnit test case CustomerClassTest |
+| ----------------------------- | --------------- | ----------------------------------- | --------------------------------- |
+| Valid                         | Valid           | customer.setCustomerName("Chiara"); | testCase3                         |
 
 #### setCustomerCard
 **Criteria for method *setCustomerCard*:**
@@ -225,9 +225,9 @@ Version:
 
 **Predicates for method *setCustomerCard*:**
 
-| Criteria                             | Predicate |
-| ------------------------------------ | --------- |
-| Validity of the String *card*    | Valid     |
+| Criteria                      | Predicate |
+| ----------------------------- | --------- |
+| Validity of the String *card* | Valid     |
 
 **Boundaries**:
 
@@ -236,9 +236,9 @@ Version:
 
 **Combination of predicates**:
 
-| Validity of the String *card* | Valid / Invalid | Description of the test case               | JUnit test case CustomerClassTest |
-| ------------------------------------ | --------------- | ------------------------------------------ | ------------------------------------ |
-| Valid                                | Valid           | customer.setCustomerCard("1234567890"); | testCase4                            |
+| Validity of the String *card* | Valid / Invalid | Description of the test case            | JUnit test case CustomerClassTest |
+| ----------------------------- | --------------- | --------------------------------------- | --------------------------------- |
+| Valid                         | Valid           | customer.setCustomerCard("1234567890"); | testCase4                         |
 
 
 #### setPoints
@@ -248,9 +248,9 @@ Version:
 
 **Predicates for method *setPoints*:**
 
-| Criteria                             | Predicate |
-| ------------------------------------ | --------- |
-| Validity of the Integer *points*    | Valid     |
+| Criteria                         | Predicate |
+| -------------------------------- | --------- |
+| Validity of the Integer *points* | Valid     |
 
 **Boundaries**:
 
@@ -259,9 +259,9 @@ Version:
 
 **Combination of predicates**:
 
-| Validity of the Integer *points* | Valid / Invalid | Description of the test case               | JUnit test case CustomerClassTest |
-| ------------------------------------ | --------------- | ------------------------------------------ | ------------------------------------ |
-| Valid                                | Valid           | customer.setPoints(10); | testCase5                           |
+| Validity of the Integer *points* | Valid / Invalid | Description of the test case | JUnit test case CustomerClassTest |
+| -------------------------------- | --------------- | ---------------------------- | --------------------------------- |
+| Valid                            | Valid           | customer.setPoints(10);      | testCase5                         |
 
 
 ### Class ProductTypeImpl
@@ -666,7 +666,7 @@ Version:
 
 
 
- ### **Class *SaleTransactionImpl*
+### **Class *SaleTransactionImpl*
 #### constructor
 **Criteria for method *constructor*:**
 
@@ -689,7 +689,7 @@ Version:
 | -------------------------------------- | --------------- | --------------------------------------------- | ------------------------------------ |
 | Valid                                  | Valid           | saleTransaction = new SaleTransactionImpl(1); | testCase1                            |
 
-#### setId
+#### setTicketNumber
 **Criteria for method *setTicketNumber*:**
 
  - Validity of the Integer *ticketNumber*
@@ -711,26 +711,16 @@ Version:
 | -------------------------------------- | --------------- | ----------------------------------- | ------------------------------------ |
 | Valid                                  | Valid           | saleTransaction.setTicketNumber(2); | testCase1                            |
 
+#### setPrice
+**Criteria for method *setPrice*:**
 
+ - Validity of the double *price*
 
-#### upsertEntry
-**Criteria for method *upsertEntry*:**
+**Predicates for method *setPrice*:**
 
- - Validity of the String *barcode*
- - Validity of the String *description*
- - Validity of the Double *pricePerUnit*
- - Validity of the Double *discountRate*
- - Validity of the Integer *amount*
-
-**Predicates for method *upsertEntry*:**
-
-| Criteria                              | Predicate |
-| ------------------------------------- | --------- |
-| Validity of the String *barcode*      | Valid     |
-| Validity of the String *description*  | Valid     |
-| Validity of the Double *pricePerUnit* | Valid     |
-| Validity of the Double *discountRate* | Valid     |
-| Validity of the Integer *amount*      | Valid     |
+| Criteria                       | Predicate |
+| ------------------------------ | --------- |
+| Validity of the double *price* | Valid     |
 
 **Boundaries**:
 
@@ -739,9 +729,338 @@ Version:
 
 **Combination of predicates**:
 
-| Validity of the String *barcode* | Validity of the String *description* | Validity of the Double *pricePerUnit* | Validity of the Double *discountRate* | Validity of the Integer *amount* | Valid / Invalid | Description of the test case                                                                                                                                                                                                       | JUnit test case TicketEntryClassTest |
-| -------------------------------- | ------------------------------------ | ------------------------------------- | ------------------------------------- | -------------------------------- | --------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------ |
-| Valid                            | Valid                                | Valid                                 | Valid                                 | Valid                            | Valid           | saleTransaction.upsertEntry("12637482635892", "description1", 4.0, 5.1, 6); TicketEntryImpl t1 = new TicketEntryImpl("12637482635892", "description1", 4.0, 5.1, 6); assertEquals(t1, saleTransaction.getEntry("12637482635892")); | testCase2                            |
+| Validity of the double *price* | Valid / Invalid | Description of the test case   | JUnit test case ProductTypeClassTest |
+| ------------------------------ | --------------- | ------------------------------ | ------------------------------------ |
+| Valid                          | Valid           | saleTransaction.setPrice(3.0); | testCase1                            |
+
+#### setDiscountRate
+**Criteria for method *setDiscountRate*:**
+
+ - Validity of the double *discountRate*
+
+**Predicates for method *setDiscountRate*:**
+
+| Criteria                              | Predicate |
+| ------------------------------------- | --------- |
+| Validity of the double *discountRate* | Valid     |
+
+**Boundaries**:
+
+| Criteria | Boundary values |
+| -------- | --------------- |
+
+**Combination of predicates**:
+
+| Validity of the double *discountRate* | Valid / Invalid | Description of the test case          | JUnit test case ProductTypeClassTest |
+| ------------------------------------- | --------------- | ------------------------------------- | ------------------------------------ |
+| Valid                                 | Valid           | saleTransaction.setDiscountRate(0.4); | testCase1                            |
+
+#### setEntries
+**Criteria for method *setEntries*:**
+
+ - Validity of the LinkedList\<TicketEntry> entries
+
+**Predicates for method *setEntries*:**
+
+| Criteria                                         | Predicate |
+| ------------------------------------------------ | --------- |
+| Validity of the LinkedList\<TicketEntry> entries | Valid     |
+
+**Boundaries**:
+
+| Criteria | Boundary values |
+| -------- | --------------- |
+
+**Combination of predicates**:
+
+| Validity of the LinkedList\<TicketEntry> entries | Valid / Invalid | Description of the test case                                                                            | JUnit test case ProductTypeClassTest |
+| ------------------------------------------------ | --------------- | ------------------------------------------------------------------------------------------------------- | ------------------------------------ |
+| Valid                                            | Valid           | LinkedList\<TicketEntry> entries = new LinkedList\<TicketEntry>(); saleTransaction.setEntries(entries); | testCase1                            |
+
+#### setBalanceOperation
+**Criteria for method *setBalanceOperation*:**
+
+ - Validity of the BalanceOperation balanceOperation
+
+**Predicates for method *setBalanceOperation*:**
+
+| Criteria                                          | Predicate |
+| ------------------------------------------------- | --------- |
+| Validity of the BalanceOperation balanceOperation | Valid     |
+
+**Boundaries**:
+
+| Criteria | Boundary values |
+| -------- | --------------- |
+
+**Combination of predicates**:
+
+| Validity of the BalanceOperation balanceOperation | Valid / Invalid | Description of the test case                                                                     | JUnit test case ProductTypeClassTest |
+| ------------------------------------------------- | --------------- | ------------------------------------------------------------------------------------------------ | ------------------------------------ |
+| Valid                                             | Valid           | BalanceOperation balanceOperation = null; saleTransaction.setBalanceOperation(balanceOperation); | testCase1                            |
+
+#### removeAmountFromEntry
+**Criteria for method *removeAmountFromEntry*:**
+
+ - Validity of the String *barcode*
+ - Validity of the Integer *amountToRemove*
+ - *amountToRemove*
+
+**Predicates for method *removeAmountFromEntry*:**
+
+| Criteria                                 | Predicate                |
+| ---------------------------------------- | ------------------------ |
+| Validity of the String *barcode*         | Valid                    |
+|                                          | Invalid                  |
+| Validity of the Integer *amountToRemove* | Valid                    |
+| *amountToRemove*                         | (0, previousAmount)      |
+|                                          | previousAmount           |
+|                                          | (previousAmount, maxint) |
+
+**Boundaries**:
+
+| Criteria         | Boundary values |
+| ---------------- | --------------- |
+| *amountToRemove* | previousAmount  |
+
+**Combination of predicates**:
+
+| Validity of the String *barcode* | Validity of the Integer *amountToRemove* | *amountToRemove*          | Valid / Invalid | Description of the test case                                                                                                                                                                                                                          | JUnit test case TicketEntryClassTest |
+| -------------------------------- | ---------------------------------------- | ------------------------- | --------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------ |
+| Valid                            | Valid                                    | (-maxint, previousAmount) | Valid(true)     | LinkedList/<TicketEntry> entries = new LinkedList/<TicketEntry>(); entries.add(new TicketEntryImpl("12637482635892", "description", 2.0, 0.1, 10)); saleTransaction.setEntries(entries); saleTransaction.removeAmountFromEntry("12637482635892", 1);  | testCase2                            |
+| Valid                            | Valid                                    | previousAmount            | Valid(true)     | LinkedList/<TicketEntry> entries = new LinkedList/<TicketEntry>(); entries.add(new TicketEntryImpl("12637482635892", "description", 2.0, 0.1, 10)); saleTransaction.setEntries(entries); saleTransaction.removeAmountFromEntry("12637482635892", 10); | testCase3                            |
+| Valid                            | Valid                                    | (previousAmount, maxint)  | Valid(false)    | LinkedList/<TicketEntry> entries = new LinkedList/<TicketEntry>(); entries.add(new TicketEntryImpl("12637482635892", "description", 2.0, 0.1, 10)); saleTransaction.setEntries(entries); saleTransaction.removeAmountFromEntry("12637482635892", 11); | testCase4                            |
+| Invalid                          | *                                        | *                         | Valid(false)    | LinkedList/<TicketEntry> entries = new LinkedList/<TicketEntry>(); entries.add(new TicketEntryImpl("12637482635892", "description", 2.0, 0.1, 10)); saleTransaction.setEntries(entries); saleTransaction.removeAmountFromEntry("22637482635892", 4);  | testCase5                            |
+
+#### setDiscountRateToProduct
+**Criteria for method *setDiscountRateToProduct*:**
+
+ - Validity of the String *barcode*
+ - Validity of the double *discountRate*
+
+**Predicates for method *setDiscountRateToProduct*:**
+
+| Criteria                              | Predicate |
+| ------------------------------------- | --------- |
+| Validity of the String *barcode*      | Valid     |
+|                                       | Invalid   |
+| Validity of the double *discountRate* | Valid     |
+
+**Boundaries**:
+
+| Criteria | Boundary values |
+| -------- | --------------- |
+
+**Combination of predicates**:
+
+| Validity of the String *barcode* | Validity of the double *discountRate* | Valid / Invalid | Description of the test case                                                                                                                                                                                                                              | JUnit test case TicketEntryClassTest |
+| -------------------------------- | ------------------------------------- | --------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------ |
+| Valid                            | Valid                                 | Valid           | LinkedList/<TicketEntry> entries = new LinkedList/<TicketEntry>(); entries.add(new TicketEntryImpl("12637482635892", "description", 2.0, 0.1, 10)); saleTransaction.setEntries(entries); saleTransaction.setDiscountRateToProduct("12637482635892", 0.2); | testCase7                            |
+| Invalid                          | *                                     | Valid(false)    | LinkedList/<TicketEntry> entries = new LinkedList/<TicketEntry>(); entries.add(new TicketEntryImpl("12637482635892", "description", 2.0, 0.1, 10)); saleTransaction.setEntries(entries); saleTransaction.setDiscountRateToProduct("22637482635892", 0.2); | testCase8                            |
+
+
+### **Class *ReturnTransactionImpl* **
+
+#### constructor
+**Criteria for method *constructor*:**
+
+ - Validity of the Integer *returnId*
+ - Validity of the SaleTransaction *saleTransaction*
+
+**Predicates for method *constructor*:**
+
+| Criteria                                          | Predicate |
+| ------------------------------------------------- | --------- |
+| Validity of the Integer *returnId*                | Valid     |
+| Validity of the SaleTransaction *saleTransaction* | Valid     |
+
+**Boundaries**:
+
+| Criteria | Boundary values |
+| -------- | --------------- |
+
+**Combination of predicates**:
+
+| Validity of the Integer *returnId* | Validity of the SaleTransaction *saleTransaction* | Valid / Invalid | Description of the test case                                                                                                     | JUnit test case TicketEntryClassTest |
+| ---------------------------------- | ------------------------------------------------- | --------------- | -------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------ |
+| Valid                              | Valid                                             | Valid           | SaleTransaction saleTransaction = null; ReturnTransactionImpl returnTransaction = new ReturnTransactionImpl(1, saleTransaction); | testCase1                            |
+
+
+#### setReturnId
+**Criteria for method *setReturnId*:**
+
+ - Validity of the Integer *returnId*
+
+**Predicates for method *setReturnId*:**
+
+| Criteria                           | Predicate |
+| ---------------------------------- | --------- |
+| Validity of the Integer *returnId* | Valid     |
+
+**Boundaries**:
+
+| Criteria | Boundary values |
+| -------- | --------------- |
+
+**Combination of predicates**:
+
+| Validity of the Integer *returnId* | Valid / Invalid | Description of the test case      | JUnit test case ProductTypeClassTest |
+| ---------------------------------- | --------------- | --------------------------------- | ------------------------------------ |
+| Valid                              | Valid           | returnTransaction.setReturnId(2); | testCase1                            |
+
+#### setProductId
+**Criteria for method *setProductId*:**
+
+ - Validity of the Integer *productId*
+
+**Predicates for method *setProductId*:**
+
+| Criteria                            | Predicate |
+| ----------------------------------- | --------- |
+| Validity of the Integer *productId* | Valid     |
+
+**Boundaries**:
+
+| Criteria | Boundary values |
+| -------- | --------------- |
+
+**Combination of predicates**:
+
+| Validity of the Integer *productId* | Valid / Invalid | Description of the test case       | JUnit test case ProductTypeClassTest |
+| ----------------------------------- | --------------- | ---------------------------------- | ------------------------------------ |
+| Valid                               | Valid           | returnTransaction.setProductId(3); | testCase1                            |
+
+#### setProductCode
+**Criteria for method *setProductCode*:**
+
+ - Validity of the String *productCode*
+
+**Predicates for method *setProductCode*:**
+
+| Criteria                             | Predicate |
+| ------------------------------------ | --------- |
+| Validity of the String *productCode* | Valid     |
+
+**Boundaries**:
+
+| Criteria | Boundary values |
+| -------- | --------------- |
+
+**Combination of predicates**:
+
+| Validity of the String *productCode* | Valid / Invalid | Description of the test case                        | JUnit test case TicketEntryClassTest |
+| ------------------------------------ | --------------- | --------------------------------------------------- | ------------------------------------ |
+| Valid                                | Valid           | returnTransaction.setProductCode("12637482635892"); | testCase1                            |
+
+#### setPricePerUnit
+**Criteria for method *setPricePerUnit*:**
+
+ - Validity of the double *pricePerUnit*
+
+**Predicates for method *setPricePerUnit*:**
+
+| Criteria                              | Predicate |
+| ------------------------------------- | --------- |
+| Validity of the double *pricePerUnit* | Valid     |
+
+**Boundaries**:
+
+| Criteria | Boundary values |
+| -------- | --------------- |
+
+**Combination of predicates**:
+
+| Validity of the double *pricePerUnit* | Valid / Invalid | Description of the test case             | JUnit test case TicketEntryClassTest |
+| ------------------------------------- | --------------- | ---------------------------------------- | ------------------------------------ |
+| Valid                                 | Valid           | returnTransaction.setPricePerUnit(25.0); | testCase1                            |
+
+#### setDiscountRate
+**Criteria for method *setDiscountRate*:**
+
+ - Validity of the Integer *discountRate*
+
+**Predicates for method *setDiscountRate*:**
+
+| Criteria                               | Predicate |
+| -------------------------------------- | --------- |
+| Validity of the Integer *discountRate* | Valid     |
+
+**Boundaries**:
+
+| Criteria | Boundary values |
+| -------- | --------------- |
+
+**Combination of predicates**:
+
+| Validity of the Integer *discountRate* | Valid / Invalid | Description of the test case            | JUnit test case TicketEntryClassTest |
+| -------------------------------------- | --------------- | --------------------------------------- | ------------------------------------ |
+| Valid                                  | Valid           | returnTransaction.setDiscountRate(0.4); | testCase1                            |
+
+#### setAmount
+**Criteria for method *setAmount*:**
+
+ - Validity of the int *amount*
+
+**Predicates for method *setAmount*:**
+
+| Criteria                     | Predicate |
+| ---------------------------- | --------- |
+| Validity of the int *amount* | Valid     |
+
+**Boundaries**:
+
+| Criteria | Boundary values |
+| -------- | --------------- |
+
+**Combination of predicates**:
+
+| Validity of the int *amount* | Valid / Invalid | Description of the test case    | JUnit test case TicketEntryClassTest |
+| ---------------------------- | --------------- | ------------------------------- | ------------------------------------ |
+| Valid                        | Valid           | returnTransaction.setAmount(4); | testCase1                            |
+
+#### setPrice
+**Criteria for method *setPrice*:**
+
+ - Validity of the double *price*
+
+**Predicates for method *setPrice*:**
+
+| Criteria                       | Predicate |
+| ------------------------------ | --------- |
+| Validity of the double *price* | Valid     |
+
+**Boundaries**:
+
+| Criteria | Boundary values |
+| -------- | --------------- |
+
+**Combination of predicates**:
+
+| Validity of the double *price* | Valid / Invalid | Description of the test case     | JUnit test case ProductTypeClassTest |
+| ------------------------------ | --------------- | -------------------------------- | ------------------------------------ |
+| Valid                          | Valid           | returnTransaction.setPrice(5.0); | testCase1                            |
+
+#### setSaleTransaction
+**Criteria for method *setSaleTransaction*:**
+
+ - Validity of the SaleTransaction *saleTransaction*
+ - 
+**Predicates for method *setSaleTransaction*:**
+
+| Criteria                                          | Predicate |
+| ------------------------------------------------- | --------- |
+| Validity of the SaleTransaction *saleTransaction* | Valid     |
+
+**Boundaries**:
+
+| Criteria | Boundary values |
+| -------- | --------------- |
+
+**Combination of predicates**:
+
+| Validity of the SaleTransaction *saleTransaction* | Valid / Invalid | Description of the test case                                                                     | JUnit test case ProductTypeClassTest |
+| ------------------------------------------------- | --------------- | ------------------------------------------------------------------------------------------------ | ------------------------------------ |
+| Valid                                             | Valid           | SaleTransaction saleTransaction2 = null; returnTransaction.setSaleTransaction(saleTransaction2); | testCase1                            |
 
 
 ### **Class *BalanceOperationImpl* **
@@ -1088,8 +1407,8 @@ Version:
 
 **Predicates for method *dbAccess*:**
 
-| Criteria                                             | Predicate |
-| --------                                             | --------- |
+| Criteria | Predicate |
+| -------- | --------- |
 
 **Boundaries**:
 
@@ -1098,9 +1417,9 @@ Version:
 
 **Combination of predicates**:
 
-| Valid / Invalid | Description of the test case | JUnit test case EZShopClassTest|
-|-------|-------|-------|
-|Valid  |shop.dbAccess()     |testCase1       |
+| Valid / Invalid | Description of the test case | JUnit test case EZShopClassTest |
+| --------------- | ---------------------------- | ------------------------------- |
+| Valid           | shop.dbAccess()              | testCase1                       |
 
 #### dbClose
 
@@ -1110,10 +1429,10 @@ Version:
 
 **Predicates for method *dbClose*:**
 
-| Criteria                                             | Predicate |
-| --------                                             | --------- |
-| Validity of the Connection *conn*                    | Valid     |
-|                                                      | Null      |
+| Criteria                          | Predicate |
+| --------------------------------- | --------- |
+| Validity of the Connection *conn* | Valid     |
+|                                   | Null      |
 **Boundaries**:
 
 | Criteria                          | Boundary values    |
@@ -1121,10 +1440,10 @@ Version:
 
 **Combination of predicates**:
 
-|Validity of the Connection *conn*| Valid / Invalid | Description of the test case | JUnit test case EZShopClassTest|
-|-------|-------|-------|-------|
-|Valid  |Valid  |EZShop shop = new EZShop();  Connection conn = shop.dbAccess;  shop.dbClose(conn)     |testCase2       |
-|Null   |Valid  |EZShop shop = new EZShop();  shop.dbClose(null)     |testCase3       |
+| Validity of the Connection *conn* | Valid / Invalid | Description of the test case                                                      | JUnit test case EZShopClassTest |
+| --------------------------------- | --------------- | --------------------------------------------------------------------------------- | ------------------------------- |
+| Valid                             | Valid           | EZShop shop = new EZShop();  Connection conn = shop.dbAccess;  shop.dbClose(conn) | testCase2                       |
+| Null                              | Valid           | EZShop shop = new EZShop();  shop.dbClose(null)                                   | testCase3                       |
 
 #### isStringOnlyAlphabet
 
@@ -1136,14 +1455,14 @@ Version:
 
 **Predicates for method *isStringOnlyAlphabet*:**
 
-| Criteria                                             | Predicate |
-| --------                                             | --------- |
-| Validity of the String *str*                         | Valid     |
-|                                                      | Null      |
-| Length of the String *str*                           | > 0       |
-|                                                      | = 0       |
-| Presence of numbers in the String *str*              | False     |
-|                                                      | True      |
+| Criteria                                | Predicate |
+| --------------------------------------- | --------- |
+| Validity of the String *str*            | Valid     |
+|                                         | Null      |
+| Length of the String *str*              | > 0       |
+|                                         | = 0       |
+| Presence of numbers in the String *str* | False     |
+|                                         | True      |
 **Boundaries**:
 
 | Criteria                          | Boundary values    |
@@ -1151,12 +1470,12 @@ Version:
 
 **Combination of predicates**:
 
-|Validity of the String *str*|Length of the String *str*|Presence of numbers in the String *str*| Valid / Invalid | Description of the test case | JUnit test case EZShopClassTest|
-|-------|-------|-------|-------|-------|-------|
-|Valid  | > 0   |False  |Valid  |isStringOnlyAlphabet("abcdefghijk")       |testCase4       |
-|"      | "     |True   |Valid  |isStringOnlyAlphabet("123abcd")           |testCase4       |
-|"      | = 0   | -     |Valid  |isStringOnlyAlphabet("")                  |testCase4       |
-|Null   | -     | -     |Valid  |isStringOnlyAlphabet(null)                |testCase4       |
+| Validity of the String *str* | Length of the String *str* | Presence of numbers in the String *str* | Valid / Invalid | Description of the test case        | JUnit test case EZShopClassTest |
+| ---------------------------- | -------------------------- | --------------------------------------- | --------------- | ----------------------------------- | ------------------------------- |
+| Valid                        | > 0                        | False                                   | Valid           | isStringOnlyAlphabet("abcdefghijk") | testCase4                       |
+| "                            | "                          | True                                    | Valid           | isStringOnlyAlphabet("123abcd")     | testCase4                       |
+| "                            | = 0                        | -                                       | Valid           | isStringOnlyAlphabet("")            | testCase4                       |
+| Null                         | -                          | -                                       | Valid           | isStringOnlyAlphabet(null)          | testCase4                       |
 
 #### isStringOnlyNumbers
 
@@ -1168,14 +1487,14 @@ Version:
 
 **Predicates for method *isStringOnlyNumbers*:**
 
-| Criteria                                             | Predicate |
-| --------                                             | --------- |
-| Validity of the String *str*                         | Valid     |
-|                                                      | Null      |
-| Length of the String *str*                           | > 0       |
-|                                                      | = 0       |
-| Presence of letters in the String *str*              | False     |
-|                                                      | True      |
+| Criteria                                | Predicate |
+| --------------------------------------- | --------- |
+| Validity of the String *str*            | Valid     |
+|                                         | Null      |
+| Length of the String *str*              | > 0       |
+|                                         | = 0       |
+| Presence of letters in the String *str* | False     |
+|                                         | True      |
 **Boundaries**:
 
 | Criteria                          | Boundary values    |
@@ -1183,12 +1502,12 @@ Version:
 
 **Combination of predicates**:
 
-|Validity of the String *str*|Length of the String *str*|Presence of numbers in the String *str*| Valid / Invalid | Description of the test case | JUnit test case EZShopClassTest|
-|-------|-------|-------|-------|-------|-------|
-|Valid  | > 0   |False  |Valid  |isStringOnlyNumbers("1234567890")        |testCase5       |
-|"      | "     |True   |Valid  |isStringOnlyNumbers("123abcd")           |testCase5       |
-|"      | = 0   | -     |Valid  |isStringOnlyNumbers("")                  |testCase5       |
-|Null   | -     | -     |Valid  |isStringOnlyNumbers(null)                |testCase5       |
+| Validity of the String *str* | Length of the String *str* | Presence of numbers in the String *str* | Valid / Invalid | Description of the test case      | JUnit test case EZShopClassTest |
+| ---------------------------- | -------------------------- | --------------------------------------- | --------------- | --------------------------------- | ------------------------------- |
+| Valid                        | > 0                        | False                                   | Valid           | isStringOnlyNumbers("1234567890") | testCase5                       |
+| "                            | "                          | True                                    | Valid           | isStringOnlyNumbers("123abcd")    | testCase5                       |
+| "                            | = 0                        | -                                       | Valid           | isStringOnlyNumbers("")           | testCase5                       |
+| Null                         | -                          | -                                       | Valid           | isStringOnlyNumbers(null)         | testCase5                       |
 
 
 #### isBarcodeValid
@@ -1200,12 +1519,12 @@ Version:
 
 **Predicates for method *isBarcodeValid*:**
 
-| Criteria                                             | Predicate |
-| --------                                             | --------- |
-| Validity of the String *barcode*                     | Valid     |
-|                                                      | Invalid   |
-| Presence of letters in the String *barcode*          | False     |
-|                                                      | True      |
+| Criteria                                    | Predicate |
+| ------------------------------------------- | --------- |
+| Validity of the String *barcode*            | Valid     |
+|                                             | Invalid   |
+| Presence of letters in the String *barcode* | False     |
+|                                             | True      |
 **Boundaries**:
 
 | Criteria                          | Boundary values    |
@@ -1213,11 +1532,11 @@ Version:
 
 **Combination of predicates**:
 
-|Validity of the String *barcode*|Presence of letters in the String *barcode*| Valid / Invalid | Description of the test case | JUnit test case EZShopClassTest|
-|-------|-------|-------|-------|-------|
-|Valid  |False  |Valid  |isBarcodeValid("12637482635892")        |testCase6       |
-|"      |True   |Valid  |isBarcodeValid("123abcd")               |testCase6       |
-|Invalid| -     |Valid  |isBarcodeValid("1111111111111")         |testCase6       |
+| Validity of the String *barcode* | Presence of letters in the String *barcode* | Valid / Invalid | Description of the test case     | JUnit test case EZShopClassTest |
+| -------------------------------- | ------------------------------------------- | --------------- | -------------------------------- | ------------------------------- |
+| Valid                            | False                                       | Valid           | isBarcodeValid("12637482635892") | testCase6                       |
+| "                                | True                                        | Valid           | isBarcodeValid("123abcd")        | testCase6                       |
+| Invalid                          | -                                           | Valid           | isBarcodeValid("1111111111111")  | testCase6                       |
 
 #### checkLuhn
 
@@ -1229,14 +1548,14 @@ Version:
 
 **Predicates for method *checkLuhn*:**
 
-| Criteria                                             | Predicate |
-| --------                                             | --------- |
-| Validity of the String *cardNo*                      | Valid     |
-|                                                      | Null      |
-| Length of the String *cardNo*                        | > 0       |
-|                                                      | = 0       |
-| Presence of numbers in the String *cardNo*           | False     |
-|                                                      | True      |
+| Criteria                                   | Predicate |
+| ------------------------------------------ | --------- |
+| Validity of the String *cardNo*            | Valid     |
+|                                            | Null      |
+| Length of the String *cardNo*              | > 0       |
+|                                            | = 0       |
+| Presence of numbers in the String *cardNo* | False     |
+|                                            | True      |
 **Boundaries**:
 
 | Criteria                          | Boundary values    |
@@ -1244,12 +1563,12 @@ Version:
 
 **Combination of predicates**:
 
-|Validity of the String *cardNo*|Length of the String *cardNo*|Presence of numbers in the String *cardNo*| Valid / Invalid | Description of the test case | JUnit test case EZShopClassTest|
-|-------|-------|-------|-------|-------|-------|
-|Valid  | > 0   |False  |Valid  |checkLuhn("4716258050958645")             |testCase7       |
-|"      | "     |True   |Valid  |isStringOnlyAlphabet("123abcd")           |testCase7       |
-|"      | = 0   | -     |Valid  |isStringOnlyAlphabet("")                  |testCase7       |
-|Null   | -     | -     |Valid  |isStringOnlyAlphabet(null)                |testCase7       |
+| Validity of the String *cardNo* | Length of the String *cardNo* | Presence of numbers in the String *cardNo* | Valid / Invalid | Description of the test case    | JUnit test case EZShopClassTest |
+| ------------------------------- | ----------------------------- | ------------------------------------------ | --------------- | ------------------------------- | ------------------------------- |
+| Valid                           | > 0                           | False                                      | Valid           | checkLuhn("4716258050958645")   | testCase7                       |
+| "                               | "                             | True                                       | Valid           | isStringOnlyAlphabet("123abcd") | testCase7                       |
+| "                               | = 0                           | -                                          | Valid           | isStringOnlyAlphabet("")        | testCase7                       |
+| Null                            | -                             | -                                          | Valid           | isStringOnlyAlphabet(null)      | testCase7                       |
 
 
 # White Box Unit Tests
@@ -1261,11 +1580,11 @@ Version:
     <For traceability write the class and method name that contains the test case>
 
 
-| Unit name | JUnit test case |
-| --------- | --------------- |
-|           |                 |
-|           |                 |
-|           |                 |  |
+| Unit name             | JUnit test case            |
+| --------------------- | -------------------------- |
+| SaleTransactionImpl   | SaleTransactionClassTest   |
+| ReturnTransactionImpl | ReturnTransactionClassTest |
+|                       |                            |
 
 ### Code coverage report
 
@@ -1278,10 +1597,10 @@ Version:
     <Identify significant loops in the units and reports the test cases
     developed to cover zero, one or multiple iterations >
 
-| Unit name | Loop rows | Number of iterations | JUnit test case |
-| --------- | --------- | -------------------- | --------------- |
-|           |           |                      |                 |
-|           |           |                      |                 |
-|           |           |                      |                 |
+| Unit name                | Loop rows | Number of iterations | JUnit test case |
+| ------------------------ | --------- | -------------------- | --------------- |
+| setDiscountRateToProduct | 83:93     | 0                    | testCase9       |
+|                          |           | 1                    | testCase7       |
+|                          |           | >1                   | testCase8       |
 
 

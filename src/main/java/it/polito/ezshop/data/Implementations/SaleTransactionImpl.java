@@ -49,19 +49,6 @@ public class SaleTransactionImpl implements SaleTransaction {
 
 	}
 
-	// public TicketEntry getEntry(String barCode) {
-	//
-	// TicketEntry entry = null;
-	// for (TicketEntry e : entries) {
-	// if (e.getBarCode() == barCode) {
-	// entry = e;
-	// break;
-	// }
-	// }
-	// return entry;
-	//
-	// }
-
 	public Boolean removeAmountFromEntry(String barCode, int amountToRemove) {
 		// remove amount from entry if amount<previous amount, deletes entry if
 		// amount==previous amount, return false if amount>previous amount
@@ -84,7 +71,6 @@ public class SaleTransactionImpl implements SaleTransaction {
 				}
 				// else if (amountToRemove > previousAmount) updated=false;
 				System.out.println("Found item to remove" + entry);
-				break;
 			}
 		}
 		// if product not present in the saleTransaction updated==false
@@ -92,7 +78,7 @@ public class SaleTransactionImpl implements SaleTransaction {
 
 	}
 
-	public void setDiscountRateToProduct(String barCode, double discountRate) {
+	public Boolean setDiscountRateToProduct(String barCode, double discountRate) {
 
 		for (TicketEntry entry : entries) {
 			if (entry.getBarCode() == barCode) {
@@ -102,9 +88,10 @@ public class SaleTransactionImpl implements SaleTransaction {
 				this.price = entry.getAmount() * entry.getPricePerUnit() * (1 - entry.getDiscountRate()); // new entry
 																											// cost
 				System.out.println(entry);
-				break;
+				return true;
 			}
 		}
+		return false;
 
 	}
 
