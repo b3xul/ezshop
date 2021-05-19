@@ -1259,7 +1259,7 @@ public class EZShop implements EZShopInterface {
 						return new CustomerImpl(rs.getInt("id"), rs.getString("name"), rs.getString("card"),
 								rs.getInt("points"));
 					} else {	// search for a customer without an associated card
-						sql = "SELECT id, name FROM Customers WHERE card IS NULL";	
+						sql = "SELECT id, name FROM Customers WHERE id = "+ id;	
 						statement = conn.createStatement();
 						rs = statement.executeQuery(sql);
 						if (rs.next()) {
@@ -1299,7 +1299,7 @@ public class EZShop implements EZShopInterface {
 					customers.add(new CustomerImpl(rs.getInt("id"), rs.getString("name"), rs.getString("card"),
 							rs.getInt("points")));
 				}
-				// add all customer without an associated card
+				// add all customers without an associated card
 				sql = "SELECT id, name FROM Customers WHERE card IS NULL";
 				statement = conn.createStatement();
 				rs = statement.executeQuery(sql);
