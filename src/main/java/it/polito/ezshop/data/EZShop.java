@@ -14,13 +14,13 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 import it.polito.ezshop.data.Implementations.BalanceOperationImpl;
+import it.polito.ezshop.data.Implementations.CustomerImpl;
 import it.polito.ezshop.data.Implementations.OrderImpl;
 import it.polito.ezshop.data.Implementations.ProductTypeImpl;
 import it.polito.ezshop.data.Implementations.ReturnTransactionImpl;
 import it.polito.ezshop.data.Implementations.SaleTransactionImpl;
 import it.polito.ezshop.data.Implementations.TicketEntryImpl;
 import it.polito.ezshop.data.Implementations.UserImpl;
-import it.polito.ezshop.data.Implementations.CustomerImpl;
 import it.polito.ezshop.exceptions.InvalidCreditCardException;
 import it.polito.ezshop.exceptions.InvalidCustomerCardException;
 import it.polito.ezshop.exceptions.InvalidCustomerIdException;
@@ -44,7 +44,7 @@ import it.polito.ezshop.exceptions.UnauthorizedException;
 public class EZShop implements EZShopInterface {
 
 	User userLoggedIn = new UserImpl();
-	public SaleTransactionImpl openSaleTransaction = null; // remove public!
+	SaleTransactionImpl openSaleTransaction = null;
 	ReturnTransactionImpl openReturnTransaction = null;
 
 	// method to open the connection to database
@@ -52,7 +52,7 @@ public class EZShop implements EZShopInterface {
 
 		Connection conn = null;
 		try {
-			String url = "jdbc:sqlite:prova_java.db";
+			String url = "jdbc:sqlite:EZShopDB.sqlite";
 			conn = DriverManager.getConnection(url);
 			System.out.println("Connection to SQLite has been established.");
 		} catch (Exception ex) {
@@ -94,7 +94,8 @@ public class EZShop implements EZShopInterface {
 	public static boolean isBarcodeValid(String barcode) {
 
 		boolean valid = false;
-		if(!isStringOnlyNumbers(barcode)) return valid;
+		if (!isStringOnlyNumbers(barcode))
+			return valid;
 
 		List<Integer> b = new ArrayList<Integer>();
 		for (String c : barcode.split("")) {
@@ -121,56 +122,59 @@ public class EZShop implements EZShopInterface {
 	}
 
 	public boolean checkLuhn(String cardNo) {
-		
-		if(!isStringOnlyNumbers(cardNo)) return false;
-	    int nDigits = cardNo.length();
-	 
-	    int nSum = 0;
-	    boolean isSecond = false;
-	    for (int i = nDigits - 1; i >= 0; i--){
-	        int d = cardNo.charAt(i) - '0';
-	 
-	        if (isSecond == true)
-	            d = d * 2;
-	 
-	        nSum += d / 10;
-	        nSum += d % 10;
-	 
-	        isSecond = !isSecond;
-	    }
-	    return (nSum % 10 == 0);
+
+		if (!isStringOnlyNumbers(cardNo))
+			return false;
+		int nDigits = cardNo.length();
+
+		int nSum = 0;
+		boolean isSecond = false;
+		for (int i = nDigits - 1; i >= 0; i--) {
+			int d = cardNo.charAt(i) - '0';
+
+			if (isSecond == true)
+				d = d * 2;
+
+			nSum += d / 10;
+			nSum += d % 10;
+
+			isSecond = !isSecond;
+		}
+		return (nSum % 10 == 0);
+
 	}
 
 	@Override
 	public void reset() {
-		Connection conn = null;    
-    	 try {
-    		conn = dbAccess();
-    		String sql = "DELETE FROM product";
-    		PreparedStatement pstmt = conn.prepareStatement(sql);
-    		pstmt.executeUpdate(); 
-    		sql = "DELETE FROM order_";
-		    pstmt = conn.prepareStatement(sql);
-		    pstmt.executeUpdate(); 
-		    sql = "DELETE FROM saleTransaction";
-		    pstmt = conn.prepareStatement(sql);
-		    pstmt.executeUpdate(); 
-		    sql = "DELETE FROM returnTransaction";
-		    pstmt = conn.prepareStatement(sql);
-		    pstmt.executeUpdate(); 
-	   		sql = "DELETE FROM balanceOperation";   
-		    pstmt = conn.prepareStatement(sql);
-		    pstmt.executeUpdate();   
-		    sql = "DELETE FROM ticketEntry";   
-		    pstmt = conn.prepareStatement(sql);
-		    pstmt.executeUpdate();   
-		    
-    	 } catch (Exception e) {  
-		    System.out.println(e.getMessage()); 
-    	 } finally {  
-	        dbClose(conn);  	
 
-	    } 	   
+		Connection conn = null;
+		try {
+			conn = dbAccess();
+			String sql = "DELETE FROM product";
+			PreparedStatement pstmt = conn.prepareStatement(sql);
+			pstmt.executeUpdate();
+			sql = "DELETE FROM order_";
+			pstmt = conn.prepareStatement(sql);
+			pstmt.executeUpdate();
+			sql = "DELETE FROM saleTransaction";
+			pstmt = conn.prepareStatement(sql);
+			pstmt.executeUpdate();
+			sql = "DELETE FROM returnTransaction";
+			pstmt = conn.prepareStatement(sql);
+			pstmt.executeUpdate();
+			sql = "DELETE FROM balanceOperation";
+			pstmt = conn.prepareStatement(sql);
+			pstmt.executeUpdate();
+			sql = "DELETE FROM ticketEntry";
+			pstmt = conn.prepareStatement(sql);
+			pstmt.executeUpdate();
+
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		} finally {
+			dbClose(conn);
+
+		}
 
 	}
 
@@ -179,43 +183,43 @@ public class EZShop implements EZShopInterface {
 			throws InvalidUsernameException, InvalidPasswordException, InvalidRoleException {
 
 		Connection conn = null;
-		if(username != null && username.isEmpty()==false) {
-			if(password != null &&  password.isEmpty()==false) {
-		    	if(role != null && (role.equals("Administrator") || role.equals("Cashier") || role.equals("ShopManager"))) {
-				    try {
-				    	conn = dbAccess();
-			    		String sql = "SELECT seq FROM sqlite_sequence WHERE name = 'Users'";
-			    		Statement statement = conn.createStatement();
-				        ResultSet rs = statement.executeQuery(sql);
-			    	    int id = rs.getInt("seq") + 1;
-			    		sql = "INSERT INTO Users (id, username, password, role) VALUES(?,?,?,?)";			             
-				        PreparedStatement pstmt = conn.prepareStatement(sql);
-					    pstmt.setInt(1,id);
-					    pstmt.setString(2, username);
-			            pstmt.setString(3, password);
-			            pstmt.setString(4, role);       
-					    int res = pstmt.executeUpdate();
-					    if(res == 0) {		// no modified row
-					    	return -1;
-					    }
-					    else {
-					    	return id;
-					    }		    		
-	    		
-				    } catch (Exception e) {  
-				        System.out.println(e.getMessage()); 
-				        return -1;
-				        
-			        } finally {  
-			        	
-			        	dbClose(conn);
-				    }
-					    	}
-		    	else throw new InvalidRoleException("Invalid role");
-		    }
-			else throw new InvalidPasswordException("Invalid password");
-    	}
-    	else throw new InvalidUsernameException("Invalid username");
+		if (username != null && username.isEmpty() == false) {
+			if (password != null && password.isEmpty() == false) {
+				if (role != null
+						&& (role.equals("Administrator") || role.equals("Cashier") || role.equals("ShopManager"))) {
+					try {
+						conn = dbAccess();
+						String sql = "SELECT seq FROM sqlite_sequence WHERE name = 'Users'";
+						Statement statement = conn.createStatement();
+						ResultSet rs = statement.executeQuery(sql);
+						int id = rs.getInt("seq") + 1;
+						sql = "INSERT INTO Users (id, username, password, role) VALUES(?,?,?,?)";
+						PreparedStatement pstmt = conn.prepareStatement(sql);
+						pstmt.setInt(1, id);
+						pstmt.setString(2, username);
+						pstmt.setString(3, password);
+						pstmt.setString(4, role);
+						int res = pstmt.executeUpdate();
+						if (res == 0) { // no modified row
+							return -1;
+						} else {
+							return id;
+						}
+
+					} catch (Exception e) {
+						System.out.println(e.getMessage());
+						return -1;
+
+					} finally {
+
+						dbClose(conn);
+					}
+				} else
+					throw new InvalidRoleException("Invalid role");
+			} else
+				throw new InvalidPasswordException("Invalid password");
+		} else
+			throw new InvalidUsernameException("Invalid username");
 
 	}
 
@@ -223,34 +227,33 @@ public class EZShop implements EZShopInterface {
 	public boolean deleteUser(Integer id) throws InvalidUserIdException, UnauthorizedException {
 
 		Connection conn = null;
-		if(userLoggedIn.getRole().equals("Administrator")) {
-    		if(id != null && id > 0) {
-			    try {
-			    	conn = dbAccess();
-		            String sql = "DELETE FROM Users WHERE id = ?";
-		            PreparedStatement pstmt = conn.prepareStatement(sql);
-		    		pstmt.setInt(1, id);
-		    		int rs = pstmt.executeUpdate(); 
-		            if(rs == 0) { 					//  no modified row
-		            	return false;
-		            }
-		            else {
-		            	return true;
-		            }
-		
-			    } catch (Exception e) {  
-			        System.out.println(e.getMessage()); 
-			        return false;
-			        
-		        } finally {  
-		        	dbClose(conn);
+		if (userLoggedIn.getRole().equals("Administrator")) {
+			if (id != null && id > 0) {
+				try {
+					conn = dbAccess();
+					String sql = "DELETE FROM Users WHERE id = ?";
+					PreparedStatement pstmt = conn.prepareStatement(sql);
+					pstmt.setInt(1, id);
+					int rs = pstmt.executeUpdate();
+					if (rs == 0) { // no modified row
+						return false;
+					} else {
+						return true;
+					}
 
-		        } 
-    		}
-    		else throw new InvalidUserIdException("Invalid User");
-    	}
-    	else throw new UnauthorizedException("Permission denied");
-	    
+				} catch (Exception e) {
+					System.out.println(e.getMessage());
+					return false;
+
+				} finally {
+					dbClose(conn);
+
+				}
+			} else
+				throw new InvalidUserIdException("Invalid User");
+		} else
+			throw new UnauthorizedException("Permission denied");
+
 	}
 
 	// ritornare la lista vuota o null in caso di eccezione?
@@ -259,27 +262,29 @@ public class EZShop implements EZShopInterface {
 
 		Connection conn = null;
 		List<User> users = new ArrayList<User>();
-		if(userLoggedIn.getRole().equals("Administrator")) {
-		    try {  
-		    	conn = dbAccess();
-	            String sql = "SELECT id, username, password, role FROM Users";
-		        Statement statement = conn.createStatement();
-		        ResultSet rs = statement.executeQuery(sql);
-		        while (rs.next()) {
-	                users.add(new UserImpl(rs.getInt("id"),rs.getString("username"),rs.getString("password"),rs.getString("role")));
-	            }
-		        return users;
-					
-		    } catch (Exception e) {  
-		        System.out.println(e.getMessage());
-		        return users;
-		        
-	        } finally {  
-	        	dbClose(conn);
-	 	       	//System.out.println("connection closed");
-		       
-		    }
-		}else throw new UnauthorizedException("Permission denied");
+		if (userLoggedIn.getRole().equals("Administrator")) {
+			try {
+				conn = dbAccess();
+				String sql = "SELECT id, username, password, role FROM Users";
+				Statement statement = conn.createStatement();
+				ResultSet rs = statement.executeQuery(sql);
+				while (rs.next()) {
+					users.add(new UserImpl(rs.getInt("id"), rs.getString("username"), rs.getString("password"),
+							rs.getString("role")));
+				}
+				return users;
+
+			} catch (Exception e) {
+				System.out.println(e.getMessage());
+				return users;
+
+			} finally {
+				dbClose(conn);
+				// System.out.println("connection closed");
+
+			}
+		} else
+			throw new UnauthorizedException("Permission denied");
 
 	}
 
@@ -288,32 +293,32 @@ public class EZShop implements EZShopInterface {
 	public User getUser(Integer id) throws InvalidUserIdException, UnauthorizedException {
 
 		Connection conn = null;
-		if(userLoggedIn.getRole().equals("Administrator")) {
-    		if(id != null && id > 0) {
-			    try {  
-			    	conn = dbAccess();
-		            String sql = "SELECT id, username, password, role FROM Users WHERE id = "+id;
-			        Statement statement = conn.createStatement();
-			        ResultSet rs = statement.executeQuery(sql);
-			        if(rs.next()) {
-			        	 return new UserImpl(rs.getInt("id"),rs.getString("username"),rs.getString("password"),rs.getString("role"));
-		            }
-			        else {
-			        	return null;
-			        }					
-			    	
-			    } catch (Exception e) {  
-			        System.out.println(e.getMessage());
-				    return null;
-				    
-		        } finally {  	
-		        	dbClose(conn);
-		 	       	//System.out.println("connection closed");
-			    }
-    		}
-    		else throw new InvalidUserIdException("Invalid user");
-    	}
-    	else throw new UnauthorizedException("Permission denied");
+		if (userLoggedIn.getRole().equals("Administrator")) {
+			if (id != null && id > 0) {
+				try {
+					conn = dbAccess();
+					String sql = "SELECT id, username, password, role FROM Users WHERE id = " + id;
+					Statement statement = conn.createStatement();
+					ResultSet rs = statement.executeQuery(sql);
+					if (rs.next()) {
+						return new UserImpl(rs.getInt("id"), rs.getString("username"), rs.getString("password"),
+								rs.getString("role"));
+					} else {
+						return null;
+					}
+
+				} catch (Exception e) {
+					System.out.println(e.getMessage());
+					return null;
+
+				} finally {
+					dbClose(conn);
+					// System.out.println("connection closed");
+				}
+			} else
+				throw new InvalidUserIdException("Invalid user");
+		} else
+			throw new UnauthorizedException("Permission denied");
 
 	}
 
@@ -322,77 +327,75 @@ public class EZShop implements EZShopInterface {
 			throws InvalidUserIdException, InvalidRoleException, UnauthorizedException {
 
 		Connection conn = null;
-		if(userLoggedIn.getRole().equals("Administrator")) {
-    		if(id != null && id > 0) {
-	    		if(role != null && (role.equals("Administrator") || role.equals("Cashier") || role.equals("ShopManager"))) {
-	    			try {  
-		    			conn = dbAccess();
-			            String sql = "UPDATE Users SET role = ? WHERE id = ?";
-			            PreparedStatement pstmt = conn.prepareStatement(sql);
-				        pstmt.setString(1, role);
-			            pstmt.setInt(2, id);
-			            int rs = pstmt.executeUpdate(); 					            
-			            if(rs == 0) { 					//  no modified row
-			            	return false;
-			            }
-			            else {
-			            	return true;
-			            }
-				    	
-				    } catch (Exception e) {  
-				        System.out.println(e.getMessage());
-				        return false;
-				        
-			        } finally {  	
-			        	dbClose(conn);
-			 	       	//System.out.println("connection closed");
-			        }
-	    		} 
-	    		else throw new InvalidRoleException("Invalid role");
-    		}
-    		else throw new InvalidUserIdException("Invalid user");
-    	}
-    	else throw new UnauthorizedException("Permission denied");
-    	
+		if (userLoggedIn.getRole().equals("Administrator")) {
+			if (id != null && id > 0) {
+				if (role != null
+						&& (role.equals("Administrator") || role.equals("Cashier") || role.equals("ShopManager"))) {
+					try {
+						conn = dbAccess();
+						String sql = "UPDATE Users SET role = ? WHERE id = ?";
+						PreparedStatement pstmt = conn.prepareStatement(sql);
+						pstmt.setString(1, role);
+						pstmt.setInt(2, id);
+						int rs = pstmt.executeUpdate();
+						if (rs == 0) { // no modified row
+							return false;
+						} else {
+							return true;
+						}
+
+					} catch (Exception e) {
+						System.out.println(e.getMessage());
+						return false;
+
+					} finally {
+						dbClose(conn);
+						// System.out.println("connection closed");
+					}
+				} else
+					throw new InvalidRoleException("Invalid role");
+			} else
+				throw new InvalidUserIdException("Invalid user");
+		} else
+			throw new UnauthorizedException("Permission denied");
+
 	}
 
 	@Override
 	public User login(String username, String password) throws InvalidUsernameException, InvalidPasswordException {
 
 		Connection conn = null;
-		if(username != null && username.isEmpty()==false) {
-			if(password != null &&  password.isEmpty()==false) {
-				try {  		
+		if (username != null && username.isEmpty() == false) {
+			if (password != null && password.isEmpty() == false) {
+				try {
 					conn = dbAccess();
-		            String sql = "SELECT id, username, password, role FROM Users WHERE username = '"+username+"'";
-			        Statement statement = conn.createStatement();
-			        ResultSet rs = statement.executeQuery(sql);
+					String sql = "SELECT id, username, password, role FROM Users WHERE username = '" + username + "'";
+					Statement statement = conn.createStatement();
+					ResultSet rs = statement.executeQuery(sql);
 
-			        if(rs.next()==true && password.equals(rs.getString("password"))) {
-			        	//System.out.println("Log in");
-	                	userLoggedIn.setId(rs.getInt("id")); userLoggedIn.setUsername(rs.getString("username"));
-	                	userLoggedIn.setPassword(rs.getString("password"));  userLoggedIn.setRole(rs.getString("role"));
-	                	return userLoggedIn;
-		            }
-		            else{
-		                return null;
-		            }	  
-		
-			    } catch (Exception e) {  
-			        System.out.println(e.getMessage()); 
-			        return null;
-			        
-			    } finally {  
-			    	dbClose(conn);
-			    	//System.out.println("connection closed");  
-			    }
-			}
-			else 
+					if (rs.next() == true && password.equals(rs.getString("password"))) {
+						// System.out.println("Log in");
+						userLoggedIn.setId(rs.getInt("id"));
+						userLoggedIn.setUsername(rs.getString("username"));
+						userLoggedIn.setPassword(rs.getString("password"));
+						userLoggedIn.setRole(rs.getString("role"));
+						return userLoggedIn;
+					} else {
+						return null;
+					}
+
+				} catch (Exception e) {
+					System.out.println(e.getMessage());
+					return null;
+
+				} finally {
+					dbClose(conn);
+					// System.out.println("connection closed");
+				}
+			} else
 				throw new InvalidPasswordException("Password not valid");
-		}
-		else 
+		} else
 			throw new InvalidUsernameException("Username not valid");
-    	
 
 	}
 
@@ -431,7 +434,8 @@ public class EZShop implements EZShopInterface {
 			throw new InvalidProductCodeException("invalid barcode: barcode does not respect GTIN specifications");
 		else if (pricePerUnit <= 0)
 			throw new InvalidPricePerUnitException("invalid price");
-		else if (userLoggedIn == null || (!userLoggedIn.getRole().equals("Administrator") &&  !userLoggedIn.getRole().equals("ShopManager")))
+		else if (userLoggedIn == null
+				|| (!userLoggedIn.getRole().equals("Administrator") && !userLoggedIn.getRole().equals("ShopManager")))
 			throw new UnauthorizedException("user error");
 		else {
 			ProductTypeImpl newProduct = new ProductTypeImpl(note, description, productCode, pricePerUnit);
@@ -467,7 +471,7 @@ public class EZShop implements EZShopInterface {
 			} catch (SQLException e) {
 				e.printStackTrace();
 				id = -1;
-			}finally {
+			} finally {
 				dbClose(conn);
 			}
 		}
@@ -497,7 +501,8 @@ public class EZShop implements EZShopInterface {
 			throw new InvalidProductCodeException("invalid barcode: barcode does not respect GTIN specifications");
 		else if (newPrice <= 0)
 			throw new InvalidPricePerUnitException("invalid price");
-		else if (userLoggedIn == null || (!userLoggedIn.getRole().equals("Administrator") &&  !userLoggedIn.getRole().equals("ShopManager")))
+		else if (userLoggedIn == null
+				|| (!userLoggedIn.getRole().equals("Administrator") && !userLoggedIn.getRole().equals("ShopManager")))
 			throw new UnauthorizedException("user error");
 		else {
 			Long.parseLong(newCode);
@@ -533,7 +538,7 @@ public class EZShop implements EZShopInterface {
 			} catch (SQLException e) {
 				e.printStackTrace();
 				success = false;
-			}finally {
+			} finally {
 				dbClose(conn);
 			}
 		}
@@ -549,7 +554,8 @@ public class EZShop implements EZShopInterface {
 		Connection conn = null;
 		if (id <= 0 || id == null)
 			throw new InvalidProductIdException("invalid ID");
-		else if (userLoggedIn == null || (!userLoggedIn.getRole().equals("Administrator") &&  !userLoggedIn.getRole().equals("ShopManager")))
+		else if (userLoggedIn == null
+				|| (!userLoggedIn.getRole().equals("Administrator") && !userLoggedIn.getRole().equals("ShopManager")))
 			throw new UnauthorizedException("user error");
 		else {
 			conn = dbAccess();
@@ -564,7 +570,7 @@ public class EZShop implements EZShopInterface {
 			} catch (SQLException e) {
 				e.printStackTrace();
 				success = false;
-			}finally {
+			} finally {
 				dbClose(conn);
 			}
 		}
@@ -578,7 +584,8 @@ public class EZShop implements EZShopInterface {
 
 		List<ProductType> inventory = new ArrayList<ProductType>();
 		Connection conn = null;
-		if (userLoggedIn == null || (!userLoggedIn.getRole().equals("Administrator") &&  !userLoggedIn.getRole().equals("ShopManager") && !userLoggedIn.getRole().equals("Cashier")))
+		if (userLoggedIn == null || (!userLoggedIn.getRole().equals("Administrator")
+				&& !userLoggedIn.getRole().equals("ShopManager") && !userLoggedIn.getRole().equals("Cashier")))
 			throw new UnauthorizedException("user error");
 		else {
 			conn = dbAccess();
@@ -611,7 +618,7 @@ public class EZShop implements EZShopInterface {
 				// for(ProductType p: inventory) p.print();
 			} catch (SQLException e) {
 				e.printStackTrace();
-			}finally {
+			} finally {
 				dbClose(conn);
 			}
 		}
@@ -634,7 +641,8 @@ public class EZShop implements EZShopInterface {
 			throw new InvalidProductCodeException("invalid barcode: in barcode must not be letters");
 		else if (!isBarcodeValid(barCode))
 			throw new InvalidProductCodeException("invalid barcode: barcode does not respect GTIN specifications");
-		else if (userLoggedIn == null || (!userLoggedIn.getRole().equals("Administrator") &&  !userLoggedIn.getRole().equals("ShopManager")))
+		else if (userLoggedIn == null
+				|| (!userLoggedIn.getRole().equals("Administrator") && !userLoggedIn.getRole().equals("ShopManager")))
 			throw new UnauthorizedException("user error");
 		else {
 			conn = dbAccess();
@@ -672,7 +680,7 @@ public class EZShop implements EZShopInterface {
 				}
 			} catch (SQLException e) {
 				e.printStackTrace();
-			}finally {
+			} finally {
 				dbClose(conn);
 			}
 		}
@@ -688,7 +696,8 @@ public class EZShop implements EZShopInterface {
 			description = null;
 		List<ProductType> matchingProducts = new ArrayList<ProductType>();
 		Connection conn = null;
-		if (userLoggedIn == null || (!userLoggedIn.getRole().equals("Administrator") &&  !userLoggedIn.getRole().equals("ShopManager")))
+		if (userLoggedIn == null
+				|| (!userLoggedIn.getRole().equals("Administrator") && !userLoggedIn.getRole().equals("ShopManager")))
 			throw new UnauthorizedException("user error");
 		else {
 			conn = dbAccess();
@@ -721,7 +730,7 @@ public class EZShop implements EZShopInterface {
 				// for(ProductType p: matchingProducts) p.print();
 			} catch (SQLException e) {
 				e.printStackTrace();
-			}finally {
+			} finally {
 				dbClose(conn);
 			}
 		}
@@ -738,7 +747,8 @@ public class EZShop implements EZShopInterface {
 		Connection conn = null;
 		if (productId <= 0 || productId == null)
 			throw new InvalidProductIdException("ID incorrect");
-		else if (userLoggedIn == null || (!userLoggedIn.getRole().equals("Administrator") &&  !userLoggedIn.getRole().equals("ShopManager")))
+		else if (userLoggedIn == null
+				|| (!userLoggedIn.getRole().equals("Administrator") && !userLoggedIn.getRole().equals("ShopManager")))
 			throw new UnauthorizedException("user error");
 		else {
 			conn = dbAccess();
@@ -775,7 +785,7 @@ public class EZShop implements EZShopInterface {
 			} catch (SQLException e) {
 				e.printStackTrace();
 				success = false;
-			}finally {
+			} finally {
 				dbClose(conn);
 			}
 		}
@@ -793,7 +803,8 @@ public class EZShop implements EZShopInterface {
 		conn = dbAccess();
 		if (productId <= 0 || productId == null)
 			throw new InvalidProductIdException("ID incorrect");
-		else if (userLoggedIn == null || (!userLoggedIn.getRole().equals("Administrator") &&  !userLoggedIn.getRole().equals("ShopManager")))
+		else if (userLoggedIn == null
+				|| (!userLoggedIn.getRole().equals("Administrator") && !userLoggedIn.getRole().equals("ShopManager")))
 			throw new UnauthorizedException("user error");
 		else if (newPos == null || newPos == "") {
 			// Statement to update the location of a product given its ID to an empty string
@@ -855,7 +866,7 @@ public class EZShop implements EZShopInterface {
 				} catch (SQLException e) {
 					e.printStackTrace();
 					success = false;
-				}finally {
+				} finally {
 					dbClose(conn);
 				}
 			}
@@ -870,21 +881,22 @@ public class EZShop implements EZShopInterface {
 
 		Connection conn = null;
 		int id = -1;
-		
+
 		if (quantity <= 0)
 			throw new InvalidQuantityException("The quantity you've inserted is not accepted");
 		if (pricePerUnit <= 0)
 			throw new InvalidPricePerUnitException("The price you've inserted is not accepted");
-		if (userLoggedIn == null || (!userLoggedIn.getRole().equals("Administrator") &&  !userLoggedIn.getRole().equals("ShopManager")))
+		if (userLoggedIn == null
+				|| (!userLoggedIn.getRole().equals("Administrator") && !userLoggedIn.getRole().equals("ShopManager")))
 			throw new UnauthorizedException("The user doesn't have the rights to perform this action");
-		if (productCode == null ||  productCode == "")
-            throw new InvalidProductCodeException("invalid barcode: barcode not inserted");
-        if (productCode.length() < 12 || productCode.length() > 14)
-            throw new InvalidProductCodeException("invalid barcode: wrong length");
-        if (!isStringOnlyNumbers(productCode))
-            throw new InvalidProductCodeException("invalid barcode: in barcode must not be letters");
-        if (!isBarcodeValid(productCode))
-            throw new InvalidProductCodeException("invalid barcode: barcode does not respect GTIN specifications");
+		if (productCode == null || productCode == "")
+			throw new InvalidProductCodeException("invalid barcode: barcode not inserted");
+		if (productCode.length() < 12 || productCode.length() > 14)
+			throw new InvalidProductCodeException("invalid barcode: wrong length");
+		if (!isStringOnlyNumbers(productCode))
+			throw new InvalidProductCodeException("invalid barcode: in barcode must not be letters");
+		if (!isBarcodeValid(productCode))
+			throw new InvalidProductCodeException("invalid barcode: barcode does not respect GTIN specifications");
 		try {
 			conn = dbAccess();
 			String sql = "SELECT id FROM product WHERE barcode = ?";
@@ -902,7 +914,7 @@ public class EZShop implements EZShopInterface {
 			statement3.setDouble(5, pricePerUnit);
 			statement3.setInt(6, quantity);
 			statement3.setString(7, "ISSUED");
-			statement3.executeUpdate();	
+			statement3.executeUpdate();
 			String sql4 = "SELECT MAX(orderId) AS MaxId FROM order_";
 			Statement statement4 = conn.createStatement();
 			ResultSet rs4 = statement4.executeQuery(sql4);
@@ -924,21 +936,22 @@ public class EZShop implements EZShopInterface {
 		Connection conn = null;
 		int orderId = -1;
 		int balanceId = 0;
-		
+
 		if (quantity <= 0)
 			throw new InvalidQuantityException("The quantity you've inserted is not accepted");
 		if (pricePerUnit <= 0)
 			throw new InvalidPricePerUnitException("The price you've inserted is not accepted");
-		if (userLoggedIn == null || (!userLoggedIn.getRole().equals("Administrator") &&  !userLoggedIn.getRole().equals("ShopManager")))
+		if (userLoggedIn == null
+				|| (!userLoggedIn.getRole().equals("Administrator") && !userLoggedIn.getRole().equals("ShopManager")))
 			throw new UnauthorizedException("The user doesn't have the rights to perform this action");
-		if (productCode == null ||  productCode == "")
-            throw new InvalidProductCodeException("invalid barcode: barcode not inserted");
-        if (productCode.length() < 12 || productCode.length() > 14)
-            throw new InvalidProductCodeException("invalid barcode: wrong length");
-        if (!isStringOnlyNumbers(productCode))
-            throw new InvalidProductCodeException("invalid barcode: in barcode must not be letters");
-        if (!isBarcodeValid(productCode))
-            throw new InvalidProductCodeException("invalid barcode: barcode does not respect GTIN specifications");
+		if (productCode == null || productCode == "")
+			throw new InvalidProductCodeException("invalid barcode: barcode not inserted");
+		if (productCode.length() < 12 || productCode.length() > 14)
+			throw new InvalidProductCodeException("invalid barcode: wrong length");
+		if (!isStringOnlyNumbers(productCode))
+			throw new InvalidProductCodeException("invalid barcode: in barcode must not be letters");
+		if (!isBarcodeValid(productCode))
+			throw new InvalidProductCodeException("invalid barcode: barcode does not respect GTIN specifications");
 		try {
 			conn = dbAccess();
 			String sql = "SELECT id FROM product WHERE barcode = ?";
@@ -983,10 +996,11 @@ public class EZShop implements EZShopInterface {
 		boolean validOrderId = false;
 		Connection conn = null;
 		int balanceId = 0;
-		
-		if (userLoggedIn == null || (!userLoggedIn.getRole().equals("Administrator") &&  !userLoggedIn.getRole().equals("ShopManager")))
+
+		if (userLoggedIn == null
+				|| (!userLoggedIn.getRole().equals("Administrator") && !userLoggedIn.getRole().equals("ShopManager")))
 			throw new UnauthorizedException("The user doesn't have the rights to perform this action");
-		if(orderId == null || orderId <=0)
+		if (orderId == null || orderId <= 0)
 			throw new InvalidOrderIdException("There is no order with this id");
 		try {
 			conn = dbAccess();
@@ -997,8 +1011,7 @@ public class EZShop implements EZShopInterface {
 			if (!rs.next()) {
 				System.out.println("There is no order with this ID");
 				return validOrderId;
-			}
-			else
+			} else
 				validOrderId = true;
 			String sql2 = "UPDATE order_ SET status = ? WHERE orderId = ?";
 			PreparedStatement statement2 = conn.prepareStatement(sql2);
@@ -1039,7 +1052,8 @@ public class EZShop implements EZShopInterface {
 		String barcode = null;
 		int qty = 0;
 		String location = null;
-		if (userLoggedIn == null || (!userLoggedIn.getRole().equals("Administrator") &&  !userLoggedIn.getRole().equals("ShopManager")))
+		if (userLoggedIn == null
+				|| (!userLoggedIn.getRole().equals("Administrator") && !userLoggedIn.getRole().equals("ShopManager")))
 			throw new UnauthorizedException("The user doesn't have the rights to perform this action");
 		if (orderId <= 0 || orderId == null)
 			throw new InvalidOrderIdException("The order id is not valid");
@@ -1053,8 +1067,7 @@ public class EZShop implements EZShopInterface {
 			if (rs.next()) {
 				barcode = rs.getString("productCode");
 				qty = rs.getInt("quantity");
-			}
-			else {
+			} else {
 				System.out.println("There is not order PAYED with this id");
 				return valid;
 			}
@@ -1090,8 +1103,9 @@ public class EZShop implements EZShopInterface {
 
 		List<Order> orders = new ArrayList<Order>();
 		Connection conn = null;
-	
-		if (userLoggedIn == null || (!userLoggedIn.getRole().equals("Administrator") &&  !userLoggedIn.getRole().equals("ShopManager")))
+
+		if (userLoggedIn == null
+				|| (!userLoggedIn.getRole().equals("Administrator") && !userLoggedIn.getRole().equals("ShopManager")))
 			throw new UnauthorizedException("The user doesn't have the rights to perform this action");
 		try {
 			conn = dbAccess();
@@ -1114,40 +1128,40 @@ public class EZShop implements EZShopInterface {
 
 	@Override
 	public Integer defineCustomer(String customerName) throws InvalidCustomerNameException, UnauthorizedException {
-		
-		Connection conn = null; 
-		if(userLoggedIn.getRole().equals("Administrator") || userLoggedIn.getRole().equals("Cashier") || userLoggedIn.getRole().equals("ShopManager")) {
-    		if(customerName != null &&  customerName.isEmpty() == false) {
-    			try {
-	    			conn = dbAccess();
-		    		String sql = "SELECT seq FROM sqlite_sequence WHERE name = 'Customers'";
-		    		Statement statement = conn.createStatement();
-			        ResultSet rs = statement.executeQuery(sql);
-		    	    int id = rs.getInt("seq") + 1;
-		    		sql = "INSERT INTO Customers (id, name, card) VALUES(?,?,NULL)";			             
-			        PreparedStatement pstmt = conn.prepareStatement(sql);
-				    pstmt.setInt(1,id);
-				    pstmt.setString(2, customerName);
-				    int res = pstmt.executeUpdate();
-				    if(res == 0) { 					 
-		            	return -1;
-		            }
-		            else {
-		            	return id;
-		            }			    							    		
-    			
-			    } catch (Exception e) {  	    	
-			        System.out.println(e.getMessage()); 
+
+		Connection conn = null;
+		if (userLoggedIn.getRole().equals("Administrator") || userLoggedIn.getRole().equals("Cashier")
+				|| userLoggedIn.getRole().equals("ShopManager")) {
+			if (customerName != null && customerName.isEmpty() == false) {
+				try {
+					conn = dbAccess();
+					String sql = "SELECT seq FROM sqlite_sequence WHERE name = 'Customers'";
+					Statement statement = conn.createStatement();
+					ResultSet rs = statement.executeQuery(sql);
+					int id = rs.getInt("seq") + 1;
+					sql = "INSERT INTO Customers (id, name, card) VALUES(?,?,NULL)";
+					PreparedStatement pstmt = conn.prepareStatement(sql);
+					pstmt.setInt(1, id);
+					pstmt.setString(2, customerName);
+					int res = pstmt.executeUpdate();
+					if (res == 0) {
+						return -1;
+					} else {
+						return id;
+					}
+
+				} catch (Exception e) {
+					System.out.println(e.getMessage());
 					return -1;
-			        
-		        } finally {   	
-		        	dbClose(conn);
-			       
-			    }
-    		}	
-    		else throw new InvalidCustomerNameException("Invalid customer name");
-    	}
-    	else throw new UnauthorizedException("Permission denied");
+
+				} finally {
+					dbClose(conn);
+
+				}
+			} else
+				throw new InvalidCustomerNameException("Invalid customer name");
+		} else
+			throw new UnauthorizedException("Permission denied");
 
 	}
 
@@ -1155,276 +1169,281 @@ public class EZShop implements EZShopInterface {
 	public boolean modifyCustomer(Integer id, String newCustomerName, String newCustomerCard)
 			throws InvalidCustomerNameException, InvalidCustomerCardException, InvalidCustomerIdException,
 			UnauthorizedException {
-			Connection conn = null; 
-		if(userLoggedIn.getRole().equals("Administrator") || userLoggedIn.getRole().equals("Cashier") || userLoggedIn.getRole().equals("ShopManager")) {
-    		if(id != null && id > 0) {
-	    		if(newCustomerName != null && newCustomerName.isEmpty() == false) {
-	    			try {  
-		    			Pattern p = Pattern.compile("\\d+");
-		    			conn = dbAccess();
-		    			String cardQuery = "";
-		    			if(newCustomerCard != null)
-		    				cardQuery = ", card = ?";
-			            String sql = "UPDATE Customers SET name = ?"+ cardQuery + "WHERE id = ?";
-			            PreparedStatement pstmt = conn.prepareStatement(sql);
-				        pstmt.setString(1, newCustomerName);
-				        if(newCustomerCard == null)					// card value doesn't change 
-				        	pstmt.setInt(2,id);
-				        else if(newCustomerCard.isEmpty()){		// card value erased (no more card for this customer)
-				        	pstmt.setString(2, null);
-				        pstmt.setInt(3, id);
-				        }
-				        else if(newCustomerCard.length() >= 10 && p.matcher(newCustomerCard).matches()){	// check card validity
-				        	pstmt.setString(2, newCustomerCard);	// set new card value
-				        	pstmt.setInt(3, id);
-				        }
-				        else { 
-				        	throw new InvalidCustomerCardException("Invalid card");
-				        }
-			            int rs = pstmt.executeUpdate(); 		
-			            if(rs == 0) { 					// 0 -> nessuna riga modificata  
-			            	return false;
-			            }
-			            else {
-			            	return true;
-			            }
-	    	
-	    			} catch (Exception e) {  
-				        System.out.println(e.getMessage());
-				        return false;
-				        
-			        } finally {  	
-			        	dbClose(conn);
-				    }
-	    		} 
-	    		else throw new InvalidCustomerNameException("Invalid customer name");
-    		}
-    		else throw new InvalidCustomerIdException("Invalid customer id");
-    	}
-    	else throw new UnauthorizedException("Permission denied");
+
+		Connection conn = null;
+		if (userLoggedIn.getRole().equals("Administrator") || userLoggedIn.getRole().equals("Cashier")
+				|| userLoggedIn.getRole().equals("ShopManager")) {
+			if (id != null && id > 0) {
+				if (newCustomerName != null && newCustomerName.isEmpty() == false) {
+					try {
+						Pattern p = Pattern.compile("\\d+");
+						conn = dbAccess();
+						String cardQuery = "";
+						if (newCustomerCard != null)
+							cardQuery = ", card = ?";
+						String sql = "UPDATE Customers SET name = ?" + cardQuery + "WHERE id = ?";
+						PreparedStatement pstmt = conn.prepareStatement(sql);
+						pstmt.setString(1, newCustomerName);
+						if (newCustomerCard == null) // card value doesn't change
+							pstmt.setInt(2, id);
+						else if (newCustomerCard.isEmpty()) { // card value erased (no more card for this customer)
+							pstmt.setString(2, null);
+							pstmt.setInt(3, id);
+						} else if (newCustomerCard.length() >= 10 && p.matcher(newCustomerCard).matches()) { // check
+																												// card
+																												// validity
+							pstmt.setString(2, newCustomerCard); // set new card value
+							pstmt.setInt(3, id);
+						} else {
+							throw new InvalidCustomerCardException("Invalid card");
+						}
+						int rs = pstmt.executeUpdate();
+						if (rs == 0) { // 0 -> nessuna riga modificata
+							return false;
+						} else {
+							return true;
+						}
+
+					} catch (Exception e) {
+						System.out.println(e.getMessage());
+						return false;
+
+					} finally {
+						dbClose(conn);
+					}
+				} else
+					throw new InvalidCustomerNameException("Invalid customer name");
+			} else
+				throw new InvalidCustomerIdException("Invalid customer id");
+		} else
+			throw new UnauthorizedException("Permission denied");
 
 	}
 
 	@Override
 	public boolean deleteCustomer(Integer id) throws InvalidCustomerIdException, UnauthorizedException {
-		
-		Connection conn = null;  
-		if(userLoggedIn.getRole().equals("Administrator") || userLoggedIn.getRole().equals("Cashier") || userLoggedIn.getRole().equals("ShopManager")) {
-    		if(id != null && id > 0) {
-    			try {
+
+		Connection conn = null;
+		if (userLoggedIn.getRole().equals("Administrator") || userLoggedIn.getRole().equals("Cashier")
+				|| userLoggedIn.getRole().equals("ShopManager")) {
+			if (id != null && id > 0) {
+				try {
 					conn = dbAccess();
-		            String sql = "DELETE FROM Customers WHERE id = ?";
-		            PreparedStatement pstmt = conn.prepareStatement(sql);
-	        		pstmt.setInt(1, id);
-	        		int rs = pstmt.executeUpdate(); 
-		            if(rs == 0) { 					
-		            	return false;
-		            }
-		            else {
-		            	return true;
-		            }
-			    		
-			    } catch (Exception e) {  
-			        System.out.println(e.getMessage());
-			        return false;
-			        
-			    } finally {  
-			    	dbClose(conn);
-			    }
-    		}
-    		else throw new InvalidCustomerIdException("Invalid customer id");
-    	}
-    	else throw new UnauthorizedException("Permission denied");
+					String sql = "DELETE FROM Customers WHERE id = ?";
+					PreparedStatement pstmt = conn.prepareStatement(sql);
+					pstmt.setInt(1, id);
+					int rs = pstmt.executeUpdate();
+					if (rs == 0) {
+						return false;
+					} else {
+						return true;
+					}
+
+				} catch (Exception e) {
+					System.out.println(e.getMessage());
+					return false;
+
+				} finally {
+					dbClose(conn);
+				}
+			} else
+				throw new InvalidCustomerIdException("Invalid customer id");
+		} else
+			throw new UnauthorizedException("Permission denied");
 
 	}
 
 	@Override
 	public Customer getCustomer(Integer id) throws InvalidCustomerIdException, UnauthorizedException {
-		
-		Connection conn = null;  
-		if(userLoggedIn.getRole().equals("Administrator") || userLoggedIn.getRole().equals("Cashier") || userLoggedIn.getRole().equals("ShopManager")) {
-    		if(id != null && id > 0) {
-    			try {  
+
+		Connection conn = null;
+		if (userLoggedIn.getRole().equals("Administrator") || userLoggedIn.getRole().equals("Cashier")
+				|| userLoggedIn.getRole().equals("ShopManager")) {
+			if (id != null && id > 0) {
+				try {
 					conn = dbAccess();
-		            String sql = "SELECT CU.id, name, card, points FROM Customers CU, Cards CA WHERE CU.card = CA.id AND CU.id = "+id;
-			        Statement statement = conn.createStatement();
-			        ResultSet rs = statement.executeQuery(sql);
-			        if(rs.next()) {
-			        	 return new CustomerImpl(rs.getInt("id"),rs.getString("name"),rs.getString("card"),rs.getInt("points"));
-		            }
-			        else { 
-			        	return null;
-			        }
-	    		
-			    } catch (Exception e) {  
-			        System.out.println(e.getMessage());
-			        return null;
-			        
-		        } finally {  	
-		        	dbClose(conn);
-			    }
-    		}
-    		else throw new InvalidCustomerIdException("Invalid customer id");
-    	}
-    	else throw new UnauthorizedException("Permission denied");
-    	
-	    
+					String sql = "SELECT CU.id, name, card, points FROM Customers CU, Cards CA WHERE CU.card = CA.id AND CU.id = "
+							+ id;
+					Statement statement = conn.createStatement();
+					ResultSet rs = statement.executeQuery(sql);
+					if (rs.next()) {
+						return new CustomerImpl(rs.getInt("id"), rs.getString("name"), rs.getString("card"),
+								rs.getInt("points"));
+					} else {
+						return null;
+					}
+
+				} catch (Exception e) {
+					System.out.println(e.getMessage());
+					return null;
+
+				} finally {
+					dbClose(conn);
+				}
+			} else
+				throw new InvalidCustomerIdException("Invalid customer id");
+		} else
+			throw new UnauthorizedException("Permission denied");
 
 	}
 
 	@Override
 	public List<Customer> getAllCustomers() throws UnauthorizedException {
-		
-		Connection conn = null;   
-		List<Customer> customers = new ArrayList<Customer>(); 
-		if(userLoggedIn.getRole().equals("Administrator") || userLoggedIn.getRole().equals("Cashier") || userLoggedIn.getRole().equals("ShopManager")) {
-			try {  
+
+		Connection conn = null;
+		List<Customer> customers = new ArrayList<Customer>();
+		if (userLoggedIn.getRole().equals("Administrator") || userLoggedIn.getRole().equals("Cashier")
+				|| userLoggedIn.getRole().equals("ShopManager")) {
+			try {
 				conn = dbAccess();
-	            String sql = "SELECT CU.id, name, card, points FROM Customers CU, Cards CA WHERE CU.card = CA.id";
-		        Statement statement = conn.createStatement();
-		        ResultSet rs = statement.executeQuery(sql);
-		        while (rs.next()) {
-		        	customers.add(new CustomerImpl(rs.getInt("id"),rs.getString("name"),rs.getString("card"),rs.getInt("points")));
-	            }
-		        return customers;
-		    } catch (Exception e) {  
-		        System.out.println(e.getMessage());
-		        return customers;
-		        
-	        } finally {  
-	        	dbClose(conn);
-		    }
-    	}else 
-    		throw new UnauthorizedException("Permission denied");
-	  
+				String sql = "SELECT CU.id, name, card, points FROM Customers CU, Cards CA WHERE CU.card = CA.id";
+				Statement statement = conn.createStatement();
+				ResultSet rs = statement.executeQuery(sql);
+				while (rs.next()) {
+					customers.add(new CustomerImpl(rs.getInt("id"), rs.getString("name"), rs.getString("card"),
+							rs.getInt("points")));
+				}
+				return customers;
+			} catch (Exception e) {
+				System.out.println(e.getMessage());
+				return customers;
+
+			} finally {
+				dbClose(conn);
+			}
+		} else
+			throw new UnauthorizedException("Permission denied");
+
 	}
 
 	@Override
 	public String createCard() throws UnauthorizedException {
-		
-		Connection conn = null;  	
-		if(userLoggedIn.getRole().equals("Administrator") || userLoggedIn.getRole().equals("Cashier") || userLoggedIn.getRole().equals("ShopManager")) {
+
+		Connection conn = null;
+		if (userLoggedIn.getRole().equals("Administrator") || userLoggedIn.getRole().equals("Cashier")
+				|| userLoggedIn.getRole().equals("ShopManager")) {
 			try {
-	    	
-	    			String cardId;
-	    			conn = dbAccess();
-		    		String sql = "SELECT COALESCE(MAX(id),'') AS lastId FROM Cards";
-		    		Statement statement = conn.createStatement();
-			        ResultSet rs = statement.executeQuery(sql);
-			        rs.next();
-			        if(rs.getString("lastId").isEmpty()) {			        	
-			        	//System.out.println("first element");
-			        	cardId = "1000000000";
-			        }
-			        else {
-			        	//System.out.println("next element");
-			        	Integer id = Integer.parseInt(rs.getString("lastId"))+1;
-			        	cardId = Integer.toString(id);
-			        }
-		    		
-		    		sql = "INSERT INTO Cards (id, points) VALUES(?,0)";			             
-			        PreparedStatement pstmt = conn.prepareStatement(sql);
-				    pstmt.setString(1,cardId);
-				    int res = pstmt.executeUpdate();
-				    if(res == 0) { 					 
-		            	return "";
-		            }
-		            else {
-		            	return cardId;
-		            }			    							    			
-	    	
-		    } catch (Exception e) {  	    	
-		        System.out.println(e.getMessage()); 
+
+				String cardId;
+				conn = dbAccess();
+				String sql = "SELECT COALESCE(MAX(id),'') AS lastId FROM Cards";
+				Statement statement = conn.createStatement();
+				ResultSet rs = statement.executeQuery(sql);
+				rs.next();
+				if (rs.getString("lastId").isEmpty()) {
+					// System.out.println("first element");
+					cardId = "1000000000";
+				} else {
+					// System.out.println("next element");
+					Integer id = Integer.parseInt(rs.getString("lastId")) + 1;
+					cardId = Integer.toString(id);
+				}
+
+				sql = "INSERT INTO Cards (id, points) VALUES(?,0)";
+				PreparedStatement pstmt = conn.prepareStatement(sql);
+				pstmt.setString(1, cardId);
+				int res = pstmt.executeUpdate();
+				if (res == 0) {
+					return "";
+				} else {
+					return cardId;
+				}
+
+			} catch (Exception e) {
+				System.out.println(e.getMessage());
 				return "";
-		        
-	        } finally {   	
-	        	dbClose(conn);
-		       
-		    }
-		}
-    	else throw new UnauthorizedException("Permission denied");
-			
+
+			} finally {
+				dbClose(conn);
+
+			}
+		} else
+			throw new UnauthorizedException("Permission denied");
+
 	}
 
 	@Override
 	public boolean attachCardToCustomer(String customerCard, Integer customerId)
 			throws InvalidCustomerIdException, InvalidCustomerCardException, UnauthorizedException {
-		
-		Connection conn = null;   
-		if(userLoggedIn.getRole().equals("Administrator") || userLoggedIn.getRole().equals("Cashier") || userLoggedIn.getRole().equals("ShopManager")) {
-    		if(customerId != null && customerId > 0) {
-    			Pattern p = Pattern.compile("\\d+");
-    			if(customerCard != null && customerCard.isEmpty() == false && customerCard.length() >= 10 && p.matcher(customerCard).matches()) {
-    				try {  
-	    				conn = dbAccess();
-				        String sql = "UPDATE Customers SET card = ? WHERE id = ?";
-			            PreparedStatement pstmt = conn.prepareStatement(sql);
-				        pstmt.setString(1, customerCard);	
-			            pstmt.setInt(2, customerId);
-			            int rs = pstmt.executeUpdate();
-			            if(rs == 0) {
-			            	return false;
-			            }else {
-			            	return true;
-			            }
-	    			
-				    } catch (Exception e) {  
-				        System.out.println(e.getMessage());
-				        return false;
-				        
-			        } finally {  
-			        	dbClose(conn);
-				    }
-    			}else 
-		        	throw new InvalidCustomerCardException("Invalid card"); 
-    		}else 
-    			throw new InvalidCustomerIdException("Invalid customer id");
-    	}else 
-    		throw new UnauthorizedException("Permission denied");
+
+		Connection conn = null;
+		if (userLoggedIn.getRole().equals("Administrator") || userLoggedIn.getRole().equals("Cashier")
+				|| userLoggedIn.getRole().equals("ShopManager")) {
+			if (customerId != null && customerId > 0) {
+				Pattern p = Pattern.compile("\\d+");
+				if (customerCard != null && customerCard.isEmpty() == false && customerCard.length() >= 10
+						&& p.matcher(customerCard).matches()) {
+					try {
+						conn = dbAccess();
+						String sql = "UPDATE Customers SET card = ? WHERE id = ?";
+						PreparedStatement pstmt = conn.prepareStatement(sql);
+						pstmt.setString(1, customerCard);
+						pstmt.setInt(2, customerId);
+						int rs = pstmt.executeUpdate();
+						if (rs == 0) {
+							return false;
+						} else {
+							return true;
+						}
+
+					} catch (Exception e) {
+						System.out.println(e.getMessage());
+						return false;
+
+					} finally {
+						dbClose(conn);
+					}
+				} else
+					throw new InvalidCustomerCardException("Invalid card");
+			} else
+				throw new InvalidCustomerIdException("Invalid customer id");
+		} else
+			throw new UnauthorizedException("Permission denied");
 
 	}
 
 	@Override
 	public boolean modifyPointsOnCard(String customerCard, int pointsToBeAdded)
 			throws InvalidCustomerCardException, UnauthorizedException {
-		
-		Connection conn = null;   
-    	if(userLoggedIn.getRole().equals("Administrator") || userLoggedIn.getRole().equals("Cashier") || userLoggedIn.getRole().equals("ShopManager")) {
-			Pattern p = Pattern.compile("\\d+");
-			if(customerCard != null && customerCard.isEmpty() == false && customerCard.length() >= 10 && p.matcher(customerCard).matches()) {
-				try { 
-					conn = dbAccess();
-					String sql = "SELECT points FROM Cards WHERE id = '"+customerCard+"'";
-    				Statement statement = conn.createStatement();
-				    ResultSet rs = statement.executeQuery(sql);
-				    if(rs.next() && rs.getInt("points") + pointsToBeAdded >= 0) {
-				    	int points = rs.getInt("points") + pointsToBeAdded;
-				    	sql = "UPDATE Cards SET points = ? WHERE id = ?";
-			            PreparedStatement pstmt = conn.prepareStatement(sql);
-			            pstmt.setInt(1, points);
-				        pstmt.setString(2, customerCard);				
-			            int res = pstmt.executeUpdate();
-			            if(res == 0) {
-			            	return false;
-			            }else {
-			            	return true;
-			            }
-				    }
-				    else{
-				    	return false;
-				    } 	    				         				
 
-			    } catch (Exception e) {  
-			        System.out.println(e.getMessage());
-			        return false;
-			        
-		        } finally {  
-		        	dbClose(conn);
-			    }
-			}else 
-	        	throw new InvalidCustomerCardException("Invalid card"); 
-    	}else 
-    		throw new UnauthorizedException("Permission denied");
+		Connection conn = null;
+		if (userLoggedIn.getRole().equals("Administrator") || userLoggedIn.getRole().equals("Cashier")
+				|| userLoggedIn.getRole().equals("ShopManager")) {
+			Pattern p = Pattern.compile("\\d+");
+			if (customerCard != null && customerCard.isEmpty() == false && customerCard.length() >= 10
+					&& p.matcher(customerCard).matches()) {
+				try {
+					conn = dbAccess();
+					String sql = "SELECT points FROM Cards WHERE id = '" + customerCard + "'";
+					Statement statement = conn.createStatement();
+					ResultSet rs = statement.executeQuery(sql);
+					if (rs.next() && rs.getInt("points") + pointsToBeAdded >= 0) {
+						int points = rs.getInt("points") + pointsToBeAdded;
+						sql = "UPDATE Cards SET points = ? WHERE id = ?";
+						PreparedStatement pstmt = conn.prepareStatement(sql);
+						pstmt.setInt(1, points);
+						pstmt.setString(2, customerCard);
+						int res = pstmt.executeUpdate();
+						if (res == 0) {
+							return false;
+						} else {
+							return true;
+						}
+					} else {
+						return false;
+					}
+
+				} catch (Exception e) {
+					System.out.println(e.getMessage());
+					return false;
+
+				} finally {
+					dbClose(conn);
+				}
+			} else
+				throw new InvalidCustomerCardException("Invalid card");
+		} else
+			throw new UnauthorizedException("Permission denied");
 
 	}
 
@@ -1891,39 +1910,83 @@ public class EZShop implements EZShopInterface {
 			throw new UnauthorizedException("User not logged in");
 		if (openReturnTransaction == null || returnId != openReturnTransaction.getReturnId())
 			return false;
-		if (openReturnTransaction == null || returnId != openReturnTransaction.getReturnId())
-			return false;
 		openReturnTransaction = null;
 		return true;
 
 	}
 
 	@Override
-	public double receiveCashPayment(Integer ticketNumber, double cash)
+	public double receiveCashPayment(Integer transactionId, double cash)
 			throws InvalidTransactionIdException, InvalidPaymentException, UnauthorizedException {
-		
-		if(ticketNumber <= 0 || ticketNumber == null) throw new InvalidTransactionIdException();
-		//else if(!userLoggedIn.getRole().equals("Administrator") || userLoggedIn.getRole().equals("Cashier") ||  userLoggedIn.getRole().equals("ShopManage")) throw new UnauthorizedException("Permission denied");
-		else if(cash < 0) throw new InvalidPaymentException();
-		else if(false) return -1; //transaction don't exist
-		else {
-			return cash - transaction.getPrice() ;
-		}
 
 		System.out.println("Executing receiveCashPayment...");
-		if (openSaleTransaction == null || ticketNumber != openSaleTransaction.getTicketNumber())
+		if (transactionId == null || transactionId <= 0)
+			throw new InvalidTransactionIdException("Transaction id cannot be null or <=0");
+		if (cash <= 0)
+			throw new InvalidPaymentException("cash cannot be <=0");
+		if (userLoggedIn.getRole() == "")
+			throw new UnauthorizedException("User not logged in");
+		if (openSaleTransaction == null || transactionId != openSaleTransaction.getTicketNumber())
 			return -1;
 
-		return 0;
+		double price = openSaleTransaction.getPrice();
+		if (cash < price)
+			return -1;
+
+		return (cash - price);
 
 	}
 
 	@Override
-	public boolean receiveCreditCardPayment(Integer ticketNumber, String creditCard)
+	public boolean receiveCreditCardPayment(Integer transactionId, String creditCard)
 			throws InvalidTransactionIdException, InvalidCreditCardException, UnauthorizedException {
 
 		System.out.println("Executing receiveCreditCardPayment...");
-		return false;
+
+		if (transactionId <= 0 || transactionId == null)
+			throw new InvalidTransactionIdException();
+		if (creditCard.equals(null) || !checkLuhn(creditCard))
+			throw new InvalidCreditCardException();
+		if (userLoggedIn.getRole() == "")
+			throw new UnauthorizedException("User not logged in");
+		if (openSaleTransaction == null || transactionId != openSaleTransaction.getTicketNumber())
+			return false;
+
+		Connection conn = null;
+		try {
+			String url = "jdbc:sqlite:creditCards.sqlite";
+			conn = DriverManager.getConnection(url);
+			System.out.println("Connection to SQLite has been established.");
+		} catch (Exception ex) {
+			System.out.println(ex.getMessage());
+		}
+		double price = openSaleTransaction.getPrice();
+		try {
+			String getCard = "SELECT balance FROM creditCards WHERE creditCardNumber = ?";
+			PreparedStatement pstmt = conn.prepareStatement(getCard);
+			pstmt.setString(1, creditCard);
+			ResultSet rs = pstmt.executeQuery();
+			if (rs == null) // card not registered
+				return false;
+			// only 1 result because creditCard is primary key
+			pstmt.close();
+			double credit = rs.getDouble("balance");
+			rs.close();
+			if (credit < price) // card has not enough money
+				return false;
+			double newCredit = credit - price;
+			String updateCard = "UPDATE creditCards SET balance = ? WHERE creditCardNumber = ?";
+			pstmt = conn.prepareStatement(updateCard);
+			pstmt.setDouble(1, newCredit);
+			pstmt.setString(2, creditCard);
+			pstmt.executeUpdate(updateCard);
+			pstmt.close();
+		} catch (Exception ex) {
+			System.out.println(ex.getMessage());
+			return false;
+		}
+
+		return true;
 
 	}
 
@@ -1931,7 +1994,14 @@ public class EZShop implements EZShopInterface {
 	public double returnCashPayment(Integer returnId) throws InvalidTransactionIdException, UnauthorizedException {
 
 		System.out.println("Executing returnCashPayment...");
-		return 0;
+		if (returnId == null || returnId <= 0)
+			throw new InvalidTransactionIdException("Transaction id cannot be null or <=0");
+		if (userLoggedIn.getRole() == "")
+			throw new UnauthorizedException("User not logged in");
+		if (openReturnTransaction == null || returnId != openReturnTransaction.getReturnId())
+			return -1;
+
+		return openReturnTransaction.getPrice();
 
 	}
 
@@ -1940,7 +2010,48 @@ public class EZShop implements EZShopInterface {
 			throws InvalidTransactionIdException, InvalidCreditCardException, UnauthorizedException {
 
 		System.out.println("Executing returnCreditCardPayment...");
-		return 0;
+		if (returnId <= 0 || returnId == null)
+			throw new InvalidTransactionIdException();
+		if (creditCard.equals(null) || !checkLuhn(creditCard))
+			throw new InvalidCreditCardException();
+		if (userLoggedIn.getRole() == "")
+			throw new UnauthorizedException("User not logged in");
+		if (openReturnTransaction == null || returnId != openReturnTransaction.getReturnId())
+			return -1;
+
+		Connection conn = null;
+		try {
+			String url = "jdbc:sqlite:creditCards.sqlite";
+			conn = DriverManager.getConnection(url);
+			System.out.println("Connection to SQLite has been established.");
+		} catch (Exception ex) {
+			System.out.println(ex.getMessage());
+		}
+		double price = openReturnTransaction.getPrice();
+		try {
+			String getCard = "SELECT balance FROM creditCards WHERE creditCardNumber = ?";
+			PreparedStatement pstmt = conn.prepareStatement(getCard);
+			pstmt.setString(1, creditCard);
+			ResultSet rs = pstmt.executeQuery();
+			if (rs == null) // card not registered
+				return -1;
+			// only 1 result because creditCard is primary key
+			pstmt.close();
+			double credit = rs.getDouble("balance");
+			rs.close();
+			double newCredit = credit + price;
+			String updateCard = "UPDATE creditCards SET balance = ? WHERE creditCardNumber = ?";
+			pstmt = conn.prepareStatement(updateCard);
+			pstmt.setDouble(1, newCredit);
+			pstmt.setString(2, creditCard);
+			pstmt.executeUpdate(updateCard);
+			pstmt.close();
+		} catch (Exception ex) {
+			System.out.println(ex.getMessage());
+			return -1;
+		}
+
+		return price;
 
 	}
 
@@ -1950,12 +2061,13 @@ public class EZShop implements EZShopInterface {
 		System.out.println("Executing recordBalanceUpdate...");
 		Connection conn = null;
 		boolean positiveBalance = false;
-		
+
 		if (computeBalance() + toBeAdded < 0) {
 			System.out.println("The operation can't be performed due to negative balance");
 			return positiveBalance;
 		}
-		if (userLoggedIn == null || (!userLoggedIn.getRole().equals("Administrator") &&  !userLoggedIn.getRole().equals("ShopManager")))
+		if (userLoggedIn == null
+				|| (!userLoggedIn.getRole().equals("Administrator") && !userLoggedIn.getRole().equals("ShopManager")))
 			throw new UnauthorizedException("The user doesn't have the rights to perform this action");
 		try {
 			conn = dbAccess();
@@ -1987,7 +2099,8 @@ public class EZShop implements EZShopInterface {
 			to = from;
 			from = tmp;
 		}
-		if (userLoggedIn == null || (!userLoggedIn.getRole().equals("Administrator") &&  !userLoggedIn.getRole().equals("ShopManager")))
+		if (userLoggedIn == null
+				|| (!userLoggedIn.getRole().equals("Administrator") && !userLoggedIn.getRole().equals("ShopManager")))
 			throw new UnauthorizedException("The user doesn't have the rights to perform this action");
 		try {
 			conn = dbAccess();
@@ -2018,7 +2131,8 @@ public class EZShop implements EZShopInterface {
 		double balance = 0;
 		String type = null;
 		double money = 0;
-		if (userLoggedIn == null || (!userLoggedIn.getRole().equals("Administrator") &&  !userLoggedIn.getRole().equals("ShopManager")))
+		if (userLoggedIn == null
+				|| (!userLoggedIn.getRole().equals("Administrator") && !userLoggedIn.getRole().equals("ShopManager")))
 			throw new UnauthorizedException("The user doesn't have the rights to perform this action");
 		try {
 			conn = dbAccess();
