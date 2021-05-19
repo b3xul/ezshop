@@ -892,11 +892,13 @@ public class EZShop implements EZShopInterface {
 			PreparedStatement statement = conn.prepareStatement(sql);
 			statement.setString(1, productCode);
 			ResultSet rs = statement.executeQuery();
-			if (!rs.next())
+			if (!rs.next()) {
+				System.out.println("There is no product with this barcode");
 				return id;
+			}
 			String sql3 = "INSERT INTO order_ (balanceId, date, money, productCode, pricePerUnit, quantity, status) VALUES (?, ?, ?, ?, ?, ?, ?)";
 			PreparedStatement statement3 = conn.prepareStatement(sql3);
-			statement3.setInt(1, -1);
+			statement3.setInt(1, 0);
 			statement3.setString(2, LocalDate.now().toString());
 			statement3.setDouble(3, pricePerUnit * quantity);
 			statement3.setString(4, productCode);
@@ -913,6 +915,7 @@ public class EZShop implements EZShopInterface {
 		} finally {
 			dbClose(conn);
 		}
+		System.out.println(id);
 		return id;
 
 	}
@@ -949,7 +952,8 @@ public class EZShop implements EZShopInterface {
 			if (!rs.next())
 				return orderId;
 			dbClose(conn);
-			recordBalanceUpdate(-pricePerUnit * quantity);
+			if(!recordBalanceUpdate(-pricePerUnit * quantity))
+				return orderId;
 			conn = dbAccess();
 			String sql2 = "SELECT MAX(balanceId) AS MaxBId FROM balanceOperation";
 			Statement statement2 = conn.createStatement();
@@ -983,6 +987,7 @@ public class EZShop implements EZShopInterface {
 
 		boolean validOrderId = false;
 		Connection conn = null;
+		double money = 0;
 		int balanceId = 0;
 		
 		if (!userLoggedIn.getRole().equals("Administrator") &&  !userLoggedIn.getRole().equals("ShopManager"))
@@ -1010,8 +1015,10 @@ public class EZShop implements EZShopInterface {
 			PreparedStatement statement3 = conn.prepareStatement(sql3);
 			statement3.setInt(1, orderId);
 			ResultSet rs3 = statement3.executeQuery();
+			money = rs3.getDouble("money");
 			dbClose(conn);
-			recordBalanceUpdate(-(rs3.getDouble("money")));
+			if(!recordBalanceUpdate(-money))
+				return validOrderId;
 			conn = dbAccess();
 			String sql4 = "SELECT MAX(balanceId) AS MaxBId FROM balanceOperation";
 			Statement statement4 = conn.createStatement();
@@ -1064,8 +1071,15 @@ public class EZShop implements EZShopInterface {
 			statement2.setString(1, barcode);
 			ResultSet rs2 = statement2.executeQuery();
 			location = rs2.getString("location");
-			if (location.equals("no location"))
-				throw new InvalidLocationException("The product type has no location assigned");
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		} finally {
+			dbClose(conn);
+		}
+		if (location.equals(""))
+			throw new InvalidLocationException("The product type has no location assigned");
+		try {
+			conn = dbAccess();
 			String sql3 = "UPDATE order_ SET status = ? WHERE orderId = ?";
 			PreparedStatement statement3 = conn.prepareStatement(sql3);
 			statement3.setString(1, "COMPLETED");
@@ -1103,6 +1117,7 @@ public class EZShop implements EZShopInterface {
 				orders.add(new OrderImpl(rs.getInt("orderId"), rs.getInt("balanceId"),
 						LocalDate.parse(rs.getString("date")), rs.getDouble("money"), rs.getString("productCode"),
 						rs.getDouble("pricePerUnit"), rs.getInt("quantity"), rs.getString("status")));
+//				System.out.println(orders.get(orders.size()-1).toString());
 			}
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
@@ -1997,11 +2012,11 @@ public class EZShop implements EZShopInterface {
 			statement.setString(1, from == null ? "0001-01-01" : from.toString());
 			statement.setString(2, to == null ? "9999-12-31" : to.toString());
 			ResultSet rs = statement.executeQuery();
-			while (rs.next())
+			while (rs.next()) {
 				bo.add(new BalanceOperationImpl(rs.getInt("balanceId"), LocalDate.parse(rs.getString("date")),
 						rs.getDouble("money"), rs.getString("type")));
-			for (BalanceOperation b : bo)
-				System.out.println(b);
+//				System.out.println(bo.get(bo.size()-1).toString());
+			}
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
 		} finally {
@@ -2030,6 +2045,8 @@ public class EZShop implements EZShopInterface {
 				type = rs.getString("type");
 				if (type.equals("DEBIT"))
 					money = -rs.getDouble("money");
+				else
+					money = rs.getDouble("money");
 				balance += money;
 			}
 		} catch (Exception e) {

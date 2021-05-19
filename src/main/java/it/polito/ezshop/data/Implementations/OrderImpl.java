@@ -119,5 +119,11 @@ public class OrderImpl implements Order {
 		this.orderId = orderId;
 
 	}
-
+	
+	@Override
+	public String toString() {
+		return "OrderImpl [orderId=" + orderId + ", balanceId=" + bo.getBalanceId() + ", date=" + bo.getDate().toString() + ", money=" 
+	+ bo.getMoney() + ", productCode=" + productCode + ", pricePerUnit=" + pricePerUnit + ", quantity=" + quantity + ", status=" + status + " ]";
+	}
+ 
 }
