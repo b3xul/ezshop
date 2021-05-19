@@ -1,6 +1,11 @@
+package it.polito.ezshop;
+
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
+
+import it.polito.ezshop.data.Implementations.UserImpl;
+
 
 public class UserClassTest {
 	
