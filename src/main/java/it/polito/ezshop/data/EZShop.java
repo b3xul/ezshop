@@ -1292,6 +1292,12 @@ public class EZShop implements EZShopInterface {
 					customers.add(new CustomerImpl(rs.getInt("id"), rs.getString("name"), rs.getString("card"),
 							rs.getInt("points")));
 				}
+				sql = "SELECT id, name FROM Customers WHERE card IS NULL";
+				statement = conn.createStatement();
+				rs = statement.executeQuery(sql);
+				while (rs.next()) {
+					customers.add(new CustomerImpl(rs.getInt("id"), rs.getString("name"), null, null));
+				}
 				return customers;
 			} catch (Exception e) {
 				System.out.println(e.getMessage());
