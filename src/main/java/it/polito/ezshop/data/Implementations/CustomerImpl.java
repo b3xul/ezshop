@@ -1,3 +1,6 @@
+package it.polito.ezshop.data.Implementations;
+
+import it.polito.ezshop.data.Customer;
 
 public class CustomerImpl implements Customer {
 	private Integer id;
@@ -5,7 +8,13 @@ public class CustomerImpl implements Customer {
 	private String card;
 	private Integer points;
 	
-
+	public CustomerImpl() {
+		this.id = -1;
+		this.name = "";
+		this.card = "";
+		this.points = -1;
+	}
+	
 	public CustomerImpl(Integer id, String name, String card, Integer points) {
 		this.id = id;
 		this.name = name;
