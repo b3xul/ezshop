@@ -650,69 +650,6 @@ public class EZShop implements EZShopInterface {
 
 	}
 
-<<<<<<< HEAD
-=======
-	public ProductTypeImpl getProductTypeImplByBarCode(String barCode)
-			throws InvalidProductCodeException, UnauthorizedException {
-
-		ProductTypeImpl product = new ProductTypeImpl();
-		Connection conn = null;
-		try {
-			if (barCode == null || barCode == "")
-				throw new InvalidProductCodeException("invalid barcode: barcode not inserted");
-			else if (barCode.length() < 12 || barCode.length() > 14)
-				throw new InvalidProductCodeException("invalid barcode: wrong length");
-			else if (!isStringOnlyNumbers(barCode))
-				throw new InvalidProductCodeException("invalid barcode: in barcode must not be letters");
-			else if (!isBarcodeValid(barCode))
-				throw new InvalidProductCodeException("invalid barcode: barcode does not respect GTIN specifications");
-			else if (!userLoggedIn.getRole().equals("Administrator") &&  !userLoggedIn.getRole().equals("ShopManager"))
-				throw new UnauthorizedException("user error");
-			else {
-				conn = dbAccess();
-				// Statement to select all the fields of a product when the barcode matches
-				String sql = "SELECT * FROM product WHERE barcode = '" + barCode + "'";
-				Statement statement;
-				statement = conn.createStatement();
-				ResultSet result = statement.executeQuery(sql);
-				if (!result.next()) {
-					System.out.println("no product with this barcode");
-					product = null;
-				} else {
-					String n = result.getString("note");
-					String d = result.getString("description");
-					String b = result.getString("barcode");
-					Double p = result.getDouble("price");
-					Integer id = result.getInt("id");
-					Integer q = result.getInt("quantity");
-					String l = result.getString("location");
-					Double dr = result.getDouble("discountRate");
-					// Creation of a new ProductTypeImpl: the object created is what then will be
-					// returned
-					product.setBarCode(b);
-					product.setNote(n);
-					product.setPricePerUnit(p);
-					product.setProductDescription(d);
-					product.setId(id);
-					product.setQuantity(q);
-					if (!l.isBlank())
-						product.setLocation(l);
-					product.setDiscountRate(dr);
-					System.out.println("product found");
-					// product.print();
-				}
-			}
-		} catch (Exception e) {
-			System.out.println(e.getMessage());
-			product = null;
-		} finally {
-			dbClose(conn);
-		}
-		return product;
-
-	}
-
->>>>>>> 910afd6ddd5c8bd54d206a939e81467f5954e1fa
 	// method to get a product by description
 	@Override
 	public List<ProductType> getProductTypesByDescription(String description) throws UnauthorizedException {
@@ -1932,7 +1869,6 @@ public class EZShop implements EZShopInterface {
 			return cash - transaction.getPrice() ;
 		}
 
-<<<<<<< HEAD
 		System.out.println("Executing receiveCashPayment...");
 		if (openSaleTransaction == null || ticketNumber != openSaleTransaction.getTicketNumber())
 			return -1;
@@ -1940,9 +1876,6 @@ public class EZShop implements EZShopInterface {
 		return 0;
 
 	}
-=======
-	} 
->>>>>>> 910afd6ddd5c8bd54d206a939e81467f5954e1fa
 
 	@Override
 	public boolean receiveCreditCardPayment(Integer ticketNumber, String creditCard)
