@@ -16,14 +16,14 @@ public class PositionImpl {
 	
 // constructor with parameters
 	public PositionImpl(String location) {
-		if (location == "" || location.split(" ").length != 3) {
+		if (location == "" || location.split("-").length != 3) {
 			this.aisleNumber = null;
 			this.alphabeticId = "";
 			this.levelNumber = null;
 		}else {
-			Integer aisleNumber = Integer.parseInt(location.split(" ")[0]);
-			String alphabeticId = location.split(" ")[1];
-			Integer levelNumber = Integer.parseInt(location.split(" ")[2]);
+			Integer aisleNumber = Integer.parseInt(location.split("-")[0]);
+			String alphabeticId = location.split("-")[1];
+			Integer levelNumber = Integer.parseInt(location.split("-")[2]);
 			this.aisleNumber = aisleNumber;
 			this.alphabeticId = alphabeticId;
 			this.levelNumber = levelNumber;
@@ -53,14 +53,14 @@ public class PositionImpl {
 	
 // setter entire position
 	public void setPosition(String location) {
-			if (location == "" || location.split(" ").length != 3) {
+			if (location == "" || location.split("-").length != 3) {
 			this.aisleNumber = null;
 			this.alphabeticId = null;
 			this.levelNumber = null;
 		}else {
-			Integer aisleNumber = Integer.parseInt(location.split(" ")[0]);
-			String alphabeticId = location.split(" ")[1];
-			Integer levelNumber = Integer.parseInt(location.split(" ")[2]);
+			Integer aisleNumber = Integer.parseInt(location.split("-")[0]);
+			String alphabeticId = location.split("-")[1];
+			Integer levelNumber = Integer.parseInt(location.split("-")[2]);
 			this.aisleNumber = aisleNumber;
 			this.alphabeticId = alphabeticId;
 			this.levelNumber = levelNumber;

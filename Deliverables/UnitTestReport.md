@@ -445,7 +445,7 @@ Version:
 
 | Validity of the Integer *quantity* | Valid / Invalid | Description of the test case | JUnit test case ProductTypeClassTest |
 | ---------------------------------- | --------------- | ---------------------------- | ------------------------------------ |
-| Valid                              | Valid           | product.setQuantity(4);      | testCase7                            |
+| Valid                              | Valid           | product.setQuantity(4);      | testCase8                            |
 
 #### setDiscountRate
 **Criteria for method *setDiscountRate*:**
@@ -467,7 +467,7 @@ Version:
 
 | Validity of the Integer *discountRate* | Valid / Invalid | Description of the test case                                                       | JUnit test case ProductTypeClassTest |
 | -------------------------------------- | --------------- | ---------------------------------------------------------------------------------- | ------------------------------------ |
-| Valid                                  | Valid           | ProductTypeImpl product2 = new ProductTypeImpl();  product2.setDiscountRate(20.0); | testCase7                            |
+| Valid                                  | Valid           | ProductTypeImpl product2 = new ProductTypeImpl();  product2.setDiscountRate(20.0); | testCase9                            |
 
 
 ### Class TicketEntryImpl
@@ -744,7 +744,7 @@ Version:
 | Valid                            | Valid                                | Valid                                 | Valid                                 | Valid                            | Valid           | saleTransaction.upsertEntry("12637482635892", "description1", 4.0, 5.1, 6); TicketEntryImpl t1 = new TicketEntryImpl("12637482635892", "description1", 4.0, 5.1, 6); assertEquals(t1, saleTransaction.getEntry("12637482635892")); | testCase2                            |
 
 
-### **Class *BalanceOperationImpl* **
+### Class *BalanceOperationImpl* 
 #### constructor
 **Criteria for method *constructor*:**
 	
@@ -885,7 +885,7 @@ Version:
 | Valid                         | Valid           | bo.setType("DEBIT");         | testCase5       |
 
 
-### **Class *OrderImpl* **
+### Class *OrderImpl* 
 #### constructor
 **Criteria for method *constructor*:**
 	

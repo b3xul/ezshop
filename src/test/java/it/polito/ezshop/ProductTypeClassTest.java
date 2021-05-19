@@ -64,7 +64,7 @@ public class ProductTypeClassTest {
 	@Test
 	public void testCase7() {
 		
-			product.setLocation("3 aisle 3");
+			product.setLocation("3-aisle-3");
 			assertTrue(product.getLocation().equals(product.getLocation()));
 			
 	}

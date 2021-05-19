@@ -11,11 +11,11 @@ import it.polito.ezshop.data.TicketEntry;
 
 public class SaleTransactionImpl implements SaleTransaction {
 
-	Integer ticketNumber;
-	double price;
-	LinkedList<TicketEntry> entries;
-	double discountRate;
-	BalanceOperation balanceOperation;
+	private Integer ticketNumber;
+	private double price;
+	private LinkedList<TicketEntry> entries;
+	private double discountRate;
+	private BalanceOperation balanceOperation;
 
 	public SaleTransactionImpl(Integer ticketNumber) {
 
