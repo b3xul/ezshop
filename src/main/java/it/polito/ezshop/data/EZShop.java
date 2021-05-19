@@ -43,9 +43,9 @@ import it.polito.ezshop.exceptions.UnauthorizedException;
 
 public class EZShop implements EZShopInterface {
 
-	User userLoggedIn = new UserImpl();
-	public SaleTransactionImpl openSaleTransaction = null; // remove public!
-	ReturnTransactionImpl openReturnTransaction = null;
+	private User userLoggedIn = new UserImpl();
+	private SaleTransactionImpl openSaleTransaction = null;
+	private ReturnTransactionImpl openReturnTransaction = null;
 
 	// method to open the connection to database
 	public Connection dbAccess() {
