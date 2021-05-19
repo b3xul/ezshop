@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import it.polito.ezshop.data.Implementations.BalanceOperationImpl;
 import it.polito.ezshop.data.Implementations.OrderImpl;
@@ -1125,6 +1126,7 @@ public class EZShop implements EZShopInterface {
 	public boolean modifyCustomer(Integer id, String newCustomerName, String newCustomerCard)
 			throws InvalidCustomerNameException, InvalidCustomerCardException, InvalidCustomerIdException,
 			UnauthorizedException {
+			Connection conn = null; 
 		if(userLoggedIn.getRole().equals("Administrator") || userLoggedIn.getRole().equals("Cashier") || userLoggedIn.getRole().equals("ShopManage")) {
     		if(id != null && id > 0) {
 	    		if(newCustomerName != null && newCustomerName.isEmpty() == false) {
