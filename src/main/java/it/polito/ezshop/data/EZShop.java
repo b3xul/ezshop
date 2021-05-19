@@ -403,7 +403,7 @@ public class EZShop implements EZShopInterface {
 			throw new InvalidProductCodeException("invalid barcode: barcode does not respect GTIN specifications");
 		else if (pricePerUnit <= 0)
 			throw new InvalidPricePerUnitException("invalid price");
-		else if (userLoggedIn.getRole() != "Administrator" &&  userLoggedIn.getRole() != "ShopManager")
+		else if (userLoggedIn == null || (!userLoggedIn.getRole().equals("Administrator") &&  !userLoggedIn.getRole().equals("ShopManager")))
 			throw new UnauthorizedException("user error");
 		else {
 			ProductTypeImpl newProduct = new ProductTypeImpl(note, description, productCode, pricePerUnit);
@@ -469,7 +469,7 @@ public class EZShop implements EZShopInterface {
 			throw new InvalidProductCodeException("invalid barcode: barcode does not respect GTIN specifications");
 		else if (newPrice <= 0)
 			throw new InvalidPricePerUnitException("invalid price");
-		else if (userLoggedIn.getRole() != "Administrator" &&  userLoggedIn.getRole() != "ShopManager")
+		else if (userLoggedIn == null || (!userLoggedIn.getRole().equals("Administrator") &&  !userLoggedIn.getRole().equals("ShopManager")))
 			throw new UnauthorizedException("user error");
 		else {
 			Long.parseLong(newCode);
@@ -521,7 +521,7 @@ public class EZShop implements EZShopInterface {
 		Connection conn = null;
 		if (id <= 0 || id == null)
 			throw new InvalidProductIdException("invalid ID");
-		else if (userLoggedIn.getRole() != "Administrator" &&  userLoggedIn.getRole() != "ShopManager")
+		else if (userLoggedIn == null || (!userLoggedIn.getRole().equals("Administrator") &&  !userLoggedIn.getRole().equals("ShopManager")))
 			throw new UnauthorizedException("user error");
 		else {
 			conn = dbAccess();
@@ -550,7 +550,7 @@ public class EZShop implements EZShopInterface {
 
 		List<ProductType> inventory = new ArrayList<ProductType>();
 		Connection conn = null;
-		if (userLoggedIn.getRole() != "Administrator" &&  userLoggedIn.getRole() != "ShopManager" && userLoggedIn.getRole() != "Cashier")
+		if (userLoggedIn == null || (!userLoggedIn.getRole().equals("Administrator") &&  !userLoggedIn.getRole().equals("ShopManager") && !userLoggedIn.getRole().equals("Cashier"))
 			throw new UnauthorizedException("user error");
 		else {
 			conn = dbAccess();
@@ -606,7 +606,7 @@ public class EZShop implements EZShopInterface {
 			throw new InvalidProductCodeException("invalid barcode: in barcode must not be letters");
 		else if (!isBarcodeValid(barCode))
 			throw new InvalidProductCodeException("invalid barcode: barcode does not respect GTIN specifications");
-		else if (userLoggedIn.getRole() != "Administrator" &&  userLoggedIn.getRole() != "ShopManager")
+		else if (userLoggedIn == null || (!userLoggedIn.getRole().equals("Administrator") &&  !userLoggedIn.getRole().equals("ShopManager")))
 			throw new UnauthorizedException("user error");
 		else {
 			conn = dbAccess();
@@ -660,7 +660,7 @@ public class EZShop implements EZShopInterface {
 			description = null;
 		List<ProductType> matchingProducts = new ArrayList<ProductType>();
 		Connection conn = null;
-		if (userLoggedIn.getRole() != "Administrator" &&  userLoggedIn.getRole() != "ShopManager")
+		if (userLoggedIn == null || (!userLoggedIn.getRole().equals("Administrator") &&  !userLoggedIn.getRole().equals("ShopManager")))
 			throw new UnauthorizedException("user error");
 		else {
 			conn = dbAccess();
@@ -710,7 +710,7 @@ public class EZShop implements EZShopInterface {
 		Connection conn = null;
 		if (productId <= 0 || productId == null)
 			throw new InvalidProductIdException("ID incorrect");
-		else if (userLoggedIn.getRole() != "Administrator" &&  userLoggedIn.getRole() != "ShopManager")
+		else if (userLoggedIn == null || (!userLoggedIn.getRole().equals("Administrator") &&  !userLoggedIn.getRole().equals("ShopManager")))
 			throw new UnauthorizedException("user error");
 		else {
 			conn = dbAccess();
@@ -765,7 +765,7 @@ public class EZShop implements EZShopInterface {
 		conn = dbAccess();
 		if (productId <= 0 || productId == null)
 			throw new InvalidProductIdException("ID incorrect");
-		else if (userLoggedIn.getRole() != "Administrator" &&  userLoggedIn.getRole() != "ShopManager")
+		else if (userLoggedIn == null || (!userLoggedIn.getRole().equals("Administrator") &&  !userLoggedIn.getRole().equals("ShopManager")))
 			throw new UnauthorizedException("user error");
 		else if (newPos == null || newPos == "") {
 			// Statement to update the location of a product given its ID to an empty string
