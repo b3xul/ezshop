@@ -43,7 +43,7 @@ public class ReturnTransactionClassTest {
 		returnTransaction.setSaleTransaction(saleTransaction2);
 		assertEquals(saleTransaction2, returnTransaction.getSaleTransaction());
 
-		System.out.println(returnTransaction.toString());
+		returnTransaction.toString();
 
 	}
 

@@ -70,7 +70,7 @@ public class SaleTransactionImpl implements SaleTransaction {
 					return true;
 				}
 				// else if (amountToRemove > previousAmount) updated=false;
-				System.out.println("Found item to remove" + entry);
+				// System.out.println("Found item to remove" + entry);
 			}
 		}
 		// if product not present in the saleTransaction updated==false

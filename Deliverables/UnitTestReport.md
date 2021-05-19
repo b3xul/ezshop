@@ -52,6 +52,7 @@ Version: 1.0
       - [setBalanceOperation](#setbalanceoperation)
       - [removeAmountFromEntry](#removeamountfromentry)
       - [setDiscountRateToProduct](#setdiscountratetoproduct)
+      - [upsertEntry](#upsertentry)
     - [**Class *ReturnTransactionImpl* **](#class-returntransactionimpl-)
       - [constructor](#constructor-6)
       - [setReturnId](#setreturnid)
@@ -899,10 +900,10 @@ Version: 1.0
 
 | Validity of the String *barcode* | Validity of the Integer *amountToRemove* | *amountToRemove*          | Valid / Invalid | Description of the test case                                                                                                                                                                                                                          | JUnit test case TicketEntryClassTest |
 | -------------------------------- | ---------------------------------------- | ------------------------- | --------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------ |
-| Valid                            | Valid                                    | (-maxint, previousAmount) | Valid(true)     | LinkedList/<TicketEntry> entries = new LinkedList/<TicketEntry>(); entries.add(new TicketEntryImpl("12637482635892", "description", 2.0, 0.1, 10)); saleTransaction.setEntries(entries); saleTransaction.removeAmountFromEntry("12637482635892", 1);  | testCase2                            |
+| Valid                            | Valid                                    | (-maxint, previousAmount) | Valid(true)     | LinkedList\<TicketEntry> entries = new LinkedList\<TicketEntry>(); entries.add(new TicketEntryImpl("12637482635892", "description", 2.0, 0.1, 10)); saleTransaction.setEntries(entries); saleTransaction.removeAmountFromEntry("12637482635892", 1);  | testCase2                            |
 | Valid                            | Valid                                    | previousAmount            | Valid(true)     | LinkedList/<TicketEntry> entries = new LinkedList/<TicketEntry>(); entries.add(new TicketEntryImpl("12637482635892", "description", 2.0, 0.1, 10)); saleTransaction.setEntries(entries); saleTransaction.removeAmountFromEntry("12637482635892", 10); | testCase3                            |
-| Valid                            | Valid                                    | (previousAmount, maxint)  | Valid(false)    | LinkedList/<TicketEntry> entries = new LinkedList/<TicketEntry>(); entries.add(new TicketEntryImpl("12637482635892", "description", 2.0, 0.1, 10)); saleTransaction.setEntries(entries); saleTransaction.removeAmountFromEntry("12637482635892", 11); | testCase4                            |
-| Invalid                          | *                                        | *                         | Valid(false)    | LinkedList/<TicketEntry> entries = new LinkedList/<TicketEntry>(); entries.add(new TicketEntryImpl("12637482635892", "description", 2.0, 0.1, 10)); saleTransaction.setEntries(entries); saleTransaction.removeAmountFromEntry("22637482635892", 4);  | testCase5                            |
+| Valid                            | Valid                                    | (previousAmount, maxint)  | Valid(false)    | LinkedList\<TicketEntry> entries = new LinkedList\<TicketEntry>(); entries.add(new TicketEntryImpl("12637482635892", "description", 2.0, 0.1, 10)); saleTransaction.setEntries(entries); saleTransaction.removeAmountFromEntry("12637482635892", 11); | testCase4                            |
+| Invalid                          | *                                        | *                         | Valid(false)    | LinkedList\<TicketEntry> entries = new LinkedList\<TicketEntry>(); entries.add(new TicketEntryImpl("12637482635892", "description", 2.0, 0.1, 10)); saleTransaction.setEntries(entries); saleTransaction.removeAmountFromEntry("22637482635892", 4);  | testCase5                            |
 
 #### setDiscountRateToProduct
 **Criteria for method *setDiscountRateToProduct*:**
@@ -927,9 +928,32 @@ Version: 1.0
 
 | Validity of the String *barcode* | Validity of the double *discountRate* | Valid / Invalid | Description of the test case                                                                                                                                                                                                                              | JUnit test case TicketEntryClassTest |
 | -------------------------------- | ------------------------------------- | --------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------ |
-| Valid                            | Valid                                 | Valid           | LinkedList/<TicketEntry> entries = new LinkedList/<TicketEntry>(); entries.add(new TicketEntryImpl("12637482635892", "description", 2.0, 0.1, 10)); saleTransaction.setEntries(entries); saleTransaction.setDiscountRateToProduct("12637482635892", 0.2); | testCase7                            |
-| Invalid                          | *                                     | Valid(false)    | LinkedList/<TicketEntry> entries = new LinkedList/<TicketEntry>(); entries.add(new TicketEntryImpl("12637482635892", "description", 2.0, 0.1, 10)); saleTransaction.setEntries(entries); saleTransaction.setDiscountRateToProduct("22637482635892", 0.2); | testCase8                            |
+| Valid                            | Valid                                 | Valid           | LinkedList\<TicketEntry> entries = new LinkedList/<TicketEntry>(); entries.add(new TicketEntryImpl("12637482635892", "description", 2.0, 0.1, 10)); saleTransaction.setEntries(entries); saleTransaction.setDiscountRateToProduct("12637482635892", 0.2); | testCase7                            |
+| Invalid                          | *                                     | Valid(false)    | LinkedList\<TicketEntry> entries = new LinkedList/<TicketEntry>(); entries.add(new TicketEntryImpl("12637482635892", "description", 2.0, 0.1, 10)); saleTransaction.setEntries(entries); saleTransaction.setDiscountRateToProduct("22637482635892", 0.2); | testCase8                            |
 
+#### upsertEntry
+**Criteria for method *upsertEntry*:**
+
+ - Validity of the ProductType *productType*
+ - Validity of the int *amount*
+
+**Predicates for method *upsertEntry*:**
+
+| Criteria                                  | Predicate |
+| ----------------------------------------- | --------- |
+| Validity of the ProductType *productType* | Valid     |
+| Validity of the int *amount*              | Valid     |
+
+**Boundaries**:
+
+| Criteria | Boundary values |
+| -------- | --------------- |
+
+**Combination of predicates**:
+
+| Validity of the ProductType *productType* | Validity of the int *amount* | Valid / Invalid | Description of the test case                                                                                                                | JUnit test case TicketEntryClassTest |
+| ----------------------------------------- | ---------------------------- | --------------- | ------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------ |
+| Valid                                     | Valid                        | Valid           | ProductType productType1 = new ProductTypeImpl("note", "description", "12637482635892", 2.5); saleTransaction.upsertEntry(productType1, 6); | testCase10                           |
 
 ### **Class *ReturnTransactionImpl* **
 
@@ -1653,15 +1677,23 @@ Version: 1.0
 
 | Unit name             | JUnit test case            |
 | --------------------- | -------------------------- |
-| SaleTransactionImpl   | SaleTransactionClassTest   |
+| BalanceOperationImpl  | BalanceOperationClassTest  |
+| CustomerImpl          | CustomerClassTest          |
+| EZShop(unit tests)    | EZShopClassTest            |
+| OrderImpl             | OrderClassTest             |
+| PositionImpl          | PositionClassTest          |
+| ProductTypeImpl       | ProductTypeClassTest       |
 | ReturnTransactionImpl | ReturnTransactionClassTest |
-|                       |                            |
+| SaleTransactionImpl   | SaleTransactionClassTest   |
+| TicketEntryImpl       | TicketEntryClassTest       |
+| UserImpl              | UserClassTest              |
 
 ### Code coverage report
 
     <Add here the screenshot report of the statement and branch coverage obtained using
     the Eclemma tool. >
 
+![](Code_coverage_report.png)
 
 ### Loop coverage analysis
 
