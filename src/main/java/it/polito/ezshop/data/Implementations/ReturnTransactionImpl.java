@@ -4,14 +4,14 @@ import it.polito.ezshop.data.SaleTransaction;
 
 public class ReturnTransactionImpl implements it.polito.ezshop.data.ReturnTransaction {
 
-	Integer returnId;
-	Integer productId;
-	String productCode;
-	double pricePerUnit;
-	double discountRate;
-	int amount;
-	double price;
-	SaleTransaction saleTransaction;
+	private Integer returnId;
+	private Integer productId;
+	private String productCode;
+	private double pricePerUnit;
+	private double discountRate;
+	private int amount;
+	private double price;
+	private SaleTransaction saleTransaction;
 	// BalanceOperation balanceOperation; isn't necessary because no getReturnTransaction exists
 
 	public ReturnTransactionImpl(Integer returnId, SaleTransaction saleTransaction) {
