@@ -43,9 +43,9 @@ import it.polito.ezshop.exceptions.UnauthorizedException;
 
 public class EZShop implements EZShopInterface {
 
-	User userLoggedIn = new UserImpl();
-	public SaleTransactionImpl openSaleTransaction = null; // remove public!
-	ReturnTransactionImpl openReturnTransaction = null;
+	private User userLoggedIn = new UserImpl();
+	private SaleTransactionImpl openSaleTransaction = null;
+	private ReturnTransactionImpl openReturnTransaction = null;
 
 	// method to open the connection to database
 	public Connection dbAccess() {
@@ -143,6 +143,35 @@ public class EZShop implements EZShopInterface {
 
 	@Override
 	public void reset() {
+		Connection conn = null;    
+    	 try {
+    		conn = dbAccess();
+    		String sql = "DELETE FROM product";
+    		PreparedStatement pstmt = conn.prepareStatement(sql);
+    		pstmt.executeUpdate(); 
+    		sql = "DELETE FROM order_";
+		    pstmt = conn.prepareStatement(sql);
+		    pstmt.executeUpdate(); 
+		    sql = "DELETE FROM saleTransaction";
+		    pstmt = conn.prepareStatement(sql);
+		    pstmt.executeUpdate(); 
+		    sql = "DELETE FROM returnTransaction";
+		    pstmt = conn.prepareStatement(sql);
+		    pstmt.executeUpdate(); 
+	   		sql = "DELETE FROM balanceOperation";   
+		    pstmt = conn.prepareStatement(sql);
+		    pstmt.executeUpdate();   
+		    sql = "DELETE FROM ticketEntry";   
+		    pstmt = conn.prepareStatement(sql);
+		    pstmt.executeUpdate();   
+		    openSaleTransaction = null;
+			openReturnTransaction = null;
+    	 } catch (Exception e) {  
+		    System.out.println(e.getMessage()); 
+    	 } finally {  
+	        dbClose(conn);  	
+
+	    } 	   
 
 	}
 
@@ -153,7 +182,7 @@ public class EZShop implements EZShopInterface {
 		Connection conn = null;
 		if(username != null && username.isEmpty()==false) {
 			if(password != null &&  password.isEmpty()==false) {
-		    	if(role != null && (role.equals("Administrator") || role.equals("Cashier") || role.equals("ShopManage"))) {
+		    	if(role != null && (role.equals("Administrator") || role.equals("Cashier") || role.equals("ShopManager"))) {
 				    try {
 				    	conn = dbAccess();
 			    		String sql = "SELECT seq FROM sqlite_sequence WHERE name = 'Users'";
@@ -296,7 +325,7 @@ public class EZShop implements EZShopInterface {
 		Connection conn = null;
 		if(userLoggedIn.getRole().equals("Administrator")) {
     		if(id != null && id > 0) {
-	    		if(role != null && (role.equals("Administrator") || role.equals("Cashier") || role.equals("ShopManage"))) {
+	    		if(role != null && (role.equals("Administrator") || role.equals("Cashier") || role.equals("ShopManager"))) {
 	    			try {  
 		    			conn = dbAccess();
 			            String sql = "UPDATE Users SET role = ? WHERE id = ?";
@@ -403,7 +432,7 @@ public class EZShop implements EZShopInterface {
 			throw new InvalidProductCodeException("invalid barcode: barcode does not respect GTIN specifications");
 		else if (pricePerUnit <= 0)
 			throw new InvalidPricePerUnitException("invalid price");
-		else if (userLoggedIn.getRole() != "Administrator" &&  userLoggedIn.getRole() != "ShopManager")
+		else if ((!userLoggedIn.getRole().equals("Administrator") &&  !userLoggedIn.getRole().equals("ShopManager")))
 			throw new UnauthorizedException("user error");
 		else {
 			ProductTypeImpl newProduct = new ProductTypeImpl(note, description, productCode, pricePerUnit);
@@ -469,7 +498,7 @@ public class EZShop implements EZShopInterface {
 			throw new InvalidProductCodeException("invalid barcode: barcode does not respect GTIN specifications");
 		else if (newPrice <= 0)
 			throw new InvalidPricePerUnitException("invalid price");
-		else if (userLoggedIn.getRole() != "Administrator" &&  userLoggedIn.getRole() != "ShopManager")
+		else if ((!userLoggedIn.getRole().equals("Administrator") &&  !userLoggedIn.getRole().equals("ShopManager")))
 			throw new UnauthorizedException("user error");
 		else {
 			Long.parseLong(newCode);
@@ -521,7 +550,7 @@ public class EZShop implements EZShopInterface {
 		Connection conn = null;
 		if (id <= 0 || id == null)
 			throw new InvalidProductIdException("invalid ID");
-		else if (userLoggedIn.getRole() != "Administrator" &&  userLoggedIn.getRole() != "ShopManager")
+		else if ((!userLoggedIn.getRole().equals("Administrator") &&  !userLoggedIn.getRole().equals("ShopManager")))
 			throw new UnauthorizedException("user error");
 		else {
 			conn = dbAccess();
@@ -550,7 +579,7 @@ public class EZShop implements EZShopInterface {
 
 		List<ProductType> inventory = new ArrayList<ProductType>();
 		Connection conn = null;
-		if (userLoggedIn.getRole() != "Administrator" &&  userLoggedIn.getRole() != "ShopManager" && userLoggedIn.getRole() != "Cashier")
+		if ((!userLoggedIn.getRole().equals("Administrator") &&  !userLoggedIn.getRole().equals("ShopManager") && !userLoggedIn.getRole().equals("Cashier")))
 			throw new UnauthorizedException("user error");
 		else {
 			conn = dbAccess();
@@ -606,7 +635,7 @@ public class EZShop implements EZShopInterface {
 			throw new InvalidProductCodeException("invalid barcode: in barcode must not be letters");
 		else if (!isBarcodeValid(barCode))
 			throw new InvalidProductCodeException("invalid barcode: barcode does not respect GTIN specifications");
-		else if (userLoggedIn.getRole() != "Administrator" &&  userLoggedIn.getRole() != "ShopManager")
+		else if ((!userLoggedIn.getRole().equals("Administrator") &&  !userLoggedIn.getRole().equals("ShopManager")))
 			throw new UnauthorizedException("user error");
 		else {
 			conn = dbAccess();
@@ -660,7 +689,7 @@ public class EZShop implements EZShopInterface {
 			description = null;
 		List<ProductType> matchingProducts = new ArrayList<ProductType>();
 		Connection conn = null;
-		if (userLoggedIn.getRole() != "Administrator" &&  userLoggedIn.getRole() != "ShopManager")
+		if ((!userLoggedIn.getRole().equals("Administrator") &&  !userLoggedIn.getRole().equals("ShopManager")))
 			throw new UnauthorizedException("user error");
 		else {
 			conn = dbAccess();
@@ -710,7 +739,7 @@ public class EZShop implements EZShopInterface {
 		Connection conn = null;
 		if (productId <= 0 || productId == null)
 			throw new InvalidProductIdException("ID incorrect");
-		else if (userLoggedIn.getRole() != "Administrator" &&  userLoggedIn.getRole() != "ShopManager")
+		else if ((!userLoggedIn.getRole().equals("Administrator") &&  !userLoggedIn.getRole().equals("ShopManager")))
 			throw new UnauthorizedException("user error");
 		else {
 			conn = dbAccess();
@@ -765,7 +794,7 @@ public class EZShop implements EZShopInterface {
 		conn = dbAccess();
 		if (productId <= 0 || productId == null)
 			throw new InvalidProductIdException("ID incorrect");
-		else if (userLoggedIn.getRole() != "Administrator" &&  userLoggedIn.getRole() != "ShopManager")
+		else if ((!userLoggedIn.getRole().equals("Administrator") &&  !userLoggedIn.getRole().equals("ShopManager")))
 			throw new UnauthorizedException("user error");
 		else if (newPos == null || newPos == "") {
 			// Statement to update the location of a product given its ID to an empty string
@@ -1088,7 +1117,7 @@ public class EZShop implements EZShopInterface {
 	public Integer defineCustomer(String customerName) throws InvalidCustomerNameException, UnauthorizedException {
 		
 		Connection conn = null; 
-		if(userLoggedIn.getRole().equals("Administrator") || userLoggedIn.getRole().equals("Cashier") || userLoggedIn.getRole().equals("ShopManage")) {
+		if(userLoggedIn.getRole().equals("Administrator") || userLoggedIn.getRole().equals("Cashier") || userLoggedIn.getRole().equals("ShopManager")) {
     		if(customerName != null &&  customerName.isEmpty() == false) {
     			try {
 	    			conn = dbAccess();
@@ -1128,7 +1157,7 @@ public class EZShop implements EZShopInterface {
 			throws InvalidCustomerNameException, InvalidCustomerCardException, InvalidCustomerIdException,
 			UnauthorizedException {
 			Connection conn = null; 
-		if(userLoggedIn.getRole().equals("Administrator") || userLoggedIn.getRole().equals("Cashier") || userLoggedIn.getRole().equals("ShopManage")) {
+		if(userLoggedIn.getRole().equals("Administrator") || userLoggedIn.getRole().equals("Cashier") || userLoggedIn.getRole().equals("ShopManager")) {
     		if(id != null && id > 0) {
 	    		if(newCustomerName != null && newCustomerName.isEmpty() == false) {
 	    			try {  
@@ -1181,7 +1210,7 @@ public class EZShop implements EZShopInterface {
 	public boolean deleteCustomer(Integer id) throws InvalidCustomerIdException, UnauthorizedException {
 		
 		Connection conn = null;  
-		if(userLoggedIn.getRole().equals("Administrator") || userLoggedIn.getRole().equals("Cashier") || userLoggedIn.getRole().equals("ShopManage")) {
+		if(userLoggedIn.getRole().equals("Administrator") || userLoggedIn.getRole().equals("Cashier") || userLoggedIn.getRole().equals("ShopManager")) {
     		if(id != null && id > 0) {
     			try {
 					conn = dbAccess();
@@ -1214,7 +1243,7 @@ public class EZShop implements EZShopInterface {
 	public Customer getCustomer(Integer id) throws InvalidCustomerIdException, UnauthorizedException {
 		
 		Connection conn = null;  
-		if(userLoggedIn.getRole().equals("Administrator") || userLoggedIn.getRole().equals("Cashier") || userLoggedIn.getRole().equals("ShopManage")) {
+		if(userLoggedIn.getRole().equals("Administrator") || userLoggedIn.getRole().equals("Cashier") || userLoggedIn.getRole().equals("ShopManager")) {
     		if(id != null && id > 0) {
     			try {  
 					conn = dbAccess();
@@ -1249,7 +1278,7 @@ public class EZShop implements EZShopInterface {
 		
 		Connection conn = null;   
 		List<Customer> customers = new ArrayList<Customer>(); 
-		if(userLoggedIn.getRole().equals("Administrator") || userLoggedIn.getRole().equals("Cashier") || userLoggedIn.getRole().equals("ShopManage")) {
+		if(userLoggedIn.getRole().equals("Administrator") || userLoggedIn.getRole().equals("Cashier") || userLoggedIn.getRole().equals("ShopManager")) {
 			try {  
 				conn = dbAccess();
 	            String sql = "SELECT CU.id, name, card, points FROM Customers CU, Cards CA WHERE CU.card = CA.id";
@@ -1275,7 +1304,7 @@ public class EZShop implements EZShopInterface {
 	public String createCard() throws UnauthorizedException {
 		
 		Connection conn = null;  	
-		if(userLoggedIn.getRole().equals("Administrator") || userLoggedIn.getRole().equals("Cashier") || userLoggedIn.getRole().equals("ShopManage")) {
+		if(userLoggedIn.getRole().equals("Administrator") || userLoggedIn.getRole().equals("Cashier") || userLoggedIn.getRole().equals("ShopManager")) {
 			try {
 	    	
 	    			String cardId;
@@ -1323,7 +1352,7 @@ public class EZShop implements EZShopInterface {
 			throws InvalidCustomerIdException, InvalidCustomerCardException, UnauthorizedException {
 		
 		Connection conn = null;   
-		if(userLoggedIn.getRole().equals("Administrator") || userLoggedIn.getRole().equals("Cashier") || userLoggedIn.getRole().equals("ShopManage")) {
+		if(userLoggedIn.getRole().equals("Administrator") || userLoggedIn.getRole().equals("Cashier") || userLoggedIn.getRole().equals("ShopManager")) {
     		if(customerId != null && customerId > 0) {
     			Pattern p = Pattern.compile("\\d+");
     			if(customerCard != null && customerCard.isEmpty() == false && customerCard.length() >= 10 && p.matcher(customerCard).matches()) {
@@ -1361,7 +1390,7 @@ public class EZShop implements EZShopInterface {
 			throws InvalidCustomerCardException, UnauthorizedException {
 		
 		Connection conn = null;   
-    	if(userLoggedIn.getRole().equals("Administrator") || userLoggedIn.getRole().equals("Cashier") || userLoggedIn.getRole().equals("ShopManage")) {
+    	if(userLoggedIn.getRole().equals("Administrator") || userLoggedIn.getRole().equals("Cashier") || userLoggedIn.getRole().equals("ShopManager")) {
 			Pattern p = Pattern.compile("\\d+");
 			if(customerCard != null && customerCard.isEmpty() == false && customerCard.length() >= 10 && p.matcher(customerCard).matches()) {
 				try { 
