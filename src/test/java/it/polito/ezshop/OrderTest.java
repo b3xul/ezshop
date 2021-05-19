@@ -6,7 +6,6 @@ import java.time.LocalDate;
 
 import org.junit.Test;
 
-import it.polito.ezshop.data.Order;
 import it.polito.ezshop.data.Implementations.OrderImpl;
 
 

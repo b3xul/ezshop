@@ -506,102 +506,146 @@ Version:
 | Valid                            | Valid                                | Valid                                 | Valid                                 | Valid                            | Valid           | saleTransaction.upsertEntry("12637482635892", "description1", 4.0, 5.1, 6); TicketEntryImpl t1 = new TicketEntryImpl("12637482635892", "description1", 4.0, 5.1, 6); assertEquals(t1, saleTransaction.getEntry("12637482635892")); | testCase2                            |
 
 
-
-**Criteria for method *name*:**
+### **Class *BalanceOperationImpl*
+#### constructor
+**Criteria for method *constructor*:**
 	
-
- - 
- - 
-
-
-
+- Validity of the Integer *balanceId*
+ - Validity of the LocalDate *date*
+ - Validity of the Double *money*
+ - Validity of the String *type*  
+ 
 
 
 **Predicates for method *name*:**
 
-| Criteria | Predicate |
-| -------- | --------- |
-|          |           |
-|          |           |
-|          |           |
-|          |           |
-
-
-
+| Criteria                            | Predicate |
+| ----------------------------------- | --------- |
+| Validity of the Integer *balanceId* | Valid     |
+| Validity of the LocalDate *date*    | Valid     |
+| Validity of the Double *money*      | Valid     |
+| Validity of the String *type*       | Valid     |
 
 
 **Boundaries**:
 
 | Criteria | Boundary values |
 | -------- | --------------- |
-|          |                 |
-|          |                 |
-
 
 
 **Combination of predicates**:
 
 
-| Criteria 1 | Criteria 2 | ... | Valid / Invalid | Description of the test case | JUnit test case |
-| ---------- | ---------- | --- | --------------- | ---------------------------- | --------------- |
-|            |            |     |                 |                              |                 |
-|            |            |     |                 |                              |                 |
-|            |            |     |                 |                              |                 |
-|            |            |     |                 |                              |                 |
-|            |            |     |                 |                              |                 |
+| - Validity of the Integer *balanceId* | - Validity of the Integer *date* | Validity of the Double *money* | Validity of the String *type* | Valid / Invalid | Description of the test case                                                         | JUnit test case |
+| ------------------------------------- | -------------------------------- | ------------------------------ | ----------------------------- | --------------- | ------------------------------------------------------------------------------------ | --------------- |
+| valid                                 | valid                            | valid                          | valid                         | valid           | BalanceOperationImpl bo = new BalanceOperationImpl(1, LocalDate.now(), 5, "CREDIT"); | testCase1       |
+|                                       |                                  |                                |                               |                 |                                                                                      |                 |
 
 
-
-
-
- ### **Class *class_name* - method *name***
-
-
-
-**Criteria for method *name*:**
+ #### setBalanceId
+**Criteria for method *setBalanceId*:**
 	
+- Validity of the Integer *balanceId*
+  
 
- - 
- - 
+**Predicates for method *setBalanceId*:**
 
-
-
-
-
-**Predicates for method *name*:**
-
-| Criteria | Predicate |
-| -------- | --------- |
-|          |           |
-|          |           |
-|          |           |
-|          |           |
-
-
-
+| Criteria                            | Predicate |
+| ----------------------------------- | --------- |
+| Validity of the Integer *balanceId* | Valid     |
 
 
 **Boundaries**:
 
 | Criteria | Boundary values |
 | -------- | --------------- |
-|          |                 |
-|          |                 |
-
 
 
 **Combination of predicates**:
 
 
-| Criteria 1 | Criteria 2 | ... | Valid / Invalid | Description of the test case | JUnit test case |
-| ---------- | ---------- | --- | --------------- | ---------------------------- | --------------- |
-|            |            |     |                 |                              |                 |
-|            |            |     |                 |                              |                 |
-|            |            |     |                 |                              |                 |
-|            |            |     |                 |                              |                 |
-|            |            |     |                 |                              |                 |
+| Validity of the Integer *balanceId* | Valid / Invalid | Description of the test case | JUnit test case |
+| ----------------------------------- | --------------- | ---------------------------- | --------------- |
+| Valid                               | Valid           | bo.setBalanceId(5);          | testCase2       |
 
 
+ #### setDate
+**Criteria for method *setDate*:**
+	
+- Validity of the LocalDate *date*
+  
+
+**Predicates for method *name*:**
+
+| Criteria                         | Predicate |
+| -------------------------------- | --------- |
+| Validity of the LocalDate *date* | Valid     |
+
+
+**Boundaries**:
+
+| Criteria | Boundary values |
+| -------- | --------------- |
+
+
+**Combination of predicates**:
+
+| Validity of the LocalDate *Date* | Valid / Invalid | Description of the test case              | JUnit test case |
+| -------------------------------- | --------------- | ----------------------------------------- | --------------- |
+| Valid                            | Valid           | bo.setDate(LocalDate.now().minusDays(1)); | testCase3       |
+
+
+ #### setMoney
+**Criteria for method *setMoney*:**
+	
+- Validity of the double *money*
+  
+
+**Predicates for method *name*:**
+
+| Criteria                       | Predicate |
+| ------------------------------ | --------- |
+| Validity of the double *money* | Valid     |
+
+
+**Boundaries**:
+
+| Criteria | Boundary values |
+| -------- | --------------- |
+
+
+**Combination of predicates**:
+
+
+| Validity of the double *money* | Valid / Invalid | Description of the test case | JUnit test case |
+| ------------------------------ | --------------- | ---------------------------- | --------------- |
+| Valid                          | Valid           | bo.setMoney(2.75);           | testCase4       |
+
+
+ #### setType
+**Criteria for method *setType*:**
+	
+- Validity of the String *type*
+  
+
+**Predicates for method *setType*:**
+
+| Criteria                      | Predicate |
+| ----------------------------- | --------- |
+| Validity of the String *type* | Valid     |
+
+**Boundaries**:
+
+| Criteria | Boundary values |
+| -------- | --------------- |
+
+
+**Combination of predicates**:
+
+
+| Validity of the Integer *balanceId* | Valid / Invalid | Description of the test case | JUnit test case |
+| ----------------------------------- | --------------- | ---------------------------- | --------------- |
+| Valid                               | Valid           | bo.setType("DEBIT");         | testCase5       |
 
 
 # White Box Unit Tests
