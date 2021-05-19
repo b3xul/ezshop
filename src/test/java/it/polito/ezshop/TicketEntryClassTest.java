@@ -49,7 +49,7 @@ public class TicketEntryClassTest {
 	public void testCase5() {
 		
 		product.setDiscountRate(0.2);
-		assertTrue(product.getDiscountRate() == 0.2;
+		assertTrue(product.getDiscountRate() == 0.2);
 		
 	}
 	
