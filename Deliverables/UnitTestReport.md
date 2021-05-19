@@ -841,6 +841,179 @@ Version:
 | Valid                           | Valid           | order.setStatus("PAYED");    | testCase7       |
 
 
+### Class EZShop
+#### 
+
+#### dbAccess
+**Criteria for method *dbAccess*:**
+
+
+**Predicates for method *dbAccess*:**
+
+| Criteria                                             | Predicate |
+| --------                                             | --------- |
+
+**Boundaries**:
+
+| Criteria                          | Boundary values    |
+
+
+**Combination of predicates**:
+
+| Valid / Invalid | Description of the test case | JUnit test case EZShopClassTest|
+|-------|-------|-------|
+|Valid  |shop.dbAccess()     |testCase1       |
+
+#### dbClose
+
+**Criteria for method *dbClose*:**
+- Validity of the Connection *conn*
+
+
+**Predicates for method *dbClose*:**
+
+| Criteria                                             | Predicate |
+| --------                                             | --------- |
+| Validity of the Connection *conn*                    | Valid     |
+|                                                      | Null      |
+**Boundaries**:
+
+| Criteria                          | Boundary values    |
+
+
+**Combination of predicates**:
+
+|Validity of the Connection *conn*| Valid / Invalid | Description of the test case | JUnit test case EZShopClassTest|
+|-------|-------|-------|-------|
+|Valid  |Valid  |EZShop shop = new EZShop();  Connection conn = shop.dbAccess;  shop.dbClose(conn)     |testCase2       |
+|Null   |Valid  |EZShop shop = new EZShop();  shop.dbClose(null)     |testCase3       |
+
+#### isStringOnlyAlphabet
+
+**Criteria for method *isStringOnlyAlphabet*:**
+- Validity of the String *str*  
+- Length of the String *str*
+- Presence of numbers in the String *str*
+
+
+**Predicates for method *isStringOnlyAlphabet*:**
+
+| Criteria                                             | Predicate |
+| --------                                             | --------- |
+| Validity of the String *str*                         | Valid     |
+|                                                      | Null      |
+| Length of the String *str*                           | > 0       |
+|                                                      | = 0       |
+| Presence of numbers in the String *str*              | False     |
+|                                                      | True      |
+**Boundaries**:
+
+| Criteria                          | Boundary values    |
+
+
+**Combination of predicates**:
+
+|Validity of the String *str*|Length of the String *str*|Presence of numbers in the String *str*| Valid / Invalid | Description of the test case | JUnit test case EZShopClassTest|
+|-------|-------|-------|-------|-------|-------|
+|Valid  | > 0   |False  |Valid  |isStringOnlyAlphabet("abcdefghijk")       |testCase4       |
+|"      | "     |True   |Valid  |isStringOnlyAlphabet("123abcd")           |testCase4       |
+|"      | = 0   | -     |Valid  |isStringOnlyAlphabet("")                  |testCase4       |
+|Null   | -     | -     |Valid  |isStringOnlyAlphabet(null)                |testCase4       |
+
+#### isStringOnlyNumbers
+
+**Criteria for method *isStringOnlyNumbers*:**
+- Validity of the String *str*  
+- Length of the String *str*
+- Presence of letters in the String *str*
+
+
+**Predicates for method *isStringOnlyNumbers*:**
+
+| Criteria                                             | Predicate |
+| --------                                             | --------- |
+| Validity of the String *str*                         | Valid     |
+|                                                      | Null      |
+| Length of the String *str*                           | > 0       |
+|                                                      | = 0       |
+| Presence of letters in the String *str*              | False     |
+|                                                      | True      |
+**Boundaries**:
+
+| Criteria                          | Boundary values    |
+
+
+**Combination of predicates**:
+
+|Validity of the String *str*|Length of the String *str*|Presence of numbers in the String *str*| Valid / Invalid | Description of the test case | JUnit test case EZShopClassTest|
+|-------|-------|-------|-------|-------|-------|
+|Valid  | > 0   |False  |Valid  |isStringOnlyNumbers("1234567890")        |testCase5       |
+|"      | "     |True   |Valid  |isStringOnlyNumbers("123abcd")           |testCase5       |
+|"      | = 0   | -     |Valid  |isStringOnlyNumbers("")                  |testCase5       |
+|Null   | -     | -     |Valid  |isStringOnlyNumbers(null)                |testCase5       |
+
+
+#### isBarcodeValid
+
+**Criteria for method *isBarcodeValid*:**
+- Validity of the String *barcode* 
+- Presence of letters in the String *barcode*
+
+
+**Predicates for method *isBarcodeValid*:**
+
+| Criteria                                             | Predicate |
+| --------                                             | --------- |
+| Validity of the String *barcode*                     | Valid     |
+|                                                      | Invalid   |
+| Presence of letters in the String *barcode*          | False     |
+|                                                      | True      |
+**Boundaries**:
+
+| Criteria                          | Boundary values    |
+
+
+**Combination of predicates**:
+
+|Validity of the String *barcode*|Presence of letters in the String *barcode*| Valid / Invalid | Description of the test case | JUnit test case EZShopClassTest|
+|-------|-------|-------|-------|-------|
+|Valid  |False  |Valid  |isBarcodeValid("12637482635892")        |testCase6       |
+|"      |True   |Valid  |isBarcodeValid("123abcd")               |testCase6       |
+|Invalid| -     |Valid  |isBarcodeValid("1111111111111")         |testCase6       |
+
+#### checkLuhn
+
+**Criteria for method *checkLuhn*:**
+- Validity of the String *cardNo*  
+- Length of the String *cardNo*
+- Presence of numbers in the String *cardNo*
+
+
+**Predicates for method *checkLuhn*:**
+
+| Criteria                                             | Predicate |
+| --------                                             | --------- |
+| Validity of the String *cardNo*                      | Valid     |
+|                                                      | Null      |
+| Length of the String *cardNo*                        | > 0       |
+|                                                      | = 0       |
+| Presence of numbers in the String *cardNo*           | False     |
+|                                                      | True      |
+**Boundaries**:
+
+| Criteria                          | Boundary values    |
+
+
+**Combination of predicates**:
+
+|Validity of the String *cardNo*|Length of the String *cardNo*|Presence of numbers in the String *cardNo*| Valid / Invalid | Description of the test case | JUnit test case EZShopClassTest|
+|-------|-------|-------|-------|-------|-------|
+|Valid  | > 0   |False  |Valid  |checkLuhn("4716258050958645")             |testCase7       |
+|"      | "     |True   |Valid  |isStringOnlyAlphabet("123abcd")           |testCase7       |
+|"      | = 0   | -     |Valid  |isStringOnlyAlphabet("")                  |testCase7       |
+|Null   | -     | -     |Valid  |isStringOnlyAlphabet(null)                |testCase7       |
+
+
 # White Box Unit Tests
 
 ### Test cases definition
