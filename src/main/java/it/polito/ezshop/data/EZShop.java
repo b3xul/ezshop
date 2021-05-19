@@ -254,7 +254,6 @@ public class EZShop implements EZShopInterface {
 	    
 	}
 
-	// ritornare la lista vuota o null in caso di eccezione?
 	@Override
 	public List<User> getAllUsers() throws UnauthorizedException {
 
@@ -284,7 +283,6 @@ public class EZShop implements EZShopInterface {
 
 	}
 
-	// ritornare null se scateno l'eccezione?
 	@Override
 	public User getUser(Integer id) throws InvalidUserIdException, UnauthorizedException {
 
@@ -1183,7 +1181,7 @@ public class EZShop implements EZShopInterface {
 				        	throw new InvalidCustomerCardException("Invalid card");
 				        }
 			            int rs = pstmt.executeUpdate(); 		
-			            if(rs == 0) { 					// 0 -> nessuna riga modificata  
+			            if(rs == 0) { 					 
 			            	return false;
 			            }
 			            else {
