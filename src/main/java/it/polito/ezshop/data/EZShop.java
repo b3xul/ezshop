@@ -808,19 +808,19 @@ public class EZShop implements EZShopInterface {
 				e.printStackTrace();
 				success = false;
 			}
-		} else if (newPos.split(" ").length != 3)
+		} else if (newPos.split("-").length != 3)
 			throw new InvalidLocationException("wrong format for location: wrong field(s)");
-		else if (!isStringOnlyNumbers(newPos.split(" ")[0]))
+		else if (!isStringOnlyNumbers(newPos.split("-")[0]))
 			throw new InvalidLocationException("wrong format for location: aisle must be a number");
-		else if (!isStringOnlyAlphabet(newPos.split(" ")[1]))
+		else if (!isStringOnlyAlphabet(newPos.split("-")[1]))
 			throw new InvalidLocationException(
 					"wrong format for location: ID must contains only alphabetic characters");
-		else if (!isStringOnlyNumbers(newPos.split(" ")[2]))
+		else if (!isStringOnlyNumbers(newPos.split("-")[2]))
 			throw new InvalidLocationException("wrong format for location: level must be a number");
 		else {
-			Integer aisleNumber = Integer.parseInt(newPos.split(" ")[0]);
-			String alphabeticId = newPos.split(" ")[1];
-			Integer levelNumber = Integer.parseInt(newPos.split(" ")[2]);
+			Integer aisleNumber = Integer.parseInt(newPos.split("-")[0]);
+			String alphabeticId = newPos.split("-")[1];
+			Integer levelNumber = Integer.parseInt(newPos.split("-")[2]);
 			if (aisleNumber == null || alphabeticId == null || alphabeticId == "" || levelNumber == null)
 				throw new InvalidLocationException("wrong format for location");
 			else {
