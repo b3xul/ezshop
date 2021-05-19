@@ -1,3 +1,7 @@
+package it.polito.ezshop.data.Implementations;
+
+import it.polito.ezshop.data.Customer;
+
 public class CustomerImpl implements Customer {
 	private Integer id;
 	private String name;
