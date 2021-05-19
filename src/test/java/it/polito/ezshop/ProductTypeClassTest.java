@@ -81,8 +81,18 @@ public class ProductTypeClassTest {
 	public void testCase9() {
 		
 			ProductTypeImpl product2 = new ProductTypeImpl();
-			product2.setDiscountRate(20.0);
-			assertTrue(product2.getDiscountRate() == 20.0);
+			product2.setDiscountRate(0.2);
+			assertTrue(product2.getDiscountRate() == 0.2);
+			
+	}
+	
+	@Test
+	public void testCase10() {
+		
+			ProductTypeImpl product2 = new ProductTypeImpl();
+			product2.print();
+			product2.setId(1);
+			product2.print();
 			
 	}
 }

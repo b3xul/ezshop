@@ -7,5 +7,8 @@ import org.junit.Test;
 public class IssueOrderTest {
 	
 	@Test
+	public void testCase1() {
+		
+	}
 
 }
