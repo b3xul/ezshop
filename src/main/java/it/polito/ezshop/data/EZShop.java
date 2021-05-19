@@ -164,7 +164,8 @@ public class EZShop implements EZShopInterface {
 		    sql = "DELETE FROM ticketEntry";   
 		    pstmt = conn.prepareStatement(sql);
 		    pstmt.executeUpdate();   
-		    
+		    openSaleTransaction = null;
+			openReturnTransaction = null;
     	 } catch (Exception e) {  
 		    System.out.println(e.getMessage()); 
     	 } finally {  
