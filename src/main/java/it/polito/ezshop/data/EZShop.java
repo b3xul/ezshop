@@ -578,7 +578,7 @@ public class EZShop implements EZShopInterface {
 
 		List<ProductType> inventory = new ArrayList<ProductType>();
 		Connection conn = null;
-		if (userLoggedIn == null || (!userLoggedIn.getRole().equals("Administrator") &&  !userLoggedIn.getRole().equals("ShopManager") && !userLoggedIn.getRole().equals("Cashier"))
+		if (userLoggedIn == null || (!userLoggedIn.getRole().equals("Administrator") &&  !userLoggedIn.getRole().equals("ShopManager") && !userLoggedIn.getRole().equals("Cashier")))
 			throw new UnauthorizedException("user error");
 		else {
 			conn = dbAccess();
