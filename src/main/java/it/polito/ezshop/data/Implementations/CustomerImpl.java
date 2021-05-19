@@ -1,11 +1,16 @@
-
 public class CustomerImpl implements Customer {
 	private Integer id;
 	private String name;
 	private String card;
 	private Integer points;
 	
-
+	public CustomerImpl() {
+		this.id = -1;
+		this.name = "";
+		this.card = "";
+		this.points = -1;
+	}
+	
 	public CustomerImpl(Integer id, String name, String card, Integer points) {
 		this.id = id;
 		this.name = name;
