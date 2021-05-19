@@ -12,6 +12,7 @@ public class ReturnTransactionClassTest {
 	@Test
 	public void testCase1() {
 
+		// constructor+setters+getters
 		SaleTransaction saleTransaction = null;
 		ReturnTransactionImpl returnTransaction = new ReturnTransactionImpl(1, saleTransaction);
 		assertEquals(Integer.valueOf(1), returnTransaction.getReturnId());
@@ -37,6 +38,7 @@ public class ReturnTransactionClassTest {
 		assertEquals(saleTransaction2, returnTransaction.getSaleTransaction());
 
 		System.out.println(returnTransaction.toString());
+
 	}
 
 }

@@ -7,15 +7,20 @@ public class ReturnTransactionImpl implements it.polito.ezshop.data.ReturnTransa
 	Integer returnId;
 	Integer productId;
 	String productCode;
+	double pricePerUnit;
+	double discountRate;
 	int amount;
 	double price;
 	SaleTransaction saleTransaction;
+	// BalanceOperation balanceOperation; isn't necessary because no getReturnTransaction exists
 
 	public ReturnTransactionImpl(Integer returnId, SaleTransaction saleTransaction) {
 
 		this.returnId = returnId;
 		this.productId = -1;
 		this.productCode = "";
+		this.pricePerUnit = 0;
+		this.discountRate = 0;
 		this.amount = 0;
 		this.price = 0;
 		this.saleTransaction = saleTransaction;
@@ -59,6 +64,30 @@ public class ReturnTransactionImpl implements it.polito.ezshop.data.ReturnTransa
 	public void setProductCode(String productCode) {
 
 		this.productCode = productCode;
+
+	}
+
+	public double getPricePerUnit() {
+
+		return pricePerUnit;
+
+	}
+
+	public void setPricePerUnit(double pricePerUnit) {
+
+		this.pricePerUnit = pricePerUnit;
+
+	}
+
+	public double getDiscountRate() {
+
+		return discountRate;
+
+	}
+
+	public void setDiscountRate(double discountRate) {
+
+		this.discountRate = discountRate;
 
 	}
 
@@ -108,8 +137,8 @@ public class ReturnTransactionImpl implements it.polito.ezshop.data.ReturnTransa
 	public String toString() {
 
 		return "ReturnTransactionImpl [returnId=" + returnId + ", productId=" + productId + ", productCode="
-				+ productCode + ", amount=" + amount + ", price=" + price + ", saleTransaction=" + saleTransaction
-				+ "]";
+				+ productCode + ", pricePerUnit=" + pricePerUnit + ", amount=" + amount + ", price=" + price
+				+ ", saleTransaction=" + saleTransaction + "]";
 
 	}
 

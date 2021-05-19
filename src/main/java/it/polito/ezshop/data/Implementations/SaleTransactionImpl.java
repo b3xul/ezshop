@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import it.polito.ezshop.data.BalanceOperation;
+import it.polito.ezshop.data.ProductType;
 import it.polito.ezshop.data.SaleTransaction;
 import it.polito.ezshop.data.TicketEntry;
 
@@ -14,7 +15,7 @@ public class SaleTransactionImpl implements SaleTransaction {
 	double price;
 	LinkedList<TicketEntry> entries;
 	double discountRate;
-	private BalanceOperation balanceOperation;
+	BalanceOperation balanceOperation;
 
 	public SaleTransactionImpl(Integer ticketNumber) {
 
@@ -26,51 +27,45 @@ public class SaleTransactionImpl implements SaleTransaction {
 
 	}
 
-	public TicketEntry upsertEntry(String barCode, String productDescription, double pricePerUnit, double discountRate,
-			int amount) { // update in entry or insert new entry if it doesn't exist
+	public TicketEntry upsertEntry(ProductType productType, int amount) {
+		// update in entry or insert new entry if it doesn't exist
 
+		String barCode = productType.getBarCode();
+		String productDescription = productType.getProductDescription();
+		double pricePerUnit = productType.getPricePerUnit();
 		for (TicketEntry entry : entries) {
 			if (entry.getBarCode() == barCode) {
 				entry.setAmount(entry.getAmount() + amount);
-				entry.setDiscountRate(discountRate);
+				this.setPrice(this.price + amount * pricePerUnit * (1 - entry.getDiscountRate()));
 				return entry;
 			}
 		}
 
-		TicketEntry newEntry = new TicketEntryImpl(barCode, productDescription, pricePerUnit, discountRate, amount);
+		TicketEntry newEntry = new TicketEntryImpl(barCode, productDescription, pricePerUnit, 0, amount);
 		entries.add(newEntry);
-
-		// this.setPrice(this.price + amount * pricePerUnit * (1 - discountRate));
+		this.setPrice(this.price + amount * pricePerUnit); // discountRate=0 until setDiscountRateToProduct is called
 
 		return newEntry;
 
 	}
 
-	public TicketEntry getEntry(String barCode) {
-
-		TicketEntry entry = null;
-		for (TicketEntry e : entries) {
-			if (e.getBarCode() == barCode) {
-				entry = e;
-				break;
-			}
-		}
-		return entry;
-
-	}
-
-	public void addEntry(String barCode, String productDescription, double pricePerUnit, double discountRate,
-			int amount) {
-
-		entries.add(new TicketEntryImpl(barCode, productDescription, pricePerUnit, discountRate, amount));
-
-	}
+	// public TicketEntry getEntry(String barCode) {
+	//
+	// TicketEntry entry = null;
+	// for (TicketEntry e : entries) {
+	// if (e.getBarCode() == barCode) {
+	// entry = e;
+	// break;
+	// }
+	// }
+	// return entry;
+	//
+	// }
 
 	public Boolean removeAmountFromEntry(String barCode, int amountToRemove) {
 		// remove amount from entry if amount<previous amount, deletes entry if
 		// amount==previous amount, return false if amount>previous amount
 
-		Boolean updated = false;
 		Iterator<TicketEntry> iter = entries.iterator();
 		while (iter.hasNext()) {
 			TicketEntry entry = iter.next();
@@ -78,12 +73,14 @@ public class SaleTransactionImpl implements SaleTransaction {
 				int previousAmount = entry.getAmount();
 				if (amountToRemove < previousAmount) {
 					entry.setAmount(previousAmount - amountToRemove);
-					updated = true;
-					break;
+					this.setPrice(
+							this.price - (amountToRemove * entry.getPricePerUnit() * (1 - entry.getDiscountRate())));
+					return true;
 				} else if (amountToRemove == previousAmount) {
 					iter.remove();
-					updated = true;
-					break;
+					this.setPrice(
+							this.price - (amountToRemove * entry.getPricePerUnit() * (1 - entry.getDiscountRate())));
+					return true;
 				}
 				// else if (amountToRemove > previousAmount) updated=false;
 				System.out.println("Found item to remove" + entry);
@@ -91,7 +88,7 @@ public class SaleTransactionImpl implements SaleTransaction {
 			}
 		}
 		// if product not present in the saleTransaction updated==false
-		return updated;
+		return false;
 
 	}
 
@@ -99,22 +96,15 @@ public class SaleTransactionImpl implements SaleTransaction {
 
 		for (TicketEntry entry : entries) {
 			if (entry.getBarCode() == barCode) {
+				double entryCost = entry.getAmount() * entry.getPricePerUnit() * (1 - entry.getDiscountRate());
+				this.price = this.price - entryCost; // removed entry cost
 				entry.setDiscountRate(discountRate);
+				this.price = entry.getAmount() * entry.getPricePerUnit() * (1 - entry.getDiscountRate()); // new entry
+																											// cost
 				System.out.println(entry);
 				break;
 			}
 		}
-
-	}
-
-	public double computePrice() {
-
-		double price = 0;
-		for (TicketEntry entry : entries)
-			price += entry.getPricePerUnit() * entry.getAmount() * (1 - entry.getDiscountRate());
-		price = price * (1 - this.getDiscountRate());
-		this.setDiscountRate(price);
-		return price;
 
 	}
 
@@ -170,7 +160,9 @@ public class SaleTransactionImpl implements SaleTransaction {
 	@Override
 	public void setDiscountRate(double discountRate) {
 
+		this.price = this.price / (1 - this.discountRate);// full price
 		this.discountRate = discountRate;
+		this.price = this.price * (1 - this.discountRate);// new discounted price
 
 	}
 
@@ -189,7 +181,7 @@ public class SaleTransactionImpl implements SaleTransaction {
 	@Override
 	public String toString() {
 
-		return "SaleTransactionImpl [ticketNumber=" + this.getTicketNumber() + ", money=" + this.price + " entries="
+		return "SaleTransactionImpl [ticketNumber=" + this.getTicketNumber() + ", price=" + this.price + " entries="
 				+ entries + ", discountRate=" + discountRate + "]";
 
 	}

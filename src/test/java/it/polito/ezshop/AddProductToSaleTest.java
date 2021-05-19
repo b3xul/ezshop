@@ -19,7 +19,8 @@ public class AddProductToSaleTest {
 		EZShopInterface ezShop = new it.polito.ezshop.data.EZShop();
 		Integer tid = ezShop.startSaleTransaction();
 		System.out.println(tid);
-		assertTrue(ezShop.addProductToSale(tid, "98765432123456", 2));
+		assertTrue(ezShop.addProductToSale(tid, "12637482635892", 4));
+		assertTrue(ezShop.addProductToSale(tid, "6253478956438", 2));
 
 	}
 
