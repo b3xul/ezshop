@@ -153,7 +153,7 @@ public class EZShop implements EZShopInterface {
 		Connection conn = null;
 		if(username != null && username.isEmpty()==false) {
 			if(password != null &&  password.isEmpty()==false) {
-		    	if(role != null && (role.equals("Administrator") || role.equals("Cashier") || role.equals("ShopManage"))) {
+		    	if(role != null && (role.equals("Administrator") || role.equals("Cashier") || role.equals("ShopManager"))) {
 				    try {
 				    	conn = dbAccess();
 			    		String sql = "SELECT seq FROM sqlite_sequence WHERE name = 'Users'";
@@ -296,7 +296,7 @@ public class EZShop implements EZShopInterface {
 		Connection conn = null;
 		if(userLoggedIn.getRole().equals("Administrator")) {
     		if(id != null && id > 0) {
-	    		if(role != null && (role.equals("Administrator") || role.equals("Cashier") || role.equals("ShopManage"))) {
+	    		if(role != null && (role.equals("Administrator") || role.equals("Cashier") || role.equals("ShopManager"))) {
 	    			try {  
 		    			conn = dbAccess();
 			            String sql = "UPDATE Users SET role = ? WHERE id = ?";
@@ -1088,7 +1088,7 @@ public class EZShop implements EZShopInterface {
 	public Integer defineCustomer(String customerName) throws InvalidCustomerNameException, UnauthorizedException {
 		
 		Connection conn = null; 
-		if(userLoggedIn.getRole().equals("Administrator") || userLoggedIn.getRole().equals("Cashier") || userLoggedIn.getRole().equals("ShopManage")) {
+		if(userLoggedIn.getRole().equals("Administrator") || userLoggedIn.getRole().equals("Cashier") || userLoggedIn.getRole().equals("ShopManager")) {
     		if(customerName != null &&  customerName.isEmpty() == false) {
     			try {
 	    			conn = dbAccess();
@@ -1128,7 +1128,7 @@ public class EZShop implements EZShopInterface {
 			throws InvalidCustomerNameException, InvalidCustomerCardException, InvalidCustomerIdException,
 			UnauthorizedException {
 			Connection conn = null; 
-		if(userLoggedIn.getRole().equals("Administrator") || userLoggedIn.getRole().equals("Cashier") || userLoggedIn.getRole().equals("ShopManage")) {
+		if(userLoggedIn.getRole().equals("Administrator") || userLoggedIn.getRole().equals("Cashier") || userLoggedIn.getRole().equals("ShopManager")) {
     		if(id != null && id > 0) {
 	    		if(newCustomerName != null && newCustomerName.isEmpty() == false) {
 	    			try {  
@@ -1181,7 +1181,7 @@ public class EZShop implements EZShopInterface {
 	public boolean deleteCustomer(Integer id) throws InvalidCustomerIdException, UnauthorizedException {
 		
 		Connection conn = null;  
-		if(userLoggedIn.getRole().equals("Administrator") || userLoggedIn.getRole().equals("Cashier") || userLoggedIn.getRole().equals("ShopManage")) {
+		if(userLoggedIn.getRole().equals("Administrator") || userLoggedIn.getRole().equals("Cashier") || userLoggedIn.getRole().equals("ShopManager")) {
     		if(id != null && id > 0) {
     			try {
 					conn = dbAccess();
@@ -1214,7 +1214,7 @@ public class EZShop implements EZShopInterface {
 	public Customer getCustomer(Integer id) throws InvalidCustomerIdException, UnauthorizedException {
 		
 		Connection conn = null;  
-		if(userLoggedIn.getRole().equals("Administrator") || userLoggedIn.getRole().equals("Cashier") || userLoggedIn.getRole().equals("ShopManage")) {
+		if(userLoggedIn.getRole().equals("Administrator") || userLoggedIn.getRole().equals("Cashier") || userLoggedIn.getRole().equals("ShopManager")) {
     		if(id != null && id > 0) {
     			try {  
 					conn = dbAccess();
@@ -1249,7 +1249,7 @@ public class EZShop implements EZShopInterface {
 		
 		Connection conn = null;   
 		List<Customer> customers = new ArrayList<Customer>(); 
-		if(userLoggedIn.getRole().equals("Administrator") || userLoggedIn.getRole().equals("Cashier") || userLoggedIn.getRole().equals("ShopManage")) {
+		if(userLoggedIn.getRole().equals("Administrator") || userLoggedIn.getRole().equals("Cashier") || userLoggedIn.getRole().equals("ShopManager")) {
 			try {  
 				conn = dbAccess();
 	            String sql = "SELECT CU.id, name, card, points FROM Customers CU, Cards CA WHERE CU.card = CA.id";
@@ -1275,7 +1275,7 @@ public class EZShop implements EZShopInterface {
 	public String createCard() throws UnauthorizedException {
 		
 		Connection conn = null;  	
-		if(userLoggedIn.getRole().equals("Administrator") || userLoggedIn.getRole().equals("Cashier") || userLoggedIn.getRole().equals("ShopManage")) {
+		if(userLoggedIn.getRole().equals("Administrator") || userLoggedIn.getRole().equals("Cashier") || userLoggedIn.getRole().equals("ShopManager")) {
 			try {
 	    	
 	    			String cardId;
@@ -1323,7 +1323,7 @@ public class EZShop implements EZShopInterface {
 			throws InvalidCustomerIdException, InvalidCustomerCardException, UnauthorizedException {
 		
 		Connection conn = null;   
-		if(userLoggedIn.getRole().equals("Administrator") || userLoggedIn.getRole().equals("Cashier") || userLoggedIn.getRole().equals("ShopManage")) {
+		if(userLoggedIn.getRole().equals("Administrator") || userLoggedIn.getRole().equals("Cashier") || userLoggedIn.getRole().equals("ShopManager")) {
     		if(customerId != null && customerId > 0) {
     			Pattern p = Pattern.compile("\\d+");
     			if(customerCard != null && customerCard.isEmpty() == false && customerCard.length() >= 10 && p.matcher(customerCard).matches()) {
@@ -1361,7 +1361,7 @@ public class EZShop implements EZShopInterface {
 			throws InvalidCustomerCardException, UnauthorizedException {
 		
 		Connection conn = null;   
-    	if(userLoggedIn.getRole().equals("Administrator") || userLoggedIn.getRole().equals("Cashier") || userLoggedIn.getRole().equals("ShopManage")) {
+    	if(userLoggedIn.getRole().equals("Administrator") || userLoggedIn.getRole().equals("Cashier") || userLoggedIn.getRole().equals("ShopManager")) {
 			Pattern p = Pattern.compile("\\d+");
 			if(customerCard != null && customerCard.isEmpty() == false && customerCard.length() >= 10 && p.matcher(customerCard).matches()) {
 				try { 
