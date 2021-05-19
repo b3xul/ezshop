@@ -20,6 +20,7 @@ import it.polito.ezshop.data.Implementations.ReturnTransactionImpl;
 import it.polito.ezshop.data.Implementations.SaleTransactionImpl;
 import it.polito.ezshop.data.Implementations.TicketEntryImpl;
 import it.polito.ezshop.data.Implementations.UserImpl;
+import it.polito.ezshop.data.Implementations.CustomerImpl;
 import it.polito.ezshop.exceptions.InvalidCreditCardException;
 import it.polito.ezshop.exceptions.InvalidCustomerCardException;
 import it.polito.ezshop.exceptions.InvalidCustomerIdException;
