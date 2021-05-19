@@ -1,20 +1,92 @@
 # Unit Testing Documentation
 
-Authors:
+Authors: Elia Fontana, Andrea Palomba, Leonardo Perugini, Francesco Sattolo
 
-Date:
+Date: 19/05/2021
 
-Version:
+Version: 1.0
 
 # Contents
 
+- [Unit Testing Documentation](#unit-testing-documentation)
+- [Contents](#contents)
 - [Black Box Unit Tests](#black-box-unit-tests)
-
-
-
-
+    - [Class UserImpl](#class-userimpl)
+      - [constructor](#constructor)
+      - [setId](#setid)
+      - [setUsername](#setusername)
+      - [setPassword](#setpassword)
+      - [setRole](#setrole)
+    - [Class CustomerImpl](#class-customerimpl)
+      - [constructor](#constructor-1)
+      - [setId](#setid-1)
+      - [setUsername](#setusername-1)
+      - [setCustomerCard](#setcustomercard)
+      - [setPoints](#setpoints)
+    - [Class ProductTypeImpl](#class-producttypeimpl)
+      - [constructor](#constructor-2)
+      - [setId](#setid-2)
+      - [setProductDescription](#setproductdescription)
+      - [setBarCode](#setbarcode)
+      - [setPricePerUnit](#setpriceperunit)
+      - [setNote](#setnote)
+      - [setLocation](#setlocation)
+      - [setQuantity](#setquantity)
+      - [setDiscountRate](#setdiscountrate)
+    - [Class TicketEntryImpl](#class-ticketentryimpl)
+      - [constructor](#constructor-3)
+      - [setProductDescription](#setproductdescription-1)
+      - [setBarCode](#setbarcode-1)
+      - [setPricePerUnit](#setpriceperunit-1)
+      - [setDiscountRate](#setdiscountrate-1)
+      - [setAmount](#setamount)
+    - [Class PositionImpl](#class-positionimpl)
+      - [constructor](#constructor-4)
+      - [setPosition](#setposition)
+    - [**Class *SaleTransactionImpl*](#class-saletransactionimpl)
+      - [constructor](#constructor-5)
+      - [setTicketNumber](#setticketnumber)
+      - [setPrice](#setprice)
+      - [setDiscountRate](#setdiscountrate-2)
+      - [setEntries](#setentries)
+      - [setBalanceOperation](#setbalanceoperation)
+      - [removeAmountFromEntry](#removeamountfromentry)
+      - [setDiscountRateToProduct](#setdiscountratetoproduct)
+    - [**Class *ReturnTransactionImpl* **](#class-returntransactionimpl-)
+      - [constructor](#constructor-6)
+      - [setReturnId](#setreturnid)
+      - [setProductId](#setproductid)
+      - [setProductCode](#setproductcode)
+      - [setPricePerUnit](#setpriceperunit-2)
+      - [setDiscountRate](#setdiscountrate-3)
+      - [setAmount](#setamount-1)
+      - [setPrice](#setprice-1)
+      - [setSaleTransaction](#setsaletransaction)
+    - [Class *BalanceOperationImpl*](#class-balanceoperationimpl)
+      - [constructor](#constructor-7)
+      - [setBalanceId](#setbalanceid)
+      - [setDate](#setdate)
+      - [setMoney](#setmoney)
+      - [setType](#settype)
+    - [Class *OrderImpl*](#class-orderimpl)
+      - [constructor](#constructor-8)
+      - [setBalanceId](#setbalanceid-1)
+      - [setOrderId](#setorderid)
+      - [setPricePerUnit](#setpriceperunit-3)
+      - [setQuantity](#setquantity-1)
+      - [setProductCode](#setproductcode-1)
+      - [setStatus](#setstatus)
+    - [Class EZShop](#class-ezshop)
+      - [dbAccess](#dbaccess)
+      - [dbClose](#dbclose)
+      - [isStringOnlyAlphabet](#isstringonlyalphabet)
+      - [isStringOnlyNumbers](#isstringonlynumbers)
+      - [isBarcodeValid](#isbarcodevalid)
+      - [checkLuhn](#checkluhn)
 - [White Box Unit Tests](#white-box-unit-tests)
-
+    - [Test cases definition](#test-cases-definition)
+    - [Code coverage report](#code-coverage-report)
+    - [Loop coverage analysis](#loop-coverage-analysis)
 
 # Black Box Unit Tests
 
@@ -1399,7 +1471,6 @@ Version:
 
 
 ### Class EZShop
-#### 
 
 #### dbAccess
 **Criteria for method *dbAccess*:**
