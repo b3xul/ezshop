@@ -98,6 +98,8 @@ public class EZShop implements EZShopInterface {
 	public static boolean isBarcodeValid(String barcode) {
 
 		boolean valid = false;
+		if(!isStringOnlyNumbers(barcode)) return valid;
+
 		List<Integer> b = new ArrayList<Integer>();
 		for (String c : barcode.split("")) {
 			b.add(Integer.parseInt(c));
@@ -120,6 +122,27 @@ public class EZShop implements EZShopInterface {
 			valid = false;
 		return valid;
 
+	}
+
+	public boolean checkLuhn(String cardNo) {
+		
+		if(!isStringOnlyNumbers(cardNo)) return false;
+	    int nDigits = cardNo.length();
+	 
+	    int nSum = 0;
+	    boolean isSecond = false;
+	    for (int i = nDigits - 1; i >= 0; i--){
+	        int d = cardNo.charAt(i) - '0';
+	 
+	        if (isSecond == true)
+	            d = d * 2;
+	 
+	        nSum += d / 10;
+	        nSum += d % 10;
+	 
+	        isSecond = !isSecond;
+	    }
+	    return (nSum % 10 == 0);
 	}
 
 	@Override
@@ -384,7 +407,7 @@ public class EZShop implements EZShopInterface {
 			throw new InvalidProductCodeException("invalid barcode: barcode does not respect GTIN specifications");
 		else if (pricePerUnit <= 0)
 			throw new InvalidPricePerUnitException("invalid price");
-		else if (false)
+		else if (!userLoggedIn.getRole().equals("Administrator") &&  !userLoggedIn.getRole().equals("ShopManager"))
 			throw new UnauthorizedException("user error");
 		else {
 			ProductTypeImpl newProduct = new ProductTypeImpl(note, description, productCode, pricePerUnit);
@@ -420,9 +443,10 @@ public class EZShop implements EZShopInterface {
 			} catch (SQLException e) {
 				e.printStackTrace();
 				id = -1;
+			}finally {
+				dbClose(conn);
 			}
 		}
-		dbClose(conn);
 		return id;
 
 	}
@@ -449,7 +473,7 @@ public class EZShop implements EZShopInterface {
 			throw new InvalidProductCodeException("invalid barcode: barcode does not respect GTIN specifications");
 		else if (newPrice <= 0)
 			throw new InvalidPricePerUnitException("invalid price");
-		else if (false)
+		else if (!userLoggedIn.getRole().equals("Administrator") &&  !userLoggedIn.getRole().equals("ShopManager"))
 			throw new UnauthorizedException("user error");
 		else {
 			Long.parseLong(newCode);
@@ -485,9 +509,10 @@ public class EZShop implements EZShopInterface {
 			} catch (SQLException e) {
 				e.printStackTrace();
 				success = false;
+			}finally {
+				dbClose(conn);
 			}
 		}
-		dbClose(conn);
 		return success;
 
 	};
@@ -500,7 +525,7 @@ public class EZShop implements EZShopInterface {
 		Connection conn = null;
 		if (id <= 0 || id == null)
 			throw new InvalidProductIdException("invalid ID");
-		else if (false)
+		else if (!userLoggedIn.getRole().equals("Administrator") &&  !userLoggedIn.getRole().equals("ShopManager"))
 			throw new UnauthorizedException("user error");
 		else {
 			conn = dbAccess();
@@ -515,9 +540,10 @@ public class EZShop implements EZShopInterface {
 			} catch (SQLException e) {
 				e.printStackTrace();
 				success = false;
+			}finally {
+				dbClose(conn);
 			}
 		}
-		dbClose(conn);
 		return success;
 
 	}
@@ -528,7 +554,7 @@ public class EZShop implements EZShopInterface {
 
 		List<ProductType> inventory = new ArrayList<ProductType>();
 		Connection conn = null;
-		if (false)
+		if (!userLoggedIn.getRole().equals("Administrator") &&  !userLoggedIn.getRole().equals("ShopManager") && !userLoggedIn.getRole().equals("Cashier"))
 			throw new UnauthorizedException("user error");
 		else {
 			conn = dbAccess();
@@ -561,9 +587,10 @@ public class EZShop implements EZShopInterface {
 				// for(ProductType p: inventory) p.print();
 			} catch (SQLException e) {
 				e.printStackTrace();
+			}finally {
+				dbClose(conn);
 			}
 		}
-		dbClose(conn);
 		return inventory;
 
 	}
@@ -583,7 +610,7 @@ public class EZShop implements EZShopInterface {
 			throw new InvalidProductCodeException("invalid barcode: in barcode must not be letters");
 		else if (!isBarcodeValid(barCode))
 			throw new InvalidProductCodeException("invalid barcode: barcode does not respect GTIN specifications");
-		else if (false)
+		else if (!userLoggedIn.getRole().equals("Administrator") &&  !userLoggedIn.getRole().equals("ShopManager"))
 			throw new UnauthorizedException("user error");
 		else {
 			conn = dbAccess();
@@ -621,9 +648,10 @@ public class EZShop implements EZShopInterface {
 				}
 			} catch (SQLException e) {
 				e.printStackTrace();
+			}finally {
+				dbClose(conn);
 			}
 		}
-		dbClose(conn);
 		return product;
 
 	}
@@ -642,7 +670,7 @@ public class EZShop implements EZShopInterface {
 				throw new InvalidProductCodeException("invalid barcode: in barcode must not be letters");
 			else if (!isBarcodeValid(barCode))
 				throw new InvalidProductCodeException("invalid barcode: barcode does not respect GTIN specifications");
-			else if (false)
+			else if (!userLoggedIn.getRole().equals("Administrator") &&  !userLoggedIn.getRole().equals("ShopManager"))
 				throw new UnauthorizedException("user error");
 			else {
 				conn = dbAccess();
@@ -696,7 +724,7 @@ public class EZShop implements EZShopInterface {
 			description = null;
 		List<ProductType> matchingProducts = new ArrayList<ProductType>();
 		Connection conn = null;
-		if (false)
+		if (!userLoggedIn.getRole().equals("Administrator") &&  !userLoggedIn.getRole().equals("ShopManager"))
 			throw new UnauthorizedException("user error");
 		else {
 			conn = dbAccess();
@@ -729,9 +757,10 @@ public class EZShop implements EZShopInterface {
 				// for(ProductType p: matchingProducts) p.print();
 			} catch (SQLException e) {
 				e.printStackTrace();
+			}finally {
+				dbClose(conn);
 			}
 		}
-		dbClose(conn);
 		return matchingProducts;
 
 	}
@@ -745,7 +774,7 @@ public class EZShop implements EZShopInterface {
 		Connection conn = null;
 		if (productId <= 0 || productId == null)
 			throw new InvalidProductIdException("ID incorrect");
-		else if (false)
+		else if (!userLoggedIn.getRole().equals("Administrator") && !userLoggedIn.getRole().equals("ShopManager"))
 			throw new UnauthorizedException("user error");
 		else {
 			conn = dbAccess();
@@ -782,9 +811,10 @@ public class EZShop implements EZShopInterface {
 			} catch (SQLException e) {
 				e.printStackTrace();
 				success = false;
+			}finally {
+				dbClose(conn);
 			}
 		}
-		dbClose(conn);
 		return success;
 
 	}
@@ -799,7 +829,7 @@ public class EZShop implements EZShopInterface {
 		conn = dbAccess();
 		if (productId <= 0 || productId == null)
 			throw new InvalidProductIdException("ID incorrect");
-		else if (false)
+		else if (!userLoggedIn.getRole().equals("Administrator") && !userLoggedIn.getRole().equals("ShopManager"))
 			throw new UnauthorizedException("user error");
 		else if (newPos == null || newPos == "") {
 			// Statement to update the location of a product given its ID to an empty string
@@ -861,10 +891,11 @@ public class EZShop implements EZShopInterface {
 				} catch (SQLException e) {
 					e.printStackTrace();
 					success = false;
+				}finally {
+					dbClose(conn);
 				}
 			}
 		}
-		dbClose(conn);
 		return success;
 
 	}
