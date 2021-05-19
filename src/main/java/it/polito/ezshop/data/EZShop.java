@@ -143,6 +143,34 @@ public class EZShop implements EZShopInterface {
 
 	@Override
 	public void reset() {
+		Connection conn = null;    
+    	 try {
+    		conn = dbAccess();
+    		String sql = "DELETE FROM product";
+    		PreparedStatement pstmt = conn.prepareStatement(sql);
+    		pstmt.executeUpdate(); 
+    		sql = "DELETE FROM order_";
+		    pstmt = conn.prepareStatement(sql);
+		    pstmt.executeUpdate(); 
+		    sql = "DELETE FROM saleTransaction";
+		    pstmt = conn.prepareStatement(sql);
+		    pstmt.executeUpdate(); 
+		    sql = "DELETE FROM returnTransaction";
+		    pstmt = conn.prepareStatement(sql);
+		    pstmt.executeUpdate(); 
+	   		sql = "DELETE FROM balanceOperation";   
+		    pstmt = conn.prepareStatement(sql);
+		    pstmt.executeUpdate();   
+		    sql = "DELETE FROM ticketEntry";   
+		    pstmt = conn.prepareStatement(sql);
+		    pstmt.executeUpdate();   
+		    
+    	 } catch (Exception e) {  
+		    System.out.println(e.getMessage()); 
+    	 } finally {  
+	        dbClose(conn);  	
+
+	    } 	   
 
 	}
 
