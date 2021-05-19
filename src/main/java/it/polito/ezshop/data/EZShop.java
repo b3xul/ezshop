@@ -810,19 +810,19 @@ public class EZShop implements EZShopInterface {
 				e.printStackTrace();
 				success = false;
 			}
-		} else if (newPos.split(" ").length != 3)
+		} else if (newPos.split("-").length != 3)
 			throw new InvalidLocationException("wrong format for location: wrong field(s)");
-		else if (!isStringOnlyNumbers(newPos.split(" ")[0]))
+		else if (!isStringOnlyNumbers(newPos.split("-")[0]))
 			throw new InvalidLocationException("wrong format for location: aisle must be a number");
-		else if (!isStringOnlyAlphabet(newPos.split(" ")[1]))
+		else if (!isStringOnlyAlphabet(newPos.split("-")[1]))
 			throw new InvalidLocationException(
 					"wrong format for location: ID must contains only alphabetic characters");
-		else if (!isStringOnlyNumbers(newPos.split(" ")[2]))
+		else if (!isStringOnlyNumbers(newPos.split("-")[2]))
 			throw new InvalidLocationException("wrong format for location: level must be a number");
 		else {
-			Integer aisleNumber = Integer.parseInt(newPos.split(" ")[0]);
-			String alphabeticId = newPos.split(" ")[1];
-			Integer levelNumber = Integer.parseInt(newPos.split(" ")[2]);
+			Integer aisleNumber = Integer.parseInt(newPos.split("-")[0]);
+			String alphabeticId = newPos.split("-")[1];
+			Integer levelNumber = Integer.parseInt(newPos.split("-")[2]);
 			if (aisleNumber == null || alphabeticId == null || alphabeticId == "" || levelNumber == null)
 				throw new InvalidLocationException("wrong format for location");
 			else {
@@ -878,28 +878,29 @@ public class EZShop implements EZShopInterface {
 			throw new InvalidQuantityException("The quantity you've inserted is not accepted");
 		if (pricePerUnit <= 0)
 			throw new InvalidPricePerUnitException("The price you've inserted is not accepted");
-		if (userLoggedIn == null
-				|| (!userLoggedIn.getRole().equals("Administrator") && !userLoggedIn.getRole().equals("ShopManager")))
-			throw new UnauthorizedException("The user doesn't have the rights to perform this action");
-		if (productCode == null || productCode == "")
-			throw new InvalidProductCodeException("invalid barcode: barcode not inserted");
-		if (productCode.length() < 12 || productCode.length() > 14)
-			throw new InvalidProductCodeException("invalid barcode: wrong length");
-		if (!isStringOnlyNumbers(productCode))
-			throw new InvalidProductCodeException("invalid barcode: in barcode must not be letters");
-		if (!isBarcodeValid(productCode))
-			throw new InvalidProductCodeException("invalid barcode: barcode does not respect GTIN specifications");
+		if (!userLoggedIn.getRole().equals("Administrator") &&  !userLoggedIn.getRole().equals("ShopManager"))
+			throw new UnauthorizedException("Either the user doesn't have the rights to perform this action or doesn't exist");
+		if (productCode == null ||  productCode == "")
+            throw new InvalidProductCodeException("invalid barcode: barcode not inserted");
+        if (productCode.length() < 12 || productCode.length() > 14)
+            throw new InvalidProductCodeException("invalid barcode: wrong length");
+        if (!isStringOnlyNumbers(productCode))
+            throw new InvalidProductCodeException("invalid barcode: in barcode must not be letters");
+        if (!isBarcodeValid(productCode))
+            throw new InvalidProductCodeException("invalid barcode: barcode does not respect GTIN specifications");
 		try {
 			conn = dbAccess();
 			String sql = "SELECT id FROM product WHERE barcode = ?";
 			PreparedStatement statement = conn.prepareStatement(sql);
 			statement.setString(1, productCode);
 			ResultSet rs = statement.executeQuery();
-			if (!rs.next())
+			if (!rs.next()) {
+				System.out.println("There is no product with this barcode");
 				return id;
+			}
 			String sql3 = "INSERT INTO order_ (balanceId, date, money, productCode, pricePerUnit, quantity, status) VALUES (?, ?, ?, ?, ?, ?, ?)";
 			PreparedStatement statement3 = conn.prepareStatement(sql3);
-			statement3.setInt(1, -1);
+			statement3.setInt(1, 0);
 			statement3.setString(2, LocalDate.now().toString());
 			statement3.setDouble(3, pricePerUnit * quantity);
 			statement3.setString(4, productCode);
@@ -916,6 +917,7 @@ public class EZShop implements EZShopInterface {
 		} finally {
 			dbClose(conn);
 		}
+		System.out.println(id);
 		return id;
 
 	}
@@ -933,17 +935,16 @@ public class EZShop implements EZShopInterface {
 			throw new InvalidQuantityException("The quantity you've inserted is not accepted");
 		if (pricePerUnit <= 0)
 			throw new InvalidPricePerUnitException("The price you've inserted is not accepted");
-		if (userLoggedIn == null
-				|| (!userLoggedIn.getRole().equals("Administrator") && !userLoggedIn.getRole().equals("ShopManager")))
-			throw new UnauthorizedException("The user doesn't have the rights to perform this action");
-		if (productCode == null || productCode == "")
-			throw new InvalidProductCodeException("invalid barcode: barcode not inserted");
-		if (productCode.length() < 12 || productCode.length() > 14)
-			throw new InvalidProductCodeException("invalid barcode: wrong length");
-		if (!isStringOnlyNumbers(productCode))
-			throw new InvalidProductCodeException("invalid barcode: in barcode must not be letters");
-		if (!isBarcodeValid(productCode))
-			throw new InvalidProductCodeException("invalid barcode: barcode does not respect GTIN specifications");
+		if (!userLoggedIn.getRole().equals("Administrator") &&  !userLoggedIn.getRole().equals("ShopManager"))
+			throw new UnauthorizedException("Either the user doesn't have the rights to perform this action or doesn't exist");
+		if (productCode == null ||  productCode == "")
+            throw new InvalidProductCodeException("invalid barcode: barcode not inserted");
+        if (productCode.length() < 12 || productCode.length() > 14)
+            throw new InvalidProductCodeException("invalid barcode: wrong length");
+        if (!isStringOnlyNumbers(productCode))
+            throw new InvalidProductCodeException("invalid barcode: in barcode must not be letters");
+        if (!isBarcodeValid(productCode))
+            throw new InvalidProductCodeException("invalid barcode: barcode does not respect GTIN specifications");
 		try {
 			conn = dbAccess();
 			String sql = "SELECT id FROM product WHERE barcode = ?";
@@ -953,7 +954,8 @@ public class EZShop implements EZShopInterface {
 			if (!rs.next())
 				return orderId;
 			dbClose(conn);
-			recordBalanceUpdate(-pricePerUnit * quantity);
+			if(!recordBalanceUpdate(-pricePerUnit * quantity))
+				return orderId;
 			conn = dbAccess();
 			String sql2 = "SELECT MAX(balanceId) AS MaxBId FROM balanceOperation";
 			Statement statement2 = conn.createStatement();
@@ -987,12 +989,11 @@ public class EZShop implements EZShopInterface {
 
 		boolean validOrderId = false;
 		Connection conn = null;
+		double money = 0;
 		int balanceId = 0;
-
-		if (userLoggedIn == null
-				|| (!userLoggedIn.getRole().equals("Administrator") && !userLoggedIn.getRole().equals("ShopManager")))
-			throw new UnauthorizedException("The user doesn't have the rights to perform this action");
-		if (orderId == null || orderId <= 0)
+		if (!userLoggedIn.getRole().equals("Administrator") &&  !userLoggedIn.getRole().equals("ShopManager"))
+			throw new UnauthorizedException("Either the user doesn't have the rights to perform this action or doesn't exist");
+		if(orderId == null || orderId <=0)
 			throw new InvalidOrderIdException("There is no order with this id");
 		try {
 			conn = dbAccess();
@@ -1014,8 +1015,10 @@ public class EZShop implements EZShopInterface {
 			PreparedStatement statement3 = conn.prepareStatement(sql3);
 			statement3.setInt(1, orderId);
 			ResultSet rs3 = statement3.executeQuery();
+			money = rs3.getDouble("money");
 			dbClose(conn);
-			recordBalanceUpdate(-(rs3.getDouble("money")));
+			if(!recordBalanceUpdate(-money))
+				return validOrderId;
 			conn = dbAccess();
 			String sql4 = "SELECT MAX(balanceId) AS MaxBId FROM balanceOperation";
 			Statement statement4 = conn.createStatement();
@@ -1044,9 +1047,8 @@ public class EZShop implements EZShopInterface {
 		String barcode = null;
 		int qty = 0;
 		String location = null;
-		if (userLoggedIn == null
-				|| (!userLoggedIn.getRole().equals("Administrator") && !userLoggedIn.getRole().equals("ShopManager")))
-			throw new UnauthorizedException("The user doesn't have the rights to perform this action");
+		if (!userLoggedIn.getRole().equals("Administrator") &&  !userLoggedIn.getRole().equals("ShopManager"))
+			throw new UnauthorizedException("Either the user doesn't have the rights to perform this action or doesn't exist");
 		if (orderId <= 0 || orderId == null)
 			throw new InvalidOrderIdException("The order id is not valid");
 		try {
@@ -1059,8 +1061,9 @@ public class EZShop implements EZShopInterface {
 			if (rs.next()) {
 				barcode = rs.getString("productCode");
 				qty = rs.getInt("quantity");
-			} else {
-				System.out.println("There is not order PAYED with this id");
+			}
+			else {
+				System.out.println("There is no PAYED order with this id");
 				return valid;
 			}
 			String sql2 = "SELECT location FROM product WHERE barcode = ?";
@@ -1068,8 +1071,15 @@ public class EZShop implements EZShopInterface {
 			statement2.setString(1, barcode);
 			ResultSet rs2 = statement2.executeQuery();
 			location = rs2.getString("location");
-			if (location.equals("no location"))
-				throw new InvalidLocationException("The product type has no location assigned");
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		} finally {
+			dbClose(conn);
+		}
+		if (location.equals(""))
+			throw new InvalidLocationException("The product type has no location assigned");
+		try {
+			conn = dbAccess();
 			String sql3 = "UPDATE order_ SET status = ? WHERE orderId = ?";
 			PreparedStatement statement3 = conn.prepareStatement(sql3);
 			statement3.setString(1, "COMPLETED");
@@ -1095,10 +1105,8 @@ public class EZShop implements EZShopInterface {
 
 		List<Order> orders = new ArrayList<Order>();
 		Connection conn = null;
-
-		if (userLoggedIn == null
-				|| (!userLoggedIn.getRole().equals("Administrator") && !userLoggedIn.getRole().equals("ShopManager")))
-			throw new UnauthorizedException("The user doesn't have the rights to perform this action");
+		if (!userLoggedIn.getRole().equals("Administrator") &&  !userLoggedIn.getRole().equals("ShopManager"))
+			throw new UnauthorizedException("Either the user doesn't have the rights to perform this action or doesn't exist");
 		try {
 			conn = dbAccess();
 			String sql = "SELECT * FROM order_";
@@ -1108,6 +1116,7 @@ public class EZShop implements EZShopInterface {
 				orders.add(new OrderImpl(rs.getInt("orderId"), rs.getInt("balanceId"),
 						LocalDate.parse(rs.getString("date")), rs.getDouble("money"), rs.getString("productCode"),
 						rs.getDouble("pricePerUnit"), rs.getInt("quantity"), rs.getString("status")));
+//				System.out.println(orders.get(orders.size()-1).toString());
 			}
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
@@ -1261,8 +1270,15 @@ public class EZShop implements EZShopInterface {
 					if (rs.next()) {
 						return new CustomerImpl(rs.getInt("id"), rs.getString("name"), rs.getString("card"),
 								rs.getInt("points"));
-					} else {
-						return null;
+					} else {	// search for a customer without an associated card
+						sql = "SELECT id, name FROM Customers WHERE id = "+ id;	
+						statement = conn.createStatement();
+						rs = statement.executeQuery(sql);
+						if (rs.next()) {
+							return new CustomerImpl(rs.getInt("id"), rs.getString("name"), null, null);
+						}
+						else
+							return null;
 					}
 
 				} catch (Exception e) {
@@ -1294,6 +1310,13 @@ public class EZShop implements EZShopInterface {
 				while (rs.next()) {
 					customers.add(new CustomerImpl(rs.getInt("id"), rs.getString("name"), rs.getString("card"),
 							rs.getInt("points")));
+				}
+				// add all customers without an associated card
+				sql = "SELECT id, name FROM Customers WHERE card IS NULL";
+				statement = conn.createStatement();
+				rs = statement.executeQuery(sql);
+				while (rs.next()) {
+					customers.add(new CustomerImpl(rs.getInt("id"), rs.getString("name"), null, null));
 				}
 				return customers;
 			} catch (Exception e) {
@@ -2060,9 +2083,8 @@ public class EZShop implements EZShopInterface {
 			System.out.println("The operation can't be performed due to negative balance");
 			return positiveBalance;
 		}
-		if (userLoggedIn == null
-				|| (!userLoggedIn.getRole().equals("Administrator") && !userLoggedIn.getRole().equals("ShopManager")))
-			throw new UnauthorizedException("The user doesn't have the rights to perform this action");
+		if (!userLoggedIn.getRole().equals("Administrator") &&  !userLoggedIn.getRole().equals("ShopManager"))
+			throw new UnauthorizedException("Either the user doesn't have the rights to perform this action or doesn't exist");
 		try {
 			conn = dbAccess();
 			String sql2 = "INSERT INTO balanceOperation (date, money, type) VALUES (?,?,?)";
@@ -2093,9 +2115,8 @@ public class EZShop implements EZShopInterface {
 			to = from;
 			from = tmp;
 		}
-		if (userLoggedIn == null
-				|| (!userLoggedIn.getRole().equals("Administrator") && !userLoggedIn.getRole().equals("ShopManager")))
-			throw new UnauthorizedException("The user doesn't have the rights to perform this action");
+		if (!userLoggedIn.getRole().equals("Administrator") &&  !userLoggedIn.getRole().equals("ShopManager"))
+			throw new UnauthorizedException("Either the user doesn't have the rights to perform this action or doesn't exist");
 		try {
 			conn = dbAccess();
 			String sql = "SELECT * FROM balanceOperation WHERE date >= ? AND date <= ?";
@@ -2103,11 +2124,11 @@ public class EZShop implements EZShopInterface {
 			statement.setString(1, from == null ? "0001-01-01" : from.toString());
 			statement.setString(2, to == null ? "9999-12-31" : to.toString());
 			ResultSet rs = statement.executeQuery();
-			while (rs.next())
+			while (rs.next()) {
 				bo.add(new BalanceOperationImpl(rs.getInt("balanceId"), LocalDate.parse(rs.getString("date")),
 						rs.getDouble("money"), rs.getString("type")));
-			for (BalanceOperation b : bo)
-				System.out.println(b);
+//				System.out.println(bo.get(bo.size()-1).toString());
+			}
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
 		} finally {
@@ -2125,9 +2146,8 @@ public class EZShop implements EZShopInterface {
 		double balance = 0;
 		String type = null;
 		double money = 0;
-		if (userLoggedIn == null
-				|| (!userLoggedIn.getRole().equals("Administrator") && !userLoggedIn.getRole().equals("ShopManager")))
-			throw new UnauthorizedException("The user doesn't have the rights to perform this action");
+		if (!userLoggedIn.getRole().equals("Administrator") &&  !userLoggedIn.getRole().equals("ShopManager"))
+			throw new UnauthorizedException("Either the user doesn't have the rights to perform this action or doesn't exist");
 		try {
 			conn = dbAccess();
 			String sql = "SELECT money, type FROM balanceOperation";
@@ -2137,6 +2157,8 @@ public class EZShop implements EZShopInterface {
 				type = rs.getString("type");
 				if (type.equals("DEBIT"))
 					money = -rs.getDouble("money");
+				else
+					money = rs.getDouble("money");
 				balance += money;
 			}
 		} catch (Exception e) {

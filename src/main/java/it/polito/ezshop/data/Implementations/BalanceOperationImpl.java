@@ -6,10 +6,10 @@ import it.polito.ezshop.data.BalanceOperation;
 
 public class BalanceOperationImpl implements BalanceOperation {
 
-	int balanceId;
-	LocalDate date;
-	double money;
-	String type;
+	private int balanceId;
+	private LocalDate date;
+	private double money;
+	private String type;
 	
 	public BalanceOperationImpl() {
 		this.balanceId = 0;

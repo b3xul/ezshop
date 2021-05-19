@@ -4,6 +4,7 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
+import it.polito.ezshop.data.Customer;
 import it.polito.ezshop.data.Implementations.CustomerImpl;
 
 public class CustomerClassTest {

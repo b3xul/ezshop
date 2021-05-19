@@ -15,8 +15,8 @@ public class OrderTest {
 	
 	@Test
 	public void testCase1() {
-		OrderImpl order = new OrderImpl(1, 1, LocalDate.now(), 20.10, "12637482635892", 5, 4, "ISSUED");
 		
+		OrderImpl order = new OrderImpl(1, 1, LocalDate.now(), 20.10, "12637482635892", 5, 4, "ISSUED");
 		assertTrue(order.getOrderId() == 1);
 		assertTrue(order.getBalanceId() == 1);
 		assertTrue(order.getDate().equals(LocalDate.now()));
@@ -65,6 +65,12 @@ public class OrderTest {
 	public void testCase7() {
 		order.setStatus("PAYED");
 		assertTrue(order.getStatus().equals("PAYED"));
+	}
+	
+	@Test
+	public void testCase8() {
+		OrderImpl order = new OrderImpl(1, 1, LocalDate.now(), 20.10, "12637482635892", 5, 4, "ISSUED");
+		System.out.println(order.toString());
 	}
 	
 }

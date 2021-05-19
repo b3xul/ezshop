@@ -52,6 +52,9 @@ public class BalanceOperationTest {
 		assertTrue(bo.getType().equals("DEBIT"));
 	}
 	
-	
+	@Test
+	public void testCase6() {
+		System.out.println(bo.toString());
+	}
 	
 }
