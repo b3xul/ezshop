@@ -116,8 +116,9 @@ class Shop{
     Users: ArrayList<User>
     ProductTypes: ArrayList<ProductType>
     Customers:  ArrayList<Customers>
-    accounting: AccountBook
-
+    accountBook: LinkedList<BalanceOperation>
+    loggedUser: <User>
+     
     reset()
     login()
     logout()
@@ -175,16 +176,6 @@ class User{
     role
 }
 
-class AccountBook{
-    BalanceOperations: LinkedList<BalanceOperation>
-}
-
-class Debit{
-}
-
-class Credit{
-}
-
 class ProductType{
     productCode
     description
@@ -197,9 +188,7 @@ class ProductType{
 
 class SaleTransaction {
     transactionID 
-    date
-    time
-    cost
+    price
     paymentType
     discount rate
     ProductTypesSale: LinkedList<Pair<ProductType, Integer quantity>>
@@ -234,43 +223,39 @@ class Order {
 
 class ReturnTransaction {
     returnID
-    quantity
+    price
     productType: ProductType
-    returnedValue
+    amount
     saleTransaction: SaleTransaction
 }
 
 class BalanceOperation{
     description
     date
+    type
 }
 
 Shop -up- EZShopInterface
-AccountBook -right- Shop
 Customer "*" -right- Shop
-AccountBook -[hidden]- Customer
 Shop -up- "*" User 
 Shop -down- "*" ProductType
 ProductType -up- "0..1" Position
 ProductType "*" -down- "*" SaleTransaction
 
 SaleTransaction -left- "*" ReturnTransaction
-SaleTransaction -up-|> Credit
+SaleTransaction -up-|> BalanceOperation
 SaleTransaction "*" -right- "0..1" LoyaltyCard
 LoyaltyCard "0..1" -up- Customer
 
-ReturnTransaction -up-|> Debit
-Order -up-|> Debit
-Debit -right-|> BalanceOperation
-Credit -[hidden]- Position
-Credit -up-|> BalanceOperation
-AccountBook -left- BalanceOperation
+ReturnTransaction -up-|> BalanceOperation
+Order -up-|> BalanceOperation
 Order "*" - ProductType
 ReturnTransaction "*" - ProductType
 
+BalanceOperation "*" -- Shop
+
 @enduml
 ```
-
 ### Each collection is persistant. Each database table is updated using methods from the corresponding DAO class in the data package.
 
 | Persistant Class   | Data Access Object class/classes that manages its persistance |
