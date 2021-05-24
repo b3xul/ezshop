@@ -199,9 +199,6 @@ class Customer {
     customerID
     name
     surname
-    loyaltyCard: LoyaltyCard
-}
-class LoyaltyCard {
     customerCard
     points
 }
@@ -244,8 +241,7 @@ ProductType "*" -down- "*" SaleTransaction
 
 SaleTransaction -left- "*" ReturnTransaction
 SaleTransaction -up-|> BalanceOperation
-SaleTransaction "*" -right- "0..1" LoyaltyCard
-LoyaltyCard "0..1" -up- Customer
+SaleTransaction "0..1" -up-  Shop
 
 ReturnTransaction -up-|> BalanceOperation
 Order -up-|> BalanceOperation
