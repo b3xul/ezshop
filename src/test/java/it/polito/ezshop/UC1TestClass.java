@@ -1,7 +1,8 @@
-package it.polito.ezshop.scenariosTests;
+package it.polito.ezshop;
 
 import static org.junit.Assert.*;
 
+import org.junit.After;
 import org.junit.Test;
 
 import it.polito.ezshop.data.EZShopInterface;

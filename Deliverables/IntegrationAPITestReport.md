@@ -232,45 +232,45 @@ Report also for each of the scenarios the (one or more) API JUnit tests that cov
 
 
 
-| Scenario ID | Functional Requirements covered                                                           | JUnit  Test (s)                                                  |
-| ----------- | ----------------------------------------------------------------------------------------- | ---------------------------------------------------------------- |
-| 1-1         | FR3.1                                                                                     | UC1TestClass: Scenario1_1TestCase, ExceptionsScenario1_1TestCase |
-| 1-2         | FR3.4, FR4.2                                                                              | UC1TestClass: Scenario1_2TestCase, ExceptionsScenario1_2TestCase |
-| 1-3         | FR3.4, FR3.1                                                                              | UC1TestClass: Scenario1_3TestCase, ExceptionsScenario1_3TestCase |
-| 1-4         | FR3.4, FR3.2                                                                              | UC1TestClass: Scenario1_4TestCase, ExceptionsScenario1_4TestCase |
-| 1-5         | FR3.3                                                                                     | UC1TestClass: Scenario1_5TestCase, ExceptionsScenario1_5TestCase |
-| 2-1         | FR1.1, FR1.5                                                                              |                                                                  |
-| 2-2         | FR1.4, FR1.2                                                                              |                                                                  |
-| 2-3         | FR1.4, FR1.5                                                                              |                                                                  |
-| 2-4         | FR1.3                                                                                     |                                                                  |
-| 3-1         | FR4.3                                                                                     |                                                                  |
-| 3-2         | FR4.7, FR4.5, FR8.1, FR8.4                                                                |                                                                  |
-| 3-3         | FR4.6, FR4.1                                                                              |                                                                  |
-| 3-4         | FR4.4                                                                                     |                                                                  |
-| 3-5         | FR4.7                                                                                     |                                                                  |
-| 4-1         | FR5.1                                                                                     |                                                                  |
-| 4-2         | FR5.5, FR5.3, FR5.6                                                                       |                                                                  |
-| 4-3         | FR5.3, FR5.1                                                                              |                                                                  |
-| 4-4         | FR5.3, FR5.1                                                                              |                                                                  |
-| 4-5         | FR5.3, FR5.2                                                                              |                                                                  |
-| 5-1         |                                                                                           |                                                                  |
-| 5-2         |                                                                                           |                                                                  |
-| 6-1         | FR6.1, FR6.7, FR6.2, FR4.1, FR6.10, FR7.1/7.2, FR6.8, FR6.11, FR8.2, FR8.4                |                                                                  |
-| 6-2         | FR6.1, FR6.7, FR6.2, FR4.1, FR6.5, FR6.10, FR7.1/7.2, FR6.8, FR6.11, FR8.2, FR8.4         |                                                                  |
-| 6-3         | FR6.1, FR6.7, FR6.2, FR4.1, FR6.4, FR6.10, FR7.1/7.2, FR6.8, FR6.11, FR8.2, FR6.11, FR8.4 |                                                                  |
-| 6-4         | FR6.1, FR6.7, FR6.2, FR4.1, FR6.10, FR7.1/7.2, FR6.6, FR5.7, FR6.8, FR6.11, FR8.2, FR8.4  |                                                                  |
-| 6-5         | FR6.1, FR6.7, FR6.2, FR4.1, FR6.10                                                        |                                                                  |
-| 6-6         | FR6.1, FR6.7, FR6.2, FR4.1, FR6.10, FR7.1, FR6.8, FR6.11, FR8.2, FR8.4                    |                                                                  |
-| 6-7         | FR6.1, FR6.7, FR6.2, FR4.1, FR6.3, FR6.10, FR7.1/7.2, FR6.8, FR6.11, FR8.2, FR8.4         |                                                                  |
-| 7-1         | FR7.2                                                                                     |                                                                  |
-| 7-2         |                                                                                           |                                                                  |
-| 7-3         |                                                                                           |                                                                  |
-| 7-4         | FR7.1                                                                                     |                                                                  |
-| 8-1         | FR6.9, FR6.12, FR6.7, FR6.13, FR4.1, FR7.4, FR6.14, FR6.15, FR8.4                         |                                                                  |
-| 8-2         | FR6.9, FR6.12, FR6.7, FR6.13, FR4.1, FR7.3, FR6.14, FR6.15, FR8.4                         |                                                                  |
-| 9-1         | FR8.3                                                                                     |                                                                  |
-| 10-1        | FR7.4                                                                                     |                                                                  |
-| 10-2        | FR7.3                                                                                     |                                                                  |
+| Scenario ID | Functional Requirements covered                                                           | JUnit  Test (s)                    |
+| ----------- | ----------------------------------------------------------------------------------------- | ---------------------------------- |
+| 1-1         | FR3.1                                                                                     | UC1TestClass: testCaseScenario1_1, |
+| 1-2         | FR3.4, FR4.2                                                                              | UC1TestClass: testCaseScenario1_2, |
+| 1-3         | FR3.4, FR3.1                                                                              | UC1TestClass: testCaseScenario1_3, |
+| 1-4         | FR3.4, FR3.2                                                                              | UC1TestClass: testCaseScenario1_4, |
+| 1-5         | FR3.3                                                                                     | UC1TestClass: testCaseScenario1_5, |
+| 2-1         | FR1.1, FR1.5                                                                              |                                    |
+| 2-2         | FR1.4, FR1.2                                                                              |                                    |
+| 2-3         | FR1.4, FR1.5                                                                              |                                    |
+| 2-4         | FR1.3                                                                                     |                                    |
+| 3-1         | FR4.3                                                                                     | UC3TestClass: testCaseScenario3_1  |
+| 3-2         | FR4.7, FR4.5, FR8.1, FR8.4                                                                | UC3TestClass: testCaseScenario3_2  |
+| 3-3         | FR4.6, FR4.1                                                                              | UC3TestClass: testCaseScenario3_3  |
+| 3-4         | FR4.4                                                                                     | UC3TestClass: testCaseScenario3_4  |
+| 3-5         | FR4.7                                                                                     | UC3TestClass: testCaseScenario3_5  |
+| 4-1         | FR5.1                                                                                     |                                    |
+| 4-2         | FR5.5, FR5.3, FR5.6                                                                       |                                    |
+| 4-3         | FR5.3, FR5.1                                                                              |                                    |
+| 4-4         | FR5.3, FR5.1                                                                              |                                    |
+| 4-5         | FR5.3, FR5.2                                                                              |                                    |
+| 5-1         |                                                                                           |                                    |
+| 5-2         |                                                                                           |                                    |
+| 6-1         | FR6.1, FR6.7, FR6.2, FR4.1, FR6.10, FR7.1/7.2, FR6.8, FR6.11, FR8.2, FR8.4                |                                    |
+| 6-2         | FR6.1, FR6.7, FR6.2, FR4.1, FR6.5, FR6.10, FR7.1/7.2, FR6.8, FR6.11, FR8.2, FR8.4         |                                    |
+| 6-3         | FR6.1, FR6.7, FR6.2, FR4.1, FR6.4, FR6.10, FR7.1/7.2, FR6.8, FR6.11, FR8.2, FR6.11, FR8.4 |                                    |
+| 6-4         | FR6.1, FR6.7, FR6.2, FR4.1, FR6.10, FR7.1/7.2, FR6.6, FR5.7, FR6.8, FR6.11, FR8.2, FR8.4  |                                    |
+| 6-5         | FR6.1, FR6.7, FR6.2, FR4.1, FR6.10                                                        |                                    |
+| 6-6         | FR6.1, FR6.7, FR6.2, FR4.1, FR6.10, FR7.1, FR6.8, FR6.11, FR8.2, FR8.4                    |                                    |
+| 6-7         | FR6.1, FR6.7, FR6.2, FR4.1, FR6.3, FR6.10, FR7.1/7.2, FR6.8, FR6.11, FR8.2, FR8.4         |                                    |
+| 7-1         | FR7.2                                                                                     |                                    |
+| 7-2         |                                                                                           |                                    |
+| 7-3         |                                                                                           |                                    |
+| 7-4         | FR7.1                                                                                     |                                    |
+| 8-1         | FR6.9, FR6.12, FR6.7, FR6.13, FR4.1, FR7.4, FR6.14, FR6.15, FR8.4                         |                                    |
+| 8-2         | FR6.9, FR6.12, FR6.7, FR6.13, FR4.1, FR7.3, FR6.14, FR6.15, FR8.4                         |                                    |
+| 9-1         | FR8.3                                                                                     | UC9TestClass: testCaseScenario9_1  |
+| 10-1        | FR7.4                                                                                     |                                    |
+| 10-2        | FR7.3                                                                                     |                                    |
 
 
 
