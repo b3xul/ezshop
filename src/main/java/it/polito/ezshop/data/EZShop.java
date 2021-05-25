@@ -1643,7 +1643,7 @@ public class EZShop implements EZShopInterface {
 			throw new InvalidTransactionIdException("Transaction id cannot be null or <=0");
 
 		System.out.println("Executing getSaleTransaction...");
-		String getSale = "SELECT price,discountRate,balanceId FROM saleTransaction WHERE ticketNumber=?";
+		String getSale = "SELECT price,discountRate,creditCard,balanceId FROM saleTransaction WHERE ticketNumber=?";
 		String getBalance = "SELECT balanceId,date,money,type FROM balanceOperation WHERE balanceId=?";
 		String getTicketEntries = "SELECT barCode,productDescription,pricePerUnit,discountRate,amount FROM ticketEntry WHERE ticketNumber=?";
 
@@ -1660,6 +1660,7 @@ public class EZShop implements EZShopInterface {
 			result = new SaleTransactionImpl(transactionId);
 			result.setPrice(rs.getDouble("price"));
 			result.setDiscountRate(rs.getDouble("discountRate"));
+			result.setCreditCard(rs.getString("creditCard"));
 			Integer balanceId = rs.getInt("balanceId");
 			// System.out.println(result.getTicketNumber() + " " + result.getDiscountRate());
 			pstmt.close();
@@ -1968,7 +1969,7 @@ public class EZShop implements EZShopInterface {
 			ex.printStackTrace();
 			return false;
 		}
-
+		openSaleTransaction.setCreditCard(creditCard);
 		return true;
 
 	}
@@ -2001,6 +2002,8 @@ public class EZShop implements EZShopInterface {
 			throw new UnauthorizedException("User not logged in");
 		if (openReturnTransaction.getReturnId() == -1 || returnId != openReturnTransaction.getReturnId())
 			return -1;
+
+		// if(openReturnTransaction.getSaleTransaction().ge)
 
 		Connection conn = null;
 		try {
@@ -2043,9 +2046,10 @@ public class EZShop implements EZShopInterface {
 
 		System.out.println("Executing recordBalanceUpdate...");
 		boolean positiveBalance = false;
-		
-		if (!userLoggedIn.getRole().equals("Administrator") &&  !userLoggedIn.getRole().equals("ShopManager"))
-			throw new UnauthorizedException("Either the user doesn't have the rights to perform this action or doesn't exist");
+
+		if (!userLoggedIn.getRole().equals("Administrator") && !userLoggedIn.getRole().equals("ShopManager"))
+			throw new UnauthorizedException(
+					"Either the user doesn't have the rights to perform this action or doesn't exist");
 
 		if (computeBalance() + toBeAdded < 0) {
 			System.out.println("The operation can't be performed due to negative balance");

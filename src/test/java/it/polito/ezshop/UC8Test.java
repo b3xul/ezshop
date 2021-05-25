@@ -9,8 +9,8 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 
-import org.junit.After;
-import org.junit.Before;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import it.polito.ezshop.data.EZShopInterface;
@@ -25,7 +25,7 @@ public class UC8Test {
 	static String barcode = "12637482635892";
 	static String barcode2 = "6253478956438";
 
-	@Before
+	@BeforeClass
 	public void init() {
 
 		ezShop = new it.polito.ezshop.data.EZShop();
@@ -77,7 +77,7 @@ public class UC8Test {
 
 	}
 
-	@After
+	@AfterClass
 	public void teardown() {
 
 		ezShop.reset();
@@ -85,7 +85,7 @@ public class UC8Test {
 	}
 
 	@Test
-	public void testCase1() {
+	public void testCaseScenario8_1() {
 
 		// Scenario 8-1 Return transaction of product type X completed, credit card
 		try {
@@ -103,7 +103,7 @@ public class UC8Test {
 	}
 
 	@Test
-	public void testCase2() {
+	public void testCaseScenario8_2() {
 
 		// Scenario 8-2 Return transaction of product type X completed, cash
 		try {
@@ -121,7 +121,7 @@ public class UC8Test {
 	}
 
 	@Test
-	public void testCase3() {
+	public void testCaseScenario8_3() {
 
 		// Scenario 8-3 startReturnTransaction exceptions
 		try {
@@ -150,7 +150,7 @@ public class UC8Test {
 	}
 
 	@Test
-	public void testCase4() {
+	public void testCaseScenario8_4() {
 
 		// Scenario 8-4 returnProduct exceptions
 		try {
@@ -195,7 +195,7 @@ public class UC8Test {
 	}
 
 	@Test
-	public void testCase5() {
+	public void testCaseScenario8_5() {
 
 		// Scenario 8-5 endReturnTransaction exceptions
 		try {
@@ -233,7 +233,7 @@ public class UC8Test {
 	}
 
 	@Test
-	public void testCase6() {
+	public void testCaseScenario8_6() {
 
 		// Scenario 8-6 deleteReturnTransaction exceptions
 		try {
