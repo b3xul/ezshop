@@ -4,6 +4,9 @@ Authors: Elia Fontana, Andrea Palomba, Leonardo Perugini, Francesco Sattolo
 
 Date: 27/04/2021
 
+Version: 1.1 (24/05/2021)  
+Changes: some classes deleted from 'Model packages' diagram (LoyaltyCard, Credit, Debit, AccountBook) and subsequential correction of the 'Verification traceability matrix'.
+
 Version: 1.0
 
 
@@ -199,9 +202,6 @@ class Customer {
     customerID
     name
     surname
-    loyaltyCard: LoyaltyCard
-}
-class LoyaltyCard {
     customerCard
     points
 }
@@ -244,8 +244,7 @@ ProductType "*" -down- "*" SaleTransaction
 
 SaleTransaction -left- "*" ReturnTransaction
 SaleTransaction -up-|> BalanceOperation
-SaleTransaction "*" -right- "0..1" LoyaltyCard
-LoyaltyCard "0..1" -up- Customer
+SaleTransaction "0..1" -up-  Shop
 
 ReturnTransaction -up-|> BalanceOperation
 Order -up-|> BalanceOperation
@@ -275,15 +274,16 @@ BalanceOperation "*" -- Shop
 # Verification traceability matrix
 
 
-|     | Shop | User | ProductType | Customer | AccountBook | LoyaltyCard | SaleTransaction | Position | Quantity | ReturnTransaction | Order | Debit | Credit | BalanceOperation |
-| --- | ---- | ---- | ----------- | -------- | ----------- | ----------- | --------------- | -------- | -------- | ----------------- | ----- | ----- | ------ | ---------------- |
-| FR1 | X    | X    |             |          |             |             |                 |          |          |                   |       |       |        |                  |
-| FR3 | X    |      | X           |          |             |             |                 | X        |          |                   |       |       |        |                  |
-| FR4 | X    |      | X           |          |             |             |                 | X        |          |                   | X     |       |        |                  |
-| FR5 | X    |      |             | X        |             | X           |                 |          |          |                   |       |       |        |                  |
-| FR6 | X    |      | X           |          | X           |             | X               |          |          | X                 |       |       |        |                  |
-| FR7 | X    |      |             |          |             |             | X               |          |          | X                 |       |       |        |                  |
-| FR8 | X    |      |             |          | X           |             |                 |          |          |                   |       | X     | X      | X                |
+|     | Shop | User | ProductType | Customer | SaleTransaction | Position | ReturnTransaction | Order | BalanceOperation |
+| --- | ---- | ---- | ----------- | -------- | --------------- | -------- | ----------------- | ----- | ---------------- |
+| FR1 | X    | X    |             |          |                 |          |                   |       |                  |
+| FR3 | X    |      | X           |          |                 | X        |                   |       |                  |
+| FR4 | X    |      | X           |          |                 | X        |                   | X     |                  |
+| FR5 | X    |      |             | X        |                 |          |                   |       |                  |
+| FR6 | X    |      | X           |          | X               |          | X                 |       |                  |
+| FR7 | X    |      |             |          | X               |          | X                 |       |                  |
+| FR8 | X    |      |             |          |                 |          |                   |       | X                |
+
 
 
 # Verification sequence diagrams 
