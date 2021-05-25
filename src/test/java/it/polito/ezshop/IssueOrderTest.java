@@ -7,8 +7,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import it.polito.ezshop.data.EZShopInterface;
-import it.polito.ezshop.data.User;
-import it.polito.ezshop.data.Implementations.UserImpl;
 import it.polito.ezshop.exceptions.InvalidPasswordException;
 import it.polito.ezshop.exceptions.InvalidPricePerUnitException;
 import it.polito.ezshop.exceptions.InvalidProductCodeException;
@@ -26,7 +24,6 @@ public class IssueOrderTest {
 	public void init() throws InvalidProductDescriptionException, InvalidProductCodeException, InvalidPricePerUnitException, UnauthorizedException, InvalidUsernameException, InvalidPasswordException, InvalidRoleException {
 		ezShop = new it.polito.ezshop.data.EZShop();
 		ezShop.reset();
-		ezShop.createUser("admin", "admin", "Administrator");
 		ezShop.login("admin", "admin");
 		ezShop.createProductType("biscotti", "12637482635892", 1.5, "piccoli");
 	}
@@ -79,24 +76,13 @@ public class IssueOrderTest {
 	public void testCase6() {
 		//This test verifies that the order can't be issued if the product code is null
 		assertThrows(InvalidProductCodeException.class, () -> {ezShop.issueOrder(null, 1, 1);});
-	}
-	
-	@Test
-	public void testCase7() {
 		//This test verifies that the order can't be issued if the product code length is either < 12 or > 14
 		assertThrows(InvalidProductCodeException.class, () -> {ezShop.issueOrder("1234", 1, 1);});
-	}
-	
-	@Test
-	public void testCase8() {
 		//This test verifies that the order can't be issued if the product code contains letters
 		assertThrows(InvalidProductCodeException.class, () -> {ezShop.issueOrder("no letters!!!", 1, 1);});
-	}
-
-	@Test
-	public void testCase9() {
 		//This test verifies that the order can't be issued if the product code does not match GTIN specifications
 		assertThrows(InvalidProductCodeException.class, () -> {ezShop.issueOrder("0123456789100", 10, 10);});
 	}
+	
 	
 }

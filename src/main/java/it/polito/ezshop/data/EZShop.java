@@ -951,8 +951,10 @@ public class EZShop implements EZShopInterface {
 			PreparedStatement statement = conn.prepareStatement(sql);
 			statement.setString(1, productCode);
 			ResultSet rs = statement.executeQuery();
-			if (!rs.next())
+			if (!rs.next()) {
+				System.out.println("There is no product with this barcode");
 				return orderId;
+			}
 			dbClose(conn);
 			if(!recordBalanceUpdate(-pricePerUnit * quantity))
 				return orderId;
@@ -1004,8 +1006,7 @@ public class EZShop implements EZShopInterface {
 			if (!rs.next()) {
 				System.out.println("There is no order with this ID");
 				return validOrderId;
-			} else
-				validOrderId = true;
+			}
 			String sql2 = "UPDATE order_ SET status = ? WHERE orderId = ?";
 			PreparedStatement statement2 = conn.prepareStatement(sql2);
 			statement2.setString(1, "PAYED");
@@ -1029,6 +1030,7 @@ public class EZShop implements EZShopInterface {
 			statement5.setInt(1, balanceId);
 			statement5.setInt(2, orderId);
 			statement5.executeUpdate();
+			validOrderId = true;
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
 		} finally {
@@ -1076,7 +1078,7 @@ public class EZShop implements EZShopInterface {
 		} finally {
 			dbClose(conn);
 		}
-		if (location.equals(""))
+		if (location.equals("") || location.equals(" "))
 			throw new InvalidLocationException("The product type has no location assigned");
 		try {
 			conn = dbAccess();
@@ -2078,13 +2080,14 @@ public class EZShop implements EZShopInterface {
 		System.out.println("Executing recordBalanceUpdate...");
 		Connection conn = null;
 		boolean positiveBalance = false;
+		
+		if (!userLoggedIn.getRole().equals("Administrator") &&  !userLoggedIn.getRole().equals("ShopManager"))
+			throw new UnauthorizedException("Either the user doesn't have the rights to perform this action or doesn't exist");
 
 		if (computeBalance() + toBeAdded < 0) {
 			System.out.println("The operation can't be performed due to negative balance");
 			return positiveBalance;
 		}
-		if (!userLoggedIn.getRole().equals("Administrator") &&  !userLoggedIn.getRole().equals("ShopManager"))
-			throw new UnauthorizedException("Either the user doesn't have the rights to perform this action or doesn't exist");
 		try {
 			conn = dbAccess();
 			String sql2 = "INSERT INTO balanceOperation (date, money, type) VALUES (?,?,?)";
