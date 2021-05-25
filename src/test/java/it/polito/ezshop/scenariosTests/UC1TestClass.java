@@ -171,4 +171,11 @@ public class UC1TestClass {
 		ezShop.logout();
 		assertThrows(UnauthorizedException.class, () -> {ezShop.getAllProductTypes();});
 	}
+
+	@After
+	  public void teardown() {
+
+	    ezShop.reset();
+
+	}
 }
