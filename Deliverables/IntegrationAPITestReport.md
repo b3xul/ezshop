@@ -256,6 +256,7 @@ Report also for each of the scenarios the (one or more) API JUnit tests that cov
 
 | Non Functional Requirement | Test name |
 | -------------------------- | --------- |
-|                            |           |
+| NFR4                           | UC1TestClass: Scenario1_1TestCase, ExceptionsScenario1_1TestCase - test cases including checks for every case of validity and invalidity <br> EZShopClassTest: testCase6 - test case for the check only of the validity of the algorithm         |
+|NFR5                         | EZShopClassTest: testCase7|
 
 
