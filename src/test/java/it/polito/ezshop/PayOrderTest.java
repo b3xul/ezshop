@@ -20,6 +20,7 @@ import it.polito.ezshop.exceptions.UnauthorizedException;
 public class PayOrderTest {
 	
 	EZShopInterface ezShop;
+	int orderId;
 	
 	@Before
 	public void init() throws UnauthorizedException, InvalidUsernameException, InvalidPasswordException, InvalidRoleException, InvalidProductDescriptionException, InvalidProductCodeException, InvalidPricePerUnitException, InvalidQuantityException {
@@ -27,7 +28,7 @@ public class PayOrderTest {
 		ezShop.reset();
 		ezShop.login("admin", "admin");
 		ezShop.createProductType("biscotti", "12637482635892", 1.5, "piccoli");
-		ezShop.issueOrder("12637482635892", 5, 2.5);
+		orderId = ezShop.issueOrder("12637482635892", 5, 2.5);
 	}
 	
 	@After
@@ -38,8 +39,8 @@ public class PayOrderTest {
 	@Test
 	public void testCase1() throws InvalidOrderIdException, UnauthorizedException {
 		
-		ezShop.recordBalanceUpdate(1000);   							//recording a positive balance before paying an order, so it can ba placed
-		assertTrue(ezShop.payOrder(1) == true);
+		ezShop.recordBalanceUpdate(1000);   							//recording a positive balance before paying an order, so it can be placed
+		assertTrue(ezShop.payOrder(orderId) == true);
 //		assertTrue(ezShop.payOrder(2) == true);
 //		assertTrue(ezShop.payOrder(3) == true);
 //		assertThrows(InvalidOrderIdException.class,() -> {ezShop.payOrder(0);});
@@ -67,7 +68,7 @@ public class PayOrderTest {
 	@Test
 	public void testCase5() throws InvalidOrderIdException, UnauthorizedException {
 		//This test asserts that an issued order can't be payed since the balance of the system will turn negative
-		assertTrue(ezShop.payOrder(1) == false);
+		assertTrue(ezShop.payOrder(orderId) == false);
 
 	}
 }
