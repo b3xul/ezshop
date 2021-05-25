@@ -13,14 +13,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import it.polito.ezshop.data.Implementations.BalanceOperationImpl;
-import it.polito.ezshop.data.Implementations.CustomerImpl;
-import it.polito.ezshop.data.Implementations.OrderImpl;
 import it.polito.ezshop.data.Implementations.EZShopDAO;
 import it.polito.ezshop.data.Implementations.ProductTypeImpl;
 import it.polito.ezshop.data.Implementations.ReturnTransactionImpl;
 import it.polito.ezshop.data.Implementations.SaleTransactionImpl;
-import it.polito.ezshop.data.Implementations.TicketEntryImpl;
 import it.polito.ezshop.data.Implementations.UserImpl;
 import it.polito.ezshop.exceptions.InvalidCreditCardException;
 import it.polito.ezshop.exceptions.InvalidCustomerCardException;
@@ -149,10 +145,12 @@ public class EZShop implements EZShopInterface {
 
 	@Override
 	public void reset() {
+
 		Connection conn = null;
-		DAO.reset();		
-	    openSaleTransaction = null;
+		DAO.reset();
+		openSaleTransaction = null;
 		openReturnTransaction = null;
+
 	}
 
 	@Override
@@ -163,8 +161,8 @@ public class EZShop implements EZShopInterface {
 			if (password != null && password.isEmpty() == false) {
 				if (role != null
 						&& (role.equals("Administrator") || role.equals("Cashier") || role.equals("ShopManager"))) {
-						Integer id = DAO.createUser(username, password, role);
-						return id;
+					Integer id = DAO.createUser(username, password, role);
+					return id;
 				} else
 					throw new InvalidRoleException("Invalid role");
 			} else
@@ -313,6 +311,7 @@ public class EZShop implements EZShopInterface {
 			success = DAO.updateProduct(id, newDescription, newCode, newPrice, newNote);
 		}
 		return success;
+
 	};
 
 	// method to delete a product
@@ -334,6 +333,7 @@ public class EZShop implements EZShopInterface {
 	// method to get the list of all products
 	@Override
 	public List<ProductType> getAllProductTypes() throws UnauthorizedException {
+
 		List<ProductType> inventory = new ArrayList<ProductType>();
 		if ((!userLoggedIn.getRole().equals("Administrator") && !userLoggedIn.getRole().equals("ShopManager")
 				&& !userLoggedIn.getRole().equals("Cashier")))
@@ -428,7 +428,7 @@ public class EZShop implements EZShopInterface {
 			Integer levelNumber = Integer.parseInt(newPos.split("-")[2]);
 			if (aisleNumber == null || alphabeticId == null || alphabeticId == "" || levelNumber == null)
 				throw new InvalidLocationException("wrong format for location");
-			else { 
+			else {
 				success = DAO.updatePosition(productId, newPos);
 			}
 		}
@@ -446,16 +446,17 @@ public class EZShop implements EZShopInterface {
 			throw new InvalidQuantityException("The quantity you've inserted is not accepted");
 		if (pricePerUnit <= 0)
 			throw new InvalidPricePerUnitException("The price you've inserted is not accepted");
-		if (!userLoggedIn.getRole().equals("Administrator") &&  !userLoggedIn.getRole().equals("ShopManager"))
-			throw new UnauthorizedException("Either the user doesn't have the rights to perform this action or doesn't exist");
-		if (productCode == null ||  productCode == "")
-            throw new InvalidProductCodeException("invalid barcode: barcode not inserted");
-        if (productCode.length() < 12 || productCode.length() > 14)
-            throw new InvalidProductCodeException("invalid barcode: wrong length");
-        if (!isStringOnlyNumbers(productCode))
-            throw new InvalidProductCodeException("invalid barcode: in barcode must not be letters");
-        if (!isBarcodeValid(productCode))
-            throw new InvalidProductCodeException("invalid barcode: barcode does not respect GTIN specifications");
+		if (!userLoggedIn.getRole().equals("Administrator") && !userLoggedIn.getRole().equals("ShopManager"))
+			throw new UnauthorizedException(
+					"Either the user doesn't have the rights to perform this action or doesn't exist");
+		if (productCode == null || productCode == "")
+			throw new InvalidProductCodeException("invalid barcode: barcode not inserted");
+		if (productCode.length() < 12 || productCode.length() > 14)
+			throw new InvalidProductCodeException("invalid barcode: wrong length");
+		if (!isStringOnlyNumbers(productCode))
+			throw new InvalidProductCodeException("invalid barcode: in barcode must not be letters");
+		if (!isBarcodeValid(productCode))
+			throw new InvalidProductCodeException("invalid barcode: barcode does not respect GTIN specifications");
 		id = DAO.issueOrder(productCode, quantity, pricePerUnit);
 		System.out.println(id);
 		return id;
@@ -473,19 +474,20 @@ public class EZShop implements EZShopInterface {
 			throw new InvalidQuantityException("The quantity you've inserted is not accepted");
 		if (pricePerUnit <= 0)
 			throw new InvalidPricePerUnitException("The price you've inserted is not accepted");
-		if (!userLoggedIn.getRole().equals("Administrator") &&  !userLoggedIn.getRole().equals("ShopManager"))
-			throw new UnauthorizedException("Either the user doesn't have the rights to perform this action or doesn't exist");
-		if (productCode == null ||  productCode == "")
-            throw new InvalidProductCodeException("invalid barcode: barcode not inserted");
-        if (productCode.length() < 12 || productCode.length() > 14)
-            throw new InvalidProductCodeException("invalid barcode: wrong length");
-        if (!isStringOnlyNumbers(productCode))
-            throw new InvalidProductCodeException("invalid barcode: in barcode must not be letters");
-        if (!isBarcodeValid(productCode))
-            throw new InvalidProductCodeException("invalid barcode: barcode does not respect GTIN specifications");
-		if(!recordBalanceUpdate(-pricePerUnit * quantity))
+		if (!userLoggedIn.getRole().equals("Administrator") && !userLoggedIn.getRole().equals("ShopManager"))
+			throw new UnauthorizedException(
+					"Either the user doesn't have the rights to perform this action or doesn't exist");
+		if (productCode == null || productCode == "")
+			throw new InvalidProductCodeException("invalid barcode: barcode not inserted");
+		if (productCode.length() < 12 || productCode.length() > 14)
+			throw new InvalidProductCodeException("invalid barcode: wrong length");
+		if (!isStringOnlyNumbers(productCode))
+			throw new InvalidProductCodeException("invalid barcode: in barcode must not be letters");
+		if (!isBarcodeValid(productCode))
+			throw new InvalidProductCodeException("invalid barcode: barcode does not respect GTIN specifications");
+		if (!recordBalanceUpdate(-pricePerUnit * quantity))
 			return orderId;
-		orderId = DAO.payOrderFor(productCode, quantity, pricePerUnit);	
+		orderId = DAO.payOrderFor(productCode, quantity, pricePerUnit);
 		return orderId;
 
 	}
@@ -495,14 +497,15 @@ public class EZShop implements EZShopInterface {
 
 		boolean validOrderId = false;
 		double money = 0;
-		if (!userLoggedIn.getRole().equals("Administrator") &&  !userLoggedIn.getRole().equals("ShopManager"))
-			throw new UnauthorizedException("Either the user doesn't have the rights to perform this action or doesn't exist");
-		if(orderId == null || orderId <=0)
+		if (!userLoggedIn.getRole().equals("Administrator") && !userLoggedIn.getRole().equals("ShopManager"))
+			throw new UnauthorizedException(
+					"Either the user doesn't have the rights to perform this action or doesn't exist");
+		if (orderId == null || orderId <= 0)
 			throw new InvalidOrderIdException("There is no order with this id");
 		validOrderId = DAO.payOrder(orderId, money);
-		if(!recordBalanceUpdate(-money))
+		if (!recordBalanceUpdate(-money))
 			return validOrderId = false;
-			
+
 		return validOrderId;
 
 	}
@@ -512,8 +515,9 @@ public class EZShop implements EZShopInterface {
 			throws InvalidOrderIdException, UnauthorizedException, InvalidLocationException {
 
 		boolean valid = false;
-		if (!userLoggedIn.getRole().equals("Administrator") &&  !userLoggedIn.getRole().equals("ShopManager"))
-			throw new UnauthorizedException("Either the user doesn't have the rights to perform this action or doesn't exist");
+		if (!userLoggedIn.getRole().equals("Administrator") && !userLoggedIn.getRole().equals("ShopManager"))
+			throw new UnauthorizedException(
+					"Either the user doesn't have the rights to perform this action or doesn't exist");
 		if (orderId <= 0 || orderId == null)
 			throw new InvalidOrderIdException("The order id is not valid");
 		valid = DAO.recordOrderArrival(orderId);
@@ -525,8 +529,9 @@ public class EZShop implements EZShopInterface {
 	public List<Order> getAllOrders() throws UnauthorizedException {
 
 		List<Order> orders = new ArrayList<Order>();
-		if (!userLoggedIn.getRole().equals("Administrator") &&  !userLoggedIn.getRole().equals("ShopManager"))
-			throw new UnauthorizedException("Either the user doesn't have the rights to perform this action or doesn't exist");
+		if (!userLoggedIn.getRole().equals("Administrator") && !userLoggedIn.getRole().equals("ShopManager"))
+			throw new UnauthorizedException(
+					"Either the user doesn't have the rights to perform this action or doesn't exist");
 		orders = DAO.getAllOrders();
 		return orders;
 
@@ -659,9 +664,8 @@ public class EZShop implements EZShopInterface {
 		System.out.println("Executing startSaleTransaction...");
 		if (userLoggedIn.getRole() == "")
 			throw new UnauthorizedException("User not logged in");
-		Integer id = DAO.startSaleTransaction();
-		openSaleTransaction = new SaleTransactionImpl(id); // transaction will be added to the db only when it ends
-		return id;
+
+		return DAO.startSaleTransaction();
 
 	}
 
@@ -671,23 +675,24 @@ public class EZShop implements EZShopInterface {
 			UnauthorizedException {
 
 		System.out.println("Executing addProductToSale...");
+		if (userLoggedIn.getRole() == "")
+			throw new UnauthorizedException("User not logged in");
 		if (transactionId == null || transactionId <= 0)
 			throw new InvalidTransactionIdException("Transaction id cannot be null or <=0");
 		if (amount <= 0)
 			throw new InvalidQuantityException("Amount to add cannot be <=0");
-		if (userLoggedIn.getRole() == "")
-			throw new UnauthorizedException("User not logged in");
-		if (openSaleTransaction == null || transactionId != openSaleTransaction.getTicketNumber())
+
+		if (openSaleTransaction.getTicketNumber() == -1 || transactionId != openSaleTransaction.getTicketNumber())
 			return false;
+
 		ProductType productType = DAO.getProductTypeByBarCode(productCode); // could throw InvalidProductCodeException
-		System.out.println(productType);
 		if (productType == null || amount > productType.getQuantity())
 			return false;
 
-		openSaleTransaction.upsertEntry(productType, amount);
-		System.out.println("openSaleTransaction->" + openSaleTransaction);
-		DAO.updateQuantity(productType.getId(), -amount);
-		return true;
+		openSaleTransaction.addProductToSale(productType, amount);
+		boolean result = DAO.updateQuantity(productType.getId(), -amount);
+
+		return result;
 
 	}
 
@@ -697,17 +702,29 @@ public class EZShop implements EZShopInterface {
 			UnauthorizedException {
 
 		System.out.println("Executing deleteProductFromSale...");
+		if (userLoggedIn.getRole() == "")
+			throw new UnauthorizedException("User not logged in");
 		if (transactionId == null || transactionId <= 0)
 			throw new InvalidTransactionIdException("Transaction id cannot be null or <=0");
 		if (amount <= 0)
 			throw new InvalidQuantityException("Amount to remove cannot be <=0");
-		if (userLoggedIn.getRole() == "")
-			throw new UnauthorizedException("User not logged in");
-		if (openSaleTransaction == null || transactionId != openSaleTransaction.getTicketNumber())
+
+		if (openSaleTransaction.getTicketNumber() == -1 || transactionId != openSaleTransaction.getTicketNumber())
 			return false;
-		Boolean result = openSaleTransaction.removeAmountFromEntry(productCode, amount);
-		DAO.updateQuantity(DAO.getProductTypeByBarCode(productCode).getId(), amount);
-		return result;
+
+		ProductType productType = DAO.getProductTypeByBarCode(productCode); // could throw InvalidProductCodeException
+
+		boolean deleted = openSaleTransaction.deleteProductFromSale(productCode, amount); // false if product not
+																							// present
+		boolean updated = false;
+		if (deleted == true)
+			updated = DAO.updateQuantity(productType.getId(), amount);
+
+		// TODO: ok?
+		if (deleted && !updated)
+			this.addProductToSale(transactionId, productCode, amount);
+
+		return (deleted && updated);
 
 	}
 
@@ -717,18 +734,22 @@ public class EZShop implements EZShopInterface {
 			UnauthorizedException {
 
 		System.out.println("Executing applyDiscountRateToProduct...");
+		if (userLoggedIn.getRole() == "")
+			throw new UnauthorizedException("User not logged in");
 		if (transactionId == null || transactionId <= 0)
 			throw new InvalidTransactionIdException("Transaction id cannot be null or <=0");
 		if (discountRate < 0 || discountRate >= 1)
 			throw new InvalidDiscountRateException("Discount Rate must be >=0 and <1");
-		if (userLoggedIn.getRole() == "")
-			throw new UnauthorizedException("User not logged in");
-		if (openSaleTransaction == null || transactionId != openSaleTransaction.getTicketNumber())
+
+		if (openSaleTransaction.getTicketNumber() == -1 || transactionId != openSaleTransaction.getTicketNumber())
 			return false;
 
-		openSaleTransaction.setDiscountRateToProduct(productCode, discountRate);
-		
-		return true;
+		ProductType productType = DAO.getProductTypeByBarCode(productCode); // could throw InvalidProductCodeException
+
+		boolean result = openSaleTransaction.applyDiscountRateToProduct(productCode, discountRate); // false if product
+																									// not present
+
+		return result;
 
 	}
 
@@ -737,15 +758,15 @@ public class EZShop implements EZShopInterface {
 			throws InvalidTransactionIdException, InvalidDiscountRateException, UnauthorizedException {
 
 		System.out.println("Executing applyDiscountRateToSale...");
+		if (userLoggedIn.getRole() == "")
+			throw new UnauthorizedException("User not logged in");
 		if (transactionId == null || transactionId <= 0)
 			throw new InvalidTransactionIdException("Transaction id cannot be null or <=0");
 		if (discountRate < 0 || discountRate >= 1)
 			throw new InvalidDiscountRateException("Discount Rate must be >=0 and <1");
-		if (userLoggedIn.getRole() == "")
-			throw new UnauthorizedException("User not logged in");
-		if (openSaleTransaction == null || transactionId != openSaleTransaction.getTicketNumber())
+		if (openSaleTransaction.getTicketNumber() == -1 || transactionId != openSaleTransaction.getTicketNumber())
 			return false;
-		openSaleTransaction.setDiscountRate(discountRate);
+		openSaleTransaction.applyDiscountRateToSale(discountRate);
 		return true;
 
 	}
@@ -754,12 +775,12 @@ public class EZShop implements EZShopInterface {
 	public int computePointsForSale(Integer transactionId) throws InvalidTransactionIdException, UnauthorizedException {
 
 		System.out.println("Executing computePointsForSale...");
-		int points = -1;
-		if (transactionId == null || transactionId <= 0)
-			throw new InvalidTransactionIdException("Transaction id cannot be null or <=0");
 		if (userLoggedIn.getRole() == "")
 			throw new UnauthorizedException("User not logged in");
-		if (openSaleTransaction != null && transactionId == openSaleTransaction.getTicketNumber()) {
+		if (transactionId == null || transactionId <= 0)
+			throw new InvalidTransactionIdException("Transaction id cannot be null or <=0");
+		int points = -1;
+		if (openSaleTransaction.getTicketNumber() != -1 && transactionId == openSaleTransaction.getTicketNumber()) {
 			points = (int) (openSaleTransaction.getPrice() / 10);
 		}
 		// else points==-1
@@ -772,49 +793,37 @@ public class EZShop implements EZShopInterface {
 			throws InvalidTransactionIdException, UnauthorizedException {
 
 		System.out.println("Executing endSaleTransaction...");
-		if (transactionId == null || transactionId <= 0)
-			throw new InvalidTransactionIdException("Transaction id cannot be null or <=0");
 		if (userLoggedIn.getRole() == "")
 			throw new UnauthorizedException("User not logged in");
-		if (openSaleTransaction == null || transactionId != openSaleTransaction.getTicketNumber()
-				|| getSaleTransaction(transactionId) != null)
+		if (transactionId == null || transactionId <= 0)
+			throw new InvalidTransactionIdException("Transaction id cannot be null or <=0");
+		if (openSaleTransaction.getTicketNumber() == -1 || transactionId != openSaleTransaction.getTicketNumber())
+			// || getSaleTransaction(transactionId) != null can't happen
 			return false;
 
-		boolean success = DAO.endSaleTransaction(transactionId, openSaleTransaction);
-		recordBalanceUpdate(openSaleTransaction.getPrice());
-		openSaleTransaction = null;
-		return success;
+		boolean result = DAO.endSaleTransaction(openSaleTransaction);
+		openSaleTransaction = new SaleTransactionImpl(-1);
+		return result;
+
 	}
 
 	@Override
 	public boolean deleteSaleTransaction(Integer transactionId)
 			throws InvalidTransactionIdException, UnauthorizedException {
 
-		// System.out.println("Executing deleteSaleTransaction...");
-		// String deleteSale = "DELETE FROM saleTransaction WHERE ticketNumber=?";
-		// String deleteTicketEntries = "DELETE FROM ticketEntry WHERE ticketNumber=?";
-		if (transactionId == null || transactionId <= 0)
-			throw new InvalidTransactionIdException("Transaction id cannot be null or <=0");
+		System.out.println("Executing deleteSaleTransaction...");
 		if (userLoggedIn.getRole() == "")
 			throw new UnauthorizedException("User not logged in");
-		// try (Connection conn = this.dbAccess();) {
-		// PreparedStatement pstmt = conn.prepareStatement(deleteSale);
-		// pstmt.setInt(1, transactionId);
-		// pstmt.executeUpdate();
-		// pstmt.close();
-		// pstmt = conn.prepareStatement(deleteTicketEntries);
-		// pstmt.setInt(1, transactionId);
-		// pstmt.executeUpdate();
-		// pstmt.close();
-		// } catch (SQLException e) {
-		// System.out.println(e.getMessage());
-		// return false;
-		// }
-		if (openSaleTransaction == null || transactionId != openSaleTransaction.getTicketNumber()
-				|| getSaleTransaction(transactionId) != null)
+		if (transactionId == null || transactionId <= 0)
+			throw new InvalidTransactionIdException("Transaction id cannot be null or <=0");
+		if (openSaleTransaction.getTicketNumber() == -1 || transactionId != openSaleTransaction.getTicketNumber())
+			// || getSaleTransaction(transactionId) != null can't happen
 			return false;
-		openSaleTransaction = null;
-		return true;
+		if (DAO.addProductsFromSaleTransaction(openSaleTransaction)) {
+			openSaleTransaction = new SaleTransactionImpl(-1);
+			return true;
+		}
+		return false;
 
 	}
 
@@ -823,12 +832,12 @@ public class EZShop implements EZShopInterface {
 			throws InvalidTransactionIdException, UnauthorizedException {
 
 		System.out.println("Executing getSaleTransaction...");
-		if (transactionId == null || transactionId <= 0)
-			throw new InvalidTransactionIdException("Transaction id cannot be null or <=0");
 		if (userLoggedIn.getRole() == "")
 			throw new UnauthorizedException("User not logged in");
+		if (transactionId == null || transactionId <= 0)
+			throw new InvalidTransactionIdException("Transaction id cannot be null or <=0");
 		SaleTransaction result = DAO.getSaleTransaction(transactionId, openSaleTransaction);
-		
+
 		return result;
 
 	}
@@ -1183,9 +1192,10 @@ public class EZShop implements EZShopInterface {
 
 		System.out.println("Executing recordBalanceUpdate...");
 		boolean positiveBalance = false;
-		
-		if (!userLoggedIn.getRole().equals("Administrator") &&  !userLoggedIn.getRole().equals("ShopManager"))
-			throw new UnauthorizedException("Either the user doesn't have the rights to perform this action or doesn't exist");
+
+		if (!userLoggedIn.getRole().equals("Administrator") && !userLoggedIn.getRole().equals("ShopManager"))
+			throw new UnauthorizedException(
+					"Either the user doesn't have the rights to perform this action or doesn't exist");
 
 		if (computeBalance() + toBeAdded < 0) {
 			System.out.println("The operation can't be performed due to negative balance");
@@ -1201,8 +1211,9 @@ public class EZShop implements EZShopInterface {
 
 		System.out.println("Executing getCreditsAndDebits...");
 		List<BalanceOperation> bo = new ArrayList<BalanceOperation>();
-		if (!userLoggedIn.getRole().equals("Administrator") &&  !userLoggedIn.getRole().equals("ShopManager"))
-			throw new UnauthorizedException("Either the user doesn't have the rights to perform this action or doesn't exist");
+		if (!userLoggedIn.getRole().equals("Administrator") && !userLoggedIn.getRole().equals("ShopManager"))
+			throw new UnauthorizedException(
+					"Either the user doesn't have the rights to perform this action or doesn't exist");
 		bo = DAO.getCreditsAndDebits(from, to);
 		return bo;
 
@@ -1213,8 +1224,9 @@ public class EZShop implements EZShopInterface {
 
 		System.out.println("Executing computeBalance...");
 		double balance = 0;
-		if (!userLoggedIn.getRole().equals("Administrator") &&  !userLoggedIn.getRole().equals("ShopManager"))
-			throw new UnauthorizedException("Either the user doesn't have the rights to perform this action or doesn't exist");
+		if (!userLoggedIn.getRole().equals("Administrator") && !userLoggedIn.getRole().equals("ShopManager"))
+			throw new UnauthorizedException(
+					"Either the user doesn't have the rights to perform this action or doesn't exist");
 		balance = DAO.computeBalance();
 		return balance;
 

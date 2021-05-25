@@ -1,12 +1,5 @@
 package it.polito.ezshop.data.Implementations;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.time.LocalDate;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -15,8 +8,6 @@ import it.polito.ezshop.data.BalanceOperation;
 import it.polito.ezshop.data.ProductType;
 import it.polito.ezshop.data.SaleTransaction;
 import it.polito.ezshop.data.TicketEntry;
-import it.polito.ezshop.exceptions.InvalidTransactionIdException;
-import it.polito.ezshop.exceptions.UnauthorizedException;
 
 public class SaleTransactionImpl implements SaleTransaction {
 
@@ -38,46 +29,18 @@ public class SaleTransactionImpl implements SaleTransaction {
 
 	}
 
-	public Integer startSaleTransaction() {
-
-		String getNextAutoincrement = "SELECT seq FROM sqlite_sequence WHERE name=\"saleTransaction\"";
-		Integer id = 0; // 0=error
-		try (Connection conn = DriverManager.getConnection("jdbc:sqlite:EZShopDB.sqlite");
-				Statement stmt = conn.createStatement();
-				ResultSet rs = stmt.executeQuery(getNextAutoincrement)) {
-			id = rs.getInt("seq") + 1;
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		this.setTicketNumber(id);
-		// transaction will be added to the db only when it ends
-		return id;
-
-	}
-
-	public TicketEntry addProductToSale(ProductType productType, int amount) {
+	public void addProductToSale(ProductType productType, int amount) {
 
 		String barCode = productType.getBarCode();
-		// decreaseProductQuantity
-		String decreaseProductQuantity = "UPDATE product SET quantity=quantity - ? WHERE barcode=?";
-		try (Connection conn = DriverManager.getConnection("jdbc:sqlite:EZShopDB.sqlite");) {
-			PreparedStatement pstmt = conn.prepareStatement(decreaseProductQuantity);
-			pstmt.setInt(1, amount);
-			pstmt.setString(2, barCode);
-			pstmt.executeUpdate();
-			pstmt.close();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		// update in entry or insert new entry if it doesn't exist
 
+		// update in entry or insert new entry if it doesn't exist
 		String productDescription = productType.getProductDescription();
 		double pricePerUnit = productType.getPricePerUnit();
 		for (TicketEntry entry : entries) {
 			if (entry.getBarCode().equals(barCode)) {
 				entry.setAmount(entry.getAmount() + amount);
 				this.setPrice(this.price + amount * pricePerUnit * (1 - entry.getDiscountRate()));
-				return entry;
+				return;
 			}
 		}
 
@@ -85,7 +48,7 @@ public class SaleTransactionImpl implements SaleTransaction {
 		entries.add(newEntry);
 		this.setPrice(this.price + amount * pricePerUnit); // discountRate=0 until applyDiscountRateToProduct is called
 
-		return newEntry;
+		return;
 
 	}
 
@@ -109,26 +72,14 @@ public class SaleTransactionImpl implements SaleTransaction {
 					iter.remove();
 					this.setPrice(this.price - (amount * entry.getPricePerUnit() * (1 - entry.getDiscountRate())));
 					result = true;
-				}
-				// else if (amountToRemove > previousAmount) updated=false;
+				} else
+					break;
+				// else if (amountToRemove > previousAmount) result=false;
 				// System.out.println("Found item to remove" + entry);
 			}
 		}
 		// if product not present in the saleTransaction result==false
-		if (result == true) {
-			// increaseProductQuantity
-			String increaseProductQuantity = "UPDATE product SET quantity=quantity + ? WHERE barcode=?";
-			try (Connection conn = DriverManager.getConnection("jdbc:sqlite:EZShopDB.sqlite");) {
-				PreparedStatement pstmt = conn.prepareStatement(increaseProductQuantity);
-				pstmt.setInt(1, amount);
-				pstmt.setString(2, barCode);
-				pstmt.executeUpdate();
-				pstmt.close();
-			} catch (SQLException e) {
-				e.printStackTrace();
-				result = false;
-			}
-		}
+
 		return result;
 
 	}
@@ -155,70 +106,6 @@ public class SaleTransactionImpl implements SaleTransaction {
 		this.price = this.price / (1 - this.discountRate);// full price
 		this.discountRate = discountRate;
 		this.price = this.price * (1 - this.discountRate);// new discounted price
-
-	}
-
-	public boolean deleteSaleTransaction() {
-
-		for (TicketEntry entry : this.getEntries()) {
-			// increaseProductQuantity
-			String increaseProductQuantity = "UPDATE product SET quantity=quantity + ? WHERE barcode=?";
-			try (Connection conn = DriverManager.getConnection("jdbc:sqlite:EZShopDB.sqlite");) {
-				PreparedStatement pstmt = conn.prepareStatement(increaseProductQuantity);
-				pstmt.setInt(1, entry.getAmount()); // amount to remove from sale, amount to add to store
-				pstmt.setString(2, entry.getBarCode());
-				pstmt.executeUpdate();
-				pstmt.close();
-			} catch (SQLException e) {
-				e.printStackTrace();
-				return false;
-			}
-		}
-		return true;
-
-	}
-
-	public Boolean endSaleTransaction() throws InvalidTransactionIdException, UnauthorizedException {
-
-		String getNextAutoincrement = "SELECT seq FROM sqlite_sequence WHERE name=\"balanceOperation\"";
-		String insertSale = "INSERT INTO saleTransaction(price,discountRate,creditCard,balanceId) VALUES(?,?,?,?)";
-		String insertTicketEntry = "INSERT INTO ticketEntry(ticketNumber,barCode,productDescription,pricePerUnit,discountRate,amount) VALUES(?,?,?,?,?,?)";
-
-		try (Connection conn = DriverManager.getConnection("jdbc:sqlite:EZShopDB.sqlite");) {
-
-			Statement stmt = conn.createStatement();
-			ResultSet rs = stmt.executeQuery(getNextAutoincrement);
-			int balanceId = rs.getInt("seq") + 1;
-			BalanceOperationImpl balanceOperation = new BalanceOperationImpl(balanceId, LocalDate.now(),
-					this.getPrice(), "CREDIT");
-			this.setBalanceOperation(balanceOperation);
-			stmt.close();
-			rs.close();
-			// Insert SaleTransaction
-			PreparedStatement pstmt = conn.prepareStatement(insertSale);
-			pstmt.setDouble(1, this.getPrice());
-			pstmt.setDouble(2, this.getDiscountRate());
-			pstmt.setString(3, this.getCreditCard());
-			pstmt.setInt(4, balanceId);
-			pstmt.executeUpdate();
-			pstmt.close();
-			for (TicketEntry entry : this.getEntries()) {
-				// InsertTicketEntry
-				pstmt = conn.prepareStatement(insertTicketEntry);
-				pstmt.setInt(1, this.getTicketNumber());
-				pstmt.setString(2, entry.getBarCode());
-				pstmt.setString(3, entry.getProductDescription());
-				pstmt.setDouble(4, entry.getPricePerUnit());
-				pstmt.setDouble(5, entry.getDiscountRate());
-				pstmt.setInt(6, entry.getAmount());
-				pstmt.executeUpdate();
-				pstmt.close();
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-			return false;
-		}
-		return true;
 
 	}
 
