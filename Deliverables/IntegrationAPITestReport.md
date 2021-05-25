@@ -206,11 +206,11 @@ Report also for each of the scenarios the (one or more) API JUnit tests that cov
 
 | Scenario ID | Functional Requirements covered | JUnit  Test(s) | 
 | ----------- | ------------------------------- | ----------- | 
-|  1-1        | FR3.1                           |             |             
-|  1-2        | FR3.4, FR4.2                    |             |             
-|  1-3        | FR3.4, FR3.1                    |             |  
-|  1-4        | FR3.4, FR3.2                    |             | 
-|  1-5        | FR3.3                           |             |             
+|  1-1        | FR3.1                           | UC1TestClass: Scenario1_1TestCase, ExceptionsScenario1_1TestCase            |             
+|  1-2        | FR3.4, FR4.2                    | UC1TestClass: Scenario1_2TestCase, ExceptionsScenario1_2TestCase            |             
+|  1-3        | FR3.4, FR3.1                    | UC1TestClass: Scenario1_3TestCase, ExceptionsScenario1_3TestCase            |  
+|  1-4        | FR3.4, FR3.2                    | UC1TestClass: Scenario1_4TestCase, ExceptionsScenario1_4TestCase            | 
+|  1-5        | FR3.3                           | UC1TestClass: Scenario1_5TestCase, ExceptionsScenario1_5TestCase            |             
 |  2-1        | FR1.1, FR1.5                    |             |             
 |  2-2        | FR1.4, FR1.2                    |             |             
 |  2-3        | FR1.4, FR1.5                    |             |  
