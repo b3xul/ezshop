@@ -50,9 +50,9 @@ Version: 1.0
       - [setDiscountRate](#setdiscountrate-2)
       - [setEntries](#setentries)
       - [setBalanceOperation](#setbalanceoperation)
-      - [removeAmountFromEntry](#removeamountfromentry)
-      - [setDiscountRateToProduct](#setdiscountratetoproduct)
-      - [upsertEntry](#upsertentry)
+      - [deleteProductFromSale](#deleteproductfromsale)
+      - [applyDiscountRateToProduct](#applydiscountratetoproduct)
+      - [addProductToSale](#addproducttosale)
     - [**Class *ReturnTransactionImpl* **](#class-returntransactionimpl-)
       - [constructor](#constructor-6)
       - [setReturnId](#setreturnid)
@@ -872,14 +872,14 @@ Version: 1.0
 | ------------------------------------------------- | --------------- | ------------------------------------------------------------------------------------------------ | ------------------------------------ |
 | Valid                                             | Valid           | BalanceOperation balanceOperation = null; saleTransaction.setBalanceOperation(balanceOperation); | testCase1                            |
 
-#### removeAmountFromEntry
-**Criteria for method *removeAmountFromEntry*:**
+#### deleteProductFromSale
+**Criteria for method *deleteProductFromSale*:**
 
  - Validity of the String *barcode*
  - Validity of the Integer *amountToRemove*
  - *amountToRemove*
 
-**Predicates for method *removeAmountFromEntry*:**
+**Predicates for method *deleteProductFromSale*:**
 
 | Criteria                                 | Predicate                |
 | ---------------------------------------- | ------------------------ |
@@ -900,18 +900,18 @@ Version: 1.0
 
 | Validity of the String *barcode* | Validity of the Integer *amountToRemove* | *amountToRemove*          | Valid / Invalid | Description of the test case                                                                                                                                                                                                                          | JUnit test case TicketEntryClassTest |
 | -------------------------------- | ---------------------------------------- | ------------------------- | --------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------ |
-| Valid                            | Valid                                    | (-maxint, previousAmount) | Valid(true)     | LinkedList\<TicketEntry> entries = new LinkedList\<TicketEntry>(); entries.add(new TicketEntryImpl("12637482635892", "description", 2.0, 0.1, 10)); saleTransaction.setEntries(entries); saleTransaction.removeAmountFromEntry("12637482635892", 1);  | testCase2                            |
-| Valid                            | Valid                                    | previousAmount            | Valid(true)     | LinkedList/<TicketEntry> entries = new LinkedList/<TicketEntry>(); entries.add(new TicketEntryImpl("12637482635892", "description", 2.0, 0.1, 10)); saleTransaction.setEntries(entries); saleTransaction.removeAmountFromEntry("12637482635892", 10); | testCase3                            |
-| Valid                            | Valid                                    | (previousAmount, maxint)  | Valid(false)    | LinkedList\<TicketEntry> entries = new LinkedList\<TicketEntry>(); entries.add(new TicketEntryImpl("12637482635892", "description", 2.0, 0.1, 10)); saleTransaction.setEntries(entries); saleTransaction.removeAmountFromEntry("12637482635892", 11); | testCase4                            |
-| Invalid                          | *                                        | *                         | Valid(false)    | LinkedList\<TicketEntry> entries = new LinkedList\<TicketEntry>(); entries.add(new TicketEntryImpl("12637482635892", "description", 2.0, 0.1, 10)); saleTransaction.setEntries(entries); saleTransaction.removeAmountFromEntry("22637482635892", 4);  | testCase5                            |
+| Valid                            | Valid                                    | (-maxint, previousAmount) | Valid(true)     | LinkedList\<TicketEntry> entries = new LinkedList\<TicketEntry>(); entries.add(new TicketEntryImpl("12637482635892", "description", 2.0, 0.1, 10)); saleTransaction.setEntries(entries); saleTransaction.deleteProductFromSale("12637482635892", 1);  | testCase2                            |
+| Valid                            | Valid                                    | previousAmount            | Valid(true)     | LinkedList/<TicketEntry> entries = new LinkedList/<TicketEntry>(); entries.add(new TicketEntryImpl("12637482635892", "description", 2.0, 0.1, 10)); saleTransaction.setEntries(entries); saleTransaction.deleteProductFromSale("12637482635892", 10); | testCase3                            |
+| Valid                            | Valid                                    | (previousAmount, maxint)  | Valid(false)    | LinkedList\<TicketEntry> entries = new LinkedList\<TicketEntry>(); entries.add(new TicketEntryImpl("12637482635892", "description", 2.0, 0.1, 10)); saleTransaction.setEntries(entries); saleTransaction.deleteProductFromSale("12637482635892", 11); | testCase4                            |
+| Invalid                          | *                                        | *                         | Valid(false)    | LinkedList\<TicketEntry> entries = new LinkedList\<TicketEntry>(); entries.add(new TicketEntryImpl("12637482635892", "description", 2.0, 0.1, 10)); saleTransaction.setEntries(entries); saleTransaction.deleteProductFromSale("22637482635892", 4);  | testCase5                            |
 
-#### setDiscountRateToProduct
-**Criteria for method *setDiscountRateToProduct*:**
+#### applyDiscountRateToProduct
+**Criteria for method *applyDiscountRateToProduct*:**
 
  - Validity of the String *barcode*
  - Validity of the double *discountRate*
 
-**Predicates for method *setDiscountRateToProduct*:**
+**Predicates for method *applyDiscountRateToProduct*:**
 
 | Criteria                              | Predicate |
 | ------------------------------------- | --------- |
@@ -926,18 +926,18 @@ Version: 1.0
 
 **Combination of predicates**:
 
-| Validity of the String *barcode* | Validity of the double *discountRate* | Valid / Invalid | Description of the test case                                                                                                                                                                                                                              | JUnit test case TicketEntryClassTest |
-| -------------------------------- | ------------------------------------- | --------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------ |
-| Valid                            | Valid                                 | Valid           | LinkedList\<TicketEntry> entries = new LinkedList/<TicketEntry>(); entries.add(new TicketEntryImpl("12637482635892", "description", 2.0, 0.1, 10)); saleTransaction.setEntries(entries); saleTransaction.setDiscountRateToProduct("12637482635892", 0.2); | testCase7                            |
-| Invalid                          | *                                     | Valid(false)    | LinkedList\<TicketEntry> entries = new LinkedList/<TicketEntry>(); entries.add(new TicketEntryImpl("12637482635892", "description", 2.0, 0.1, 10)); saleTransaction.setEntries(entries); saleTransaction.setDiscountRateToProduct("22637482635892", 0.2); | testCase8                            |
+| Validity of the String *barcode* | Validity of the double *discountRate* | Valid / Invalid | Description of the test case                                                                                                                                                                                                                                | JUnit test case TicketEntryClassTest |
+| -------------------------------- | ------------------------------------- | --------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------ |
+| Valid                            | Valid                                 | Valid           | LinkedList\<TicketEntry> entries = new LinkedList/<TicketEntry>(); entries.add(new TicketEntryImpl("12637482635892", "description", 2.0, 0.1, 10)); saleTransaction.setEntries(entries); saleTransaction.applyDiscountRateToProduct("12637482635892", 0.2); | testCase7                            |
+| Invalid                          | *                                     | Valid(false)    | LinkedList\<TicketEntry> entries = new LinkedList/<TicketEntry>(); entries.add(new TicketEntryImpl("12637482635892", "description", 2.0, 0.1, 10)); saleTransaction.setEntries(entries); saleTransaction.applyDiscountRateToProduct("22637482635892", 0.2); | testCase8                            |
 
-#### upsertEntry
-**Criteria for method *upsertEntry*:**
+#### addProductToSale
+**Criteria for method *addProductToSale*:**
 
  - Validity of the ProductType *productType*
  - Validity of the int *amount*
 
-**Predicates for method *upsertEntry*:**
+**Predicates for method *addProductToSale*:**
 
 | Criteria                                  | Predicate |
 | ----------------------------------------- | --------- |
@@ -951,9 +951,9 @@ Version: 1.0
 
 **Combination of predicates**:
 
-| Validity of the ProductType *productType* | Validity of the int *amount* | Valid / Invalid | Description of the test case                                                                                                                | JUnit test case TicketEntryClassTest |
-| ----------------------------------------- | ---------------------------- | --------------- | ------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------ |
-| Valid                                     | Valid                        | Valid           | ProductType productType1 = new ProductTypeImpl("note", "description", "12637482635892", 2.5); saleTransaction.upsertEntry(productType1, 6); | testCase10                           |
+| Validity of the ProductType *productType* | Validity of the int *amount* | Valid / Invalid | Description of the test case                                                                                                                     | JUnit test case TicketEntryClassTest |
+| ----------------------------------------- | ---------------------------- | --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------ |
+| Valid                                     | Valid                        | Valid           | ProductType productType1 = new ProductTypeImpl("note", "description", "12637482635892", 2.5); saleTransaction.addProductToSale(productType1, 6); | testCase10                           |
 
 ### **Class *ReturnTransactionImpl* **
 
@@ -1700,10 +1700,10 @@ Version: 1.0
     <Identify significant loops in the units and reports the test cases
     developed to cover zero, one or multiple iterations >
 
-| Unit name                | Loop rows | Number of iterations | JUnit test case |
-| ------------------------ | --------- | -------------------- | --------------- |
-| setDiscountRateToProduct | 83:93     | 0                    | testCase9       |
-|                          |           | 1                    | testCase7       |
-|                          |           | >1                   | testCase8       |
+| Unit name                  | Loop rows | Number of iterations | JUnit test case |
+| -------------------------- | --------- | -------------------- | --------------- |
+| applyDiscountRateToProduct | 83:93     | 0                    | testCase9       |
+|                            |           | 1                    | testCase7       |
+|                            |           | >1                   | testCase8       |
 
 

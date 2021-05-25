@@ -49,7 +49,7 @@ public class SaleTransactionClassTest {
 	@Test
 	public void testCase2() {
 
-		// removeAmountFromEntry(lower amount): 1 iteration
+		// deleteProductFromSale(lower amount): 1 iteration
 		SaleTransactionImpl saleTransaction = new SaleTransactionImpl(1);
 		assertEquals(Integer.valueOf(1), saleTransaction.getTicketNumber());
 
@@ -75,7 +75,7 @@ public class SaleTransactionClassTest {
 
 		saleTransaction.toString();
 
-		assertTrue(saleTransaction.removeAmountFromEntry("12637482635892", 1));
+		assertTrue(saleTransaction.deleteProductFromSale("12637482635892", 1));
 
 		saleTransaction.toString();
 
@@ -84,7 +84,7 @@ public class SaleTransactionClassTest {
 	@Test
 	public void testCase3() {
 
-		// removeAmountFromEntry(same amount): 1 iteration
+		// deleteProductFromSale(same amount): 1 iteration
 		SaleTransactionImpl saleTransaction = new SaleTransactionImpl(1);
 		assertEquals(Integer.valueOf(1), saleTransaction.getTicketNumber());
 
@@ -110,7 +110,7 @@ public class SaleTransactionClassTest {
 
 		saleTransaction.toString();
 
-		assertTrue(saleTransaction.removeAmountFromEntry("12637482635892", 10));
+		assertTrue(saleTransaction.deleteProductFromSale("12637482635892", 10));
 
 		saleTransaction.toString();
 
@@ -119,7 +119,7 @@ public class SaleTransactionClassTest {
 	@Test
 	public void testCase4() {
 
-		// removeAmountFromEntry(higher amount): 1 iteration
+		// deleteProductFromSale(higher amount): 1 iteration
 		SaleTransactionImpl saleTransaction = new SaleTransactionImpl(1);
 		assertEquals(Integer.valueOf(1), saleTransaction.getTicketNumber());
 
@@ -145,7 +145,7 @@ public class SaleTransactionClassTest {
 
 		saleTransaction.toString();
 
-		assertFalse(saleTransaction.removeAmountFromEntry("12637482635892", 11));
+		assertFalse(saleTransaction.deleteProductFromSale("12637482635892", 11));
 
 		saleTransaction.toString();
 
@@ -154,7 +154,7 @@ public class SaleTransactionClassTest {
 	@Test
 	public void testCase5() {
 
-		// removeAmountFromEntry(barcode not found): entries.size() iterations
+		// deleteProductFromSale(barcode not found): entries.size() iterations
 		SaleTransactionImpl saleTransaction = new SaleTransactionImpl(1);
 		assertEquals(Integer.valueOf(1), saleTransaction.getTicketNumber());
 
@@ -180,7 +180,7 @@ public class SaleTransactionClassTest {
 
 		saleTransaction.toString();
 
-		assertFalse(saleTransaction.removeAmountFromEntry("22637482635892", 4));
+		assertFalse(saleTransaction.deleteProductFromSale("22637482635892", 4));
 
 		saleTransaction.toString();
 
@@ -189,7 +189,7 @@ public class SaleTransactionClassTest {
 	@Test
 	public void testCase6() {
 
-		// removeAmountFromEntry(empty list): 0 iterations
+		// deleteProductFromSale(empty list): 0 iterations
 		SaleTransactionImpl saleTransaction = new SaleTransactionImpl(1);
 		assertEquals(Integer.valueOf(1), saleTransaction.getTicketNumber());
 
@@ -212,7 +212,7 @@ public class SaleTransactionClassTest {
 
 		saleTransaction.toString();
 
-		assertFalse(saleTransaction.removeAmountFromEntry("12637482635892", 11));
+		assertFalse(saleTransaction.deleteProductFromSale("12637482635892", 11));
 
 		saleTransaction.toString();
 
@@ -221,7 +221,7 @@ public class SaleTransactionClassTest {
 	@Test
 	public void testCase7() {
 
-		// setDiscountRateToProduct: 1 iteration
+		// applyDiscountRateToProduct: 1 iteration
 		SaleTransactionImpl saleTransaction = new SaleTransactionImpl(1);
 		assertEquals(Integer.valueOf(1), saleTransaction.getTicketNumber());
 
@@ -247,7 +247,7 @@ public class SaleTransactionClassTest {
 
 		saleTransaction.toString();
 
-		saleTransaction.setDiscountRateToProduct("12637482635892", 0.2);
+		saleTransaction.applyDiscountRateToProduct("12637482635892", 0.2);
 
 		saleTransaction.toString();
 
@@ -256,7 +256,7 @@ public class SaleTransactionClassTest {
 	@Test
 	public void testCase8() {
 
-		// setDiscountRateToProduct(wrong barcode): entries.size() iterations
+		// applyDiscountRateToProduct(wrong barcode): entries.size() iterations
 		SaleTransactionImpl saleTransaction = new SaleTransactionImpl(1);
 		assertEquals(Integer.valueOf(1), saleTransaction.getTicketNumber());
 
@@ -282,7 +282,7 @@ public class SaleTransactionClassTest {
 
 		saleTransaction.toString();
 
-		saleTransaction.setDiscountRateToProduct("22637482635892", 0.2);
+		saleTransaction.applyDiscountRateToProduct("22637482635892", 0.2);
 
 		saleTransaction.toString();
 
@@ -291,7 +291,7 @@ public class SaleTransactionClassTest {
 	@Test
 	public void testCase9() {
 
-		// setDiscountRateToProduct(empty list): 0 iterations
+		// applyDiscountRateToProduct(empty list): 0 iterations
 		SaleTransactionImpl saleTransaction = new SaleTransactionImpl(1);
 		assertEquals(Integer.valueOf(1), saleTransaction.getTicketNumber());
 
@@ -315,7 +315,7 @@ public class SaleTransactionClassTest {
 
 		saleTransaction.toString();
 
-		saleTransaction.setDiscountRateToProduct("12637482635892", 0.2);
+		saleTransaction.applyDiscountRateToProduct("12637482635892", 0.2);
 
 		saleTransaction.toString();
 
@@ -324,7 +324,7 @@ public class SaleTransactionClassTest {
 	@Test
 	public void testCase10() {
 
-		// upsertEntry
+		// addProductToSale
 
 		SaleTransactionImpl saleTransaction = new SaleTransactionImpl(1);
 		assertEquals(Integer.valueOf(1), saleTransaction.getTicketNumber());
@@ -349,10 +349,10 @@ public class SaleTransactionClassTest {
 		saleTransaction.toString();
 
 		ProductType productType1 = new ProductTypeImpl("note", "description", "12637482635892", 2.5);
-		saleTransaction.upsertEntry(productType1, 6);
+		saleTransaction.addProductToSale(productType1, 6);
 		ProductType productType2 = new ProductTypeImpl("note", "description2", "6253478956438", 7.0);
-		saleTransaction.upsertEntry(productType2, 9);
-		saleTransaction.upsertEntry(productType2, 10);
+		saleTransaction.addProductToSale(productType2, 9);
+		saleTransaction.addProductToSale(productType2, 10);
 
 		saleTransaction.toString();
 

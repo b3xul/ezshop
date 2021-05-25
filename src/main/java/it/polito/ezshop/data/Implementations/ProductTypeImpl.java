@@ -157,6 +157,77 @@ public class ProductTypeImpl implements ProductType {
 					+ this.barCode + ", at " + this.location.getPosition() + ", pieces: " + this.quantity + " ("
 					+ this.note + ") - [discount rate: " + this.discountRate + "%]");
 
+	}
+
+	@Override
+	public int hashCode() {
+
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((barCode == null) ? 0 : barCode.hashCode());
+		result = prime * result + ((discountRate == null) ? 0 : discountRate.hashCode());
+		result = prime * result + ((id == null) ? 0 : id.hashCode());
+		result = prime * result + ((location == null) ? 0 : location.hashCode());
+		result = prime * result + ((note == null) ? 0 : note.hashCode());
+		result = prime * result + ((pricePerUnit == null) ? 0 : pricePerUnit.hashCode());
+		result = prime * result + ((productDescription == null) ? 0 : productDescription.hashCode());
+		result = prime * result + ((quantity == null) ? 0 : quantity.hashCode());
+		return result;
+
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		ProductTypeImpl other = (ProductTypeImpl) obj;
+		if (barCode == null) {
+			if (other.barCode != null)
+				return false;
+		} else if (!barCode.equals(other.barCode))
+			return false;
+		if (discountRate == null) {
+			if (other.discountRate != null)
+				return false;
+		} else if (!discountRate.equals(other.discountRate))
+			return false;
+		if (id == null) {
+			if (other.id != null)
+				return false;
+		} else if (!id.equals(other.id))
+			return false;
+		if (location == null) {
+			if (other.location != null)
+				return false;
+		} else if (!location.equals(other.location))
+			return false;
+		if (note == null) {
+			if (other.note != null)
+				return false;
+		} else if (!note.equals(other.note))
+			return false;
+		if (pricePerUnit == null) {
+			if (other.pricePerUnit != null)
+				return false;
+		} else if (!pricePerUnit.equals(other.pricePerUnit))
+			return false;
+		if (productDescription == null) {
+			if (other.productDescription != null)
+				return false;
+		} else if (!productDescription.equals(other.productDescription))
+			return false;
+		if (quantity == null) {
+			if (other.quantity != null)
+				return false;
+		} else if (!quantity.equals(other.quantity))
+			return false;
+		return true;
+
 	};
 
 }
