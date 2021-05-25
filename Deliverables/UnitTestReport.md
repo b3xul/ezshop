@@ -53,9 +53,9 @@ Version: 1.0
       - [setDiscountRate](#setdiscountrate-2)
       - [setEntries](#setentries)
       - [setBalanceOperation](#setbalanceoperation)
-      - [removeAmountFromEntry](#removeamountfromentry)
-      - [setDiscountRateToProduct](#setdiscountratetoproduct)
-      - [upsertEntry](#upsertentry)
+      - [deleteProductFromSale](#deleteproductfromsale)
+      - [applyDiscountRateToProduct](#applydiscountratetoproduct)
+      - [addProductToSale](#addproducttosale)
     - [Class *ReturnTransactionImpl* **](#class-returntransactionimpl-)
       - [constructor](#constructor-6)
       - [setReturnId](#setreturnid)
@@ -711,9 +711,9 @@ Version: 1.0
 **Combination of predicates**:
 
 | Length of the String *position.split(" ")* | Valid / Invalid | Description of the test case                            | JUnit test case PositionClassTest |
-| ------------------------------------------ | --------------- | ------------------------------------------------------- | ------------------------------------ |
-| = 3                                        | Valid           | PositionImpl position4 = new PositionImpl("3 aisle 4"); | testCase1                            |
-| != 3                                       | Valid           | PositionImpl position3 = new PositionImpl("corridor");  | testCase2                            |
+| ------------------------------------------ | --------------- | ------------------------------------------------------- | --------------------------------- |
+| = 3                                        | Valid           | PositionImpl position4 = new PositionImpl("3 aisle 4"); | testCase1                         |
+| != 3                                       | Valid           | PositionImpl position3 = new PositionImpl("corridor");  | testCase2                         |
 
 #### setPosition
 *Criteria for method *setPosition*:**
@@ -735,9 +735,9 @@ Version: 1.0
 **Combination of predicates**:
 
 | Length of the String *position.split(" ")* | Valid / Invalid | Description of the test case                                                      | JUnit test case PositionClassTest |
-| ------------------------------------------ | --------------- | --------------------------------------------------------------------------------- | ------------------------------------ |
-| = 3                                        | Valid           | PositionImpl position = new PositionImpl(); position.setPosition("2 corridor 3"); | testCase3                            |
-| != 3                                       | Valid           | PositionImpl position = new PositionImpl(); position.setPosition("");             | testCase4                            |
+| ------------------------------------------ | --------------- | --------------------------------------------------------------------------------- | --------------------------------- |
+| = 3                                        | Valid           | PositionImpl position = new PositionImpl(); position.setPosition("2 corridor 3"); | testCase3                         |
+| != 3                                       | Valid           | PositionImpl position = new PositionImpl(); position.setPosition("");             | testCase4                         |
 
 
 
@@ -762,8 +762,8 @@ Version: 1.0
 **Combination of predicates**:
 
 | Validity of the Integer *ticketNumber* | Valid / Invalid | Description of the test case                  | JUnit test case SaleTransactionClassTest |
-| -------------------------------------- | --------------- | --------------------------------------------- | ------------------------------------ |
-| Valid                                  | Valid           | saleTransaction = new SaleTransactionImpl(1); | testCase1                            |
+| -------------------------------------- | --------------- | --------------------------------------------- | ---------------------------------------- |
+| Valid                                  | Valid           | saleTransaction = new SaleTransactionImpl(1); | testCase1                                |
 
 #### setTicketNumber
 **Criteria for method *setTicketNumber*:**
@@ -784,8 +784,8 @@ Version: 1.0
 **Combination of predicates**:
 
 | Validity of the Integer *ticketNumber* | Valid / Invalid | Description of the test case        | JUnit test case SaleTransactionClassTest |
-| -------------------------------------- | --------------- | ----------------------------------- | ------------------------------------ |
-| Valid                                  | Valid           | saleTransaction.setTicketNumber(2); | testCase1                            |
+| -------------------------------------- | --------------- | ----------------------------------- | ---------------------------------------- |
+| Valid                                  | Valid           | saleTransaction.setTicketNumber(2); | testCase1                                |
 
 #### setPrice
 **Criteria for method *setPrice*:**
@@ -806,8 +806,8 @@ Version: 1.0
 **Combination of predicates**:
 
 | Validity of the double *price* | Valid / Invalid | Description of the test case   | JUnit test case SaleTransactionClassTest |
-| ------------------------------ | --------------- | ------------------------------ | ------------------------------------ |
-| Valid                          | Valid           | saleTransaction.setPrice(3.0); | testCase1                            |
+| ------------------------------ | --------------- | ------------------------------ | ---------------------------------------- |
+| Valid                          | Valid           | saleTransaction.setPrice(3.0); | testCase1                                |
 
 #### setDiscountRate
 **Criteria for method *setDiscountRate*:**
@@ -828,8 +828,8 @@ Version: 1.0
 **Combination of predicates**:
 
 | Validity of the double *discountRate* | Valid / Invalid | Description of the test case          | JUnit test case SaleTransactionClassTest |
-| ------------------------------------- | --------------- | ------------------------------------- | ------------------------------------ |
-| Valid                                 | Valid           | saleTransaction.setDiscountRate(0.4); | testCase1                            |
+| ------------------------------------- | --------------- | ------------------------------------- | ---------------------------------------- |
+| Valid                                 | Valid           | saleTransaction.setDiscountRate(0.4); | testCase1                                |
 
 #### setEntries
 **Criteria for method *setEntries*:**
@@ -850,8 +850,8 @@ Version: 1.0
 **Combination of predicates**:
 
 | Validity of the LinkedList\<TicketEntry> entries | Valid / Invalid | Description of the test case                                                                            | JUnit test case SaleTransactionClassTest |
-| ------------------------------------------------ | --------------- | ------------------------------------------------------------------------------------------------------- | ------------------------------------ |
-| Valid                                            | Valid           | LinkedList\<TicketEntry> entries = new LinkedList\<TicketEntry>(); saleTransaction.setEntries(entries); | testCase1                            |
+| ------------------------------------------------ | --------------- | ------------------------------------------------------------------------------------------------------- | ---------------------------------------- |
+| Valid                                            | Valid           | LinkedList\<TicketEntry> entries = new LinkedList\<TicketEntry>(); saleTransaction.setEntries(entries); | testCase1                                |
 
 #### setBalanceOperation
 **Criteria for method *setBalanceOperation*:**
@@ -872,17 +872,17 @@ Version: 1.0
 **Combination of predicates**:
 
 | Validity of the BalanceOperation balanceOperation | Valid / Invalid | Description of the test case                                                                     | JUnit test case SaleTransactionClassTest |
-| ------------------------------------------------- | --------------- | ------------------------------------------------------------------------------------------------ | ------------------------------------ |
-| Valid                                             | Valid           | BalanceOperation balanceOperation = null; saleTransaction.setBalanceOperation(balanceOperation); | testCase1                            |
+| ------------------------------------------------- | --------------- | ------------------------------------------------------------------------------------------------ | ---------------------------------------- |
+| Valid                                             | Valid           | BalanceOperation balanceOperation = null; saleTransaction.setBalanceOperation(balanceOperation); | testCase1                                |
 
-#### removeAmountFromEntry
-**Criteria for method *removeAmountFromEntry*:**
+#### deleteProductFromSale
+**Criteria for method *deleteProductFromSale*:**
 
  - Validity of the String *barcode*
  - Validity of the Integer *amountToRemove*
  - *amountToRemove*
 
-**Predicates for method *removeAmountFromEntry*:**
+**Predicates for method *deleteProductFromSale*:**
 
 | Criteria                                 | Predicate                |
 | ---------------------------------------- | ------------------------ |
@@ -902,19 +902,19 @@ Version: 1.0
 **Combination of predicates**:
 
 | Validity of the String *barcode* | Validity of the Integer *amountToRemove* | *amountToRemove*          | Valid / Invalid | Description of the test case                                                                                                                                                                                                                          | JUnit test case SaleTransactionClassTest |
-| -------------------------------- | ---------------------------------------- | ------------------------- | --------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------ |
-| Valid                            | Valid                                    | (-maxint, previousAmount) | Valid(true)     | LinkedList\<TicketEntry> entries = new LinkedList\<TicketEntry>(); entries.add(new TicketEntryImpl("12637482635892", "description", 2.0, 0.1, 10)); saleTransaction.setEntries(entries); saleTransaction.removeAmountFromEntry("12637482635892", 1);  | testCase2                            |
-| Valid                            | Valid                                    | previousAmount            | Valid(true)     | LinkedList/<TicketEntry> entries = new LinkedList/<TicketEntry>(); entries.add(new TicketEntryImpl("12637482635892", "description", 2.0, 0.1, 10)); saleTransaction.setEntries(entries); saleTransaction.removeAmountFromEntry("12637482635892", 10); | testCase3                            |
-| Valid                            | Valid                                    | (previousAmount, maxint)  | Valid(false)    | LinkedList\<TicketEntry> entries = new LinkedList\<TicketEntry>(); entries.add(new TicketEntryImpl("12637482635892", "description", 2.0, 0.1, 10)); saleTransaction.setEntries(entries); saleTransaction.removeAmountFromEntry("12637482635892", 11); | testCase4                            |
-| Invalid                          | *                                        | *                         | Valid(false)    | LinkedList\<TicketEntry> entries = new LinkedList\<TicketEntry>(); entries.add(new TicketEntryImpl("12637482635892", "description", 2.0, 0.1, 10)); saleTransaction.setEntries(entries); saleTransaction.removeAmountFromEntry("22637482635892", 4);  | testCase5                            |
+| -------------------------------- | ---------------------------------------- | ------------------------- | --------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------- |
+| Valid                            | Valid                                    | (-maxint, previousAmount) | Valid(true)     | LinkedList\<TicketEntry> entries = new LinkedList\<TicketEntry>(); entries.add(new TicketEntryImpl("12637482635892", "description", 2.0, 0.1, 10)); saleTransaction.setEntries(entries); saleTransaction.deleteProductFromSale("12637482635892", 1);  | testCase2                                |
+| Valid                            | Valid                                    | previousAmount            | Valid(true)     | LinkedList/<TicketEntry> entries = new LinkedList/<TicketEntry>(); entries.add(new TicketEntryImpl("12637482635892", "description", 2.0, 0.1, 10)); saleTransaction.setEntries(entries); saleTransaction.deleteProductFromSale("12637482635892", 10); | testCase3                                |
+| Valid                            | Valid                                    | (previousAmount, maxint)  | Valid(false)    | LinkedList\<TicketEntry> entries = new LinkedList\<TicketEntry>(); entries.add(new TicketEntryImpl("12637482635892", "description", 2.0, 0.1, 10)); saleTransaction.setEntries(entries); saleTransaction.deleteProductFromSale("12637482635892", 11); | testCase4                                |
+| Invalid                          | *                                        | *                         | Valid(false)    | LinkedList\<TicketEntry> entries = new LinkedList\<TicketEntry>(); entries.add(new TicketEntryImpl("12637482635892", "description", 2.0, 0.1, 10)); saleTransaction.setEntries(entries); saleTransaction.deleteProductFromSale("22637482635892", 4);  | testCase5                                |
 
-#### setDiscountRateToProduct
-**Criteria for method *setDiscountRateToProduct*:**
+#### applyDiscountRateToProduct
+**Criteria for method *applyDiscountRateToProduct*:**
 
  - Validity of the String *barcode*
  - Validity of the double *discountRate*
 
-**Predicates for method *setDiscountRateToProduct*:**
+**Predicates for method *applyDiscountRateToProduct*:**
 
 | Criteria                              | Predicate |
 | ------------------------------------- | --------- |
@@ -930,17 +930,17 @@ Version: 1.0
 **Combination of predicates**:
 
 | Validity of the String *barcode* | Validity of the double *discountRate* | Valid / Invalid | Description of the test case                                                                                                                                                                                                                              | JUnit test case SaleTransactionClassTest |
-| -------------------------------- | ------------------------------------- | --------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------ |
-| Valid                            | Valid                                 | Valid           | LinkedList\<TicketEntry> entries = new LinkedList/<TicketEntry>(); entries.add(new TicketEntryImpl("12637482635892", "description", 2.0, 0.1, 10)); saleTransaction.setEntries(entries); saleTransaction.setDiscountRateToProduct("12637482635892", 0.2); | testCase7                            |
-| Invalid                          | *                                     | Valid(false)    | LinkedList\<TicketEntry> entries = new LinkedList/<TicketEntry>(); entries.add(new TicketEntryImpl("12637482635892", "description", 2.0, 0.1, 10)); saleTransaction.setEntries(entries); saleTransaction.setDiscountRateToProduct("22637482635892", 0.2); | testCase8                            |
+| -------------------------------- | ------------------------------------- | --------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------- |
+| Valid                            | Valid                                 | Valid           | LinkedList\<TicketEntry> entries = new LinkedList/<TicketEntry>(); entries.add(new TicketEntryImpl("12637482635892", "description", 2.0, 0.1, 10)); saleTransaction.setEntries(entries); saleTransaction.setDiscountRateToProduct("12637482635892", 0.2); | testCase7                                |
+| Invalid                          | *                                     | Valid(false)    | LinkedList\<TicketEntry> entries = new LinkedList/<TicketEntry>(); entries.add(new TicketEntryImpl("12637482635892", "description", 2.0, 0.1, 10)); saleTransaction.setEntries(entries); saleTransaction.setDiscountRateToProduct("22637482635892", 0.2); | testCase8                                |
 
-#### upsertEntry
-**Criteria for method *upsertEntry*:**
+#### addProductToSale
+**Criteria for method *addProductToSale*:**
 
  - Validity of the ProductType *productType*
  - Validity of the int *amount*
 
-**Predicates for method *upsertEntry*:**
+**Predicates for method *addProductToSale*:**
 
 | Criteria                                  | Predicate |
 | ----------------------------------------- | --------- |
@@ -955,8 +955,8 @@ Version: 1.0
 **Combination of predicates**:
 
 | Validity of the ProductType *productType* | Validity of the int *amount* | Valid / Invalid | Description of the test case                                                                                                                | JUnit test case SaleTransactionClassTest |
-| ----------------------------------------- | ---------------------------- | --------------- | ------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------ |
-| Valid                                     | Valid                        | Valid           | ProductType productType1 = new ProductTypeImpl("note", "description", "12637482635892", 2.5); saleTransaction.upsertEntry(productType1, 6); | testCase10                           |
+| ----------------------------------------- | ---------------------------- | --------------- | ------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------- |
+| Valid                                     | Valid                        | Valid           | ProductType productType1 = new ProductTypeImpl("note", "description", "12637482635892", 2.5); saleTransaction.upsertEntry(productType1, 6); | testCase10                               |
 
 ### Class *ReturnTransactionImpl* **
 
@@ -981,8 +981,8 @@ Version: 1.0
 **Combination of predicates**:
 
 | Validity of the Integer *returnId* | Validity of the SaleTransaction *saleTransaction* | Valid / Invalid | Description of the test case                                                                                                     | JUnit test case ReturnTransactionClassTest |
-| ---------------------------------- | ------------------------------------------------- | --------------- | -------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------ |
-| Valid                              | Valid                                             | Valid           | SaleTransaction saleTransaction = null; ReturnTransactionImpl returnTransaction = new ReturnTransactionImpl(1, saleTransaction); | testCase1                            |
+| ---------------------------------- | ------------------------------------------------- | --------------- | -------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------ |
+| Valid                              | Valid                                             | Valid           | SaleTransaction saleTransaction = null; ReturnTransactionImpl returnTransaction = new ReturnTransactionImpl(1, saleTransaction); | testCase1                                  |
 
 
 #### setReturnId
@@ -1004,8 +1004,8 @@ Version: 1.0
 **Combination of predicates**:
 
 | Validity of the Integer *returnId* | Valid / Invalid | Description of the test case      | JUnit test case ReturnTransactionClassTest |
-| ---------------------------------- | --------------- | --------------------------------- | ------------------------------------ |
-| Valid                              | Valid           | returnTransaction.setReturnId(2); | testCase1                            |
+| ---------------------------------- | --------------- | --------------------------------- | ------------------------------------------ |
+| Valid                              | Valid           | returnTransaction.setReturnId(2); | testCase1                                  |
 
 #### setProductId
 **Criteria for method *setProductId*:**
@@ -1026,8 +1026,8 @@ Version: 1.0
 **Combination of predicates**:
 
 | Validity of the Integer *productId* | Valid / Invalid | Description of the test case       | JUnit test case ReturnTransactionClassTest |
-| ----------------------------------- | --------------- | ---------------------------------- | ------------------------------------ |
-| Valid                               | Valid           | returnTransaction.setProductId(3); | testCase1                            |
+| ----------------------------------- | --------------- | ---------------------------------- | ------------------------------------------ |
+| Valid                               | Valid           | returnTransaction.setProductId(3); | testCase1                                  |
 
 #### setProductCode
 **Criteria for method *setProductCode*:**
@@ -1048,8 +1048,8 @@ Version: 1.0
 **Combination of predicates**:
 
 | Validity of the String *productCode* | Valid / Invalid | Description of the test case                        | JUnit test case ReturnTransactionClassTest |
-| ------------------------------------ | --------------- | --------------------------------------------------- | ------------------------------------ |
-| Valid                                | Valid           | returnTransaction.setProductCode("12637482635892"); | testCase1                            |
+| ------------------------------------ | --------------- | --------------------------------------------------- | ------------------------------------------ |
+| Valid                                | Valid           | returnTransaction.setProductCode("12637482635892"); | testCase1                                  |
 
 #### setPricePerUnit
 **Criteria for method *setPricePerUnit*:**
@@ -1070,8 +1070,8 @@ Version: 1.0
 **Combination of predicates**:
 
 | Validity of the double *pricePerUnit* | Valid / Invalid | Description of the test case             | JUnit test case ReturnTransactionClassTest |
-| ------------------------------------- | --------------- | ---------------------------------------- | ------------------------------------ |
-| Valid                                 | Valid           | returnTransaction.setPricePerUnit(25.0); | testCase1                            |
+| ------------------------------------- | --------------- | ---------------------------------------- | ------------------------------------------ |
+| Valid                                 | Valid           | returnTransaction.setPricePerUnit(25.0); | testCase1                                  |
 
 #### setDiscountRate
 **Criteria for method *setDiscountRate*:**
@@ -1092,8 +1092,8 @@ Version: 1.0
 **Combination of predicates**:
 
 | Validity of the Integer *discountRate* | Valid / Invalid | Description of the test case            | JUnit test case ReturnTransactionClassTest |
-| -------------------------------------- | --------------- | --------------------------------------- | ------------------------------------ |
-| Valid                                  | Valid           | returnTransaction.setDiscountRate(0.4); | testCase1                            |
+| -------------------------------------- | --------------- | --------------------------------------- | ------------------------------------------ |
+| Valid                                  | Valid           | returnTransaction.setDiscountRate(0.4); | testCase1                                  |
 
 #### setAmount
 **Criteria for method *setAmount*:**
@@ -1114,8 +1114,8 @@ Version: 1.0
 **Combination of predicates**:
 
 | Validity of the int *amount* | Valid / Invalid | Description of the test case    | JUnit test case ReturnTransactionClassTest |
-| ---------------------------- | --------------- | ------------------------------- | ------------------------------------ |
-| Valid                        | Valid           | returnTransaction.setAmount(4); | testCase1                            |
+| ---------------------------- | --------------- | ------------------------------- | ------------------------------------------ |
+| Valid                        | Valid           | returnTransaction.setAmount(4); | testCase1                                  |
 
 #### setPrice
 **Criteria for method *setPrice*:**
@@ -1136,8 +1136,8 @@ Version: 1.0
 **Combination of predicates**:
 
 | Validity of the double *price* | Valid / Invalid | Description of the test case     | JUnit test case ReturnTransactionClassTest |
-| ------------------------------ | --------------- | -------------------------------- | ------------------------------------ |
-| Valid                          | Valid           | returnTransaction.setPrice(5.0); | testCase1                            |
+| ------------------------------ | --------------- | -------------------------------- | ------------------------------------------ |
+| Valid                          | Valid           | returnTransaction.setPrice(5.0); | testCase1                                  |
 
 #### setSaleTransaction
 **Criteria for method *setSaleTransaction*:**
@@ -1158,8 +1158,8 @@ Version: 1.0
 **Combination of predicates**:
 
 | Validity of the SaleTransaction *saleTransaction* | Valid / Invalid | Description of the test case                                                                     | JUnit test case ReturnTransactionClassTest |
-| ------------------------------------------------- | --------------- | ------------------------------------------------------------------------------------------------ | ------------------------------------ |
-| Valid                                             | Valid           | SaleTransaction saleTransaction2 = null; returnTransaction.setSaleTransaction(saleTransaction2); | testCase1                            |
+| ------------------------------------------------- | --------------- | ------------------------------------------------------------------------------------------------ | ------------------------------------------ |
+| Valid                                             | Valid           | SaleTransaction saleTransaction2 = null; returnTransaction.setSaleTransaction(saleTransaction2); | testCase1                                  |
 
 
 ### Class *BalanceOperationImpl* 
@@ -1193,9 +1193,9 @@ Version: 1.0
 
 
 | Validity of the Integer *balanceId* | Validity of the Integer *date* | Validity of the Double *money* | Validity of the String *type* | Valid / Invalid | Description of the test case                                                         | JUnit test case BalanceOperationClassTest |
-| ------------------------------------- | -------------------------------- | ------------------------------ | ----------------------------- | --------------- | ------------------------------------------------------------------------------------ | --------------- |
-| valid                                 | valid                            | valid                          | valid                         | valid           | BalanceOperationImpl bo = new BalanceOperationImpl(1, LocalDate.now(), 5, "CREDIT"); | testCase1       |
-|                                       |                                  |                                |                               |                 |                                                                                      |                 |
+| ----------------------------------- | ------------------------------ | ------------------------------ | ----------------------------- | --------------- | ------------------------------------------------------------------------------------ | ----------------------------------------- |
+| valid                               | valid                          | valid                          | valid                         | valid           | BalanceOperationImpl bo = new BalanceOperationImpl(1, LocalDate.now(), 5, "CREDIT"); | testCase1                                 |
+|                                     |                                |                                |                               |                 |                                                                                      |                                           |
 
 
  #### setBalanceId
@@ -1221,8 +1221,8 @@ Version: 1.0
 
 
 | Validity of the Integer *balanceId* | Valid / Invalid | Description of the test case | JUnit test case BalanceOperationClassTest |
-| ----------------------------------- | --------------- | ---------------------------- | --------------- |
-| Valid                               | Valid           | bo.setBalanceId(5);          | testCase2       |
+| ----------------------------------- | --------------- | ---------------------------- | ----------------------------------------- |
+| Valid                               | Valid           | bo.setBalanceId(5);          | testCase2                                 |
 
 
  #### setDate
@@ -1247,8 +1247,8 @@ Version: 1.0
 **Combination of predicates**:
 
 | Validity of the LocalDate *Date* | Valid / Invalid | Description of the test case              | JUnit test case BalanceOperationClassTest |
-| -------------------------------- | --------------- | ----------------------------------------- | --------------- |
-| Valid                            | Valid           | bo.setDate(LocalDate.now().minusDays(1)); | testCase3       |
+| -------------------------------- | --------------- | ----------------------------------------- | ----------------------------------------- |
+| Valid                            | Valid           | bo.setDate(LocalDate.now().minusDays(1)); | testCase3                                 |
 
 
  #### setMoney
@@ -1274,8 +1274,8 @@ Version: 1.0
 
 
 | Validity of the double *money* | Valid / Invalid | Description of the test case | JUnit test case BalanceOperationClassTest |
-| ------------------------------ | --------------- | ---------------------------- | --------------- |
-| Valid                          | Valid           | bo.setMoney(2.75);           | testCase4       |
+| ------------------------------ | --------------- | ---------------------------- | ----------------------------------------- |
+| Valid                          | Valid           | bo.setMoney(2.75);           | testCase4                                 |
 
 
  #### setType
@@ -1299,8 +1299,8 @@ Version: 1.0
 **Combination of predicates**:
 
 | Validity of the String *type* | Valid / Invalid | Description of the test case | JUnit test case BalanceOperationClassTest |
-| ----------------------------- | --------------- | ---------------------------- | --------------- |
-| Valid                         | Valid           | bo.setType("DEBIT");         | testCase5       |
+| ----------------------------- | --------------- | ---------------------------- | ----------------------------------------- |
+| Valid                         | Valid           | bo.setType("DEBIT");         | testCase5                                 |
 
 
 ### Class *OrderImpl* 
@@ -1338,8 +1338,8 @@ Version: 1.0
 **Combination of predicates**:
 
 | Validity of the Integer *orderId* | Validity of the Integer *balanceId* | Validity of the LocalDate *date* | Validity of the double *money* | Validity of the String *prodcutCode* | Validity of the double *pricePerUnit* | Validity of the int *quantity* | Validity of the String *status* | Valid / Invalid | Description of the test case                                                                     | JUnit test case OrderClassTest |
-| --------------------------------- | ----------------------------------- | -------------------------------- | ------------------------------ | ------------------------------------ | ------------------------------------- | ------------------------------ | ------------------------------- | --------------- | ------------------------------------------------------------------------------------------------ | --------------- |
-| Valid                             | Valid                               | Valid                            | Valid                          | Valid                                | Valid                                 | Valid                          | Valid                           | Valid           | OrderImpl order = new OrderImpl(1, 1, LocalDate.now(), 20.10, "12637482635892", 5, 4, "ISSUED"); | testCase1       |
+| --------------------------------- | ----------------------------------- | -------------------------------- | ------------------------------ | ------------------------------------ | ------------------------------------- | ------------------------------ | ------------------------------- | --------------- | ------------------------------------------------------------------------------------------------ | ------------------------------ |
+| Valid                             | Valid                               | Valid                            | Valid                          | Valid                                | Valid                                 | Valid                          | Valid                           | Valid           | OrderImpl order = new OrderImpl(1, 1, LocalDate.now(), 20.10, "12637482635892", 5, 4, "ISSUED"); | testCase1                      |
 
 
  #### setBalanceId
@@ -1363,8 +1363,8 @@ Version: 1.0
 **Combination of predicates**:
 
 | Validity of the Integer *balanceId* | Valid / Invalid | Description of the test case | JUnit test case OrderClassTest |
-| ----------------------------------- | --------------- | ---------------------------- | --------------- |
-| Valid                               | Valid           | order.setBalanceId(5);       | testCase2       |
+| ----------------------------------- | --------------- | ---------------------------- | ------------------------------ |
+| Valid                               | Valid           | order.setBalanceId(5);       | testCase2                      |
 
 
  #### setOrderId
@@ -1388,8 +1388,8 @@ Version: 1.0
 **Combination of predicates**:
 
 | Validity of the Integer *orderId* | Valid / Invalid | Description of the test case | JUnit test case OrderClassTest |
-| --------------------------------- | --------------- | ---------------------------- | --------------- |
-| Valid                             | Valid           | order.setOrderId(5);         | testCase3       |
+| --------------------------------- | --------------- | ---------------------------- | ------------------------------ |
+| Valid                             | Valid           | order.setOrderId(5);         | testCase3                      |
 
 
  #### setPricePerUnit
@@ -1413,8 +1413,8 @@ Version: 1.0
 **Combination of predicates**:
 
 | Validity of the double *pricePerUnit* | Valid / Invalid | Description of the test case  | JUnit test case OrderClassTest |
-| ------------------------------------- | --------------- | ----------------------------- | --------------- |
-| Valid                                 | Valid           | order.setPricePerUnit(12.15); | testCase4       |
+| ------------------------------------- | --------------- | ----------------------------- | ------------------------------ |
+| Valid                                 | Valid           | order.setPricePerUnit(12.15); | testCase4                      |
 
 
 
@@ -1439,8 +1439,8 @@ Version: 1.0
 **Combination of predicates**:
 
 | Validity of the int *quantity* | Valid / Invalid | Description of the test case | JUnit test case OrderClassTest |
-| ------------------------------ | --------------- | ---------------------------- | --------------- |
-| Valid                          | Valid           | order.setQuantity(12);       | testCase5       |
+| ------------------------------ | --------------- | ---------------------------- | ------------------------------ |
+| Valid                          | Valid           | order.setQuantity(12);       | testCase5                      |
 
 
 
@@ -1466,8 +1466,8 @@ Version: 1.0
 **Combination of predicates**:
 
 | Validity of the String *productCode* | Valid / Invalid | Description of the test case            | JUnit test case OrderClassTest |
-| ------------------------------------ | --------------- | --------------------------------------- | --------------- |
-| Valid                                | Valid           | order.setProductCode("12637482635892"); | testCase6       |
+| ------------------------------------ | --------------- | --------------------------------------- | ------------------------------ |
+| Valid                                | Valid           | order.setProductCode("12637482635892"); | testCase6                      |
 
 
 
@@ -1493,8 +1493,8 @@ Version: 1.0
 **Combination of predicates**:
 
 | Validity of the String *Status* | Valid / Invalid | Description of the test case | JUnit test case OrderClassTest |
-| ------------------------------- | --------------- | ---------------------------- | --------------- |
-| Valid                           | Valid           | order.setStatus("PAYED");    | testCase7       |
+| ------------------------------- | --------------- | ---------------------------- | ------------------------------ |
+| Valid                           | Valid           | order.setStatus("PAYED");    | testCase7                      |
 
 
 ### Class EZShop
@@ -1703,10 +1703,10 @@ Version: 1.0
     <Identify significant loops in the units and reports the test cases
     developed to cover zero, one or multiple iterations >
 
-| Unit name                | Loop rows | Number of iterations | JUnit test case |
-| ------------------------ | --------- | -------------------- | --------------- |
-| setDiscountRateToProduct | 83:93     | 0                    | testCase9       |
-|                          |           | 1                    | testCase7       |
-|                          |           | >1                   | testCase8       |
+| Unit name                  | Loop rows | Number of iterations | JUnit test case |
+| -------------------------- | --------- | -------------------- | --------------- |
+| applyDiscountRateToProduct | 83:93     | 0                    | testCase9       |
+|                            |           | 1                    | testCase7       |
+|                            |           | >1                   | testCase8       |
 
 

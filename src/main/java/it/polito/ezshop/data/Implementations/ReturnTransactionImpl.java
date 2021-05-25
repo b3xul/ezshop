@@ -14,7 +14,7 @@ public class ReturnTransactionImpl implements it.polito.ezshop.data.ReturnTransa
 	private SaleTransaction saleTransaction;
 	// BalanceOperation balanceOperation; isn't necessary because no getReturnTransaction exists
 
-	public ReturnTransactionImpl(Integer returnId, SaleTransaction saleTransaction) {
+	public ReturnTransactionImpl(Integer returnId) {
 
 		this.returnId = returnId;
 		this.productId = -1;
@@ -23,7 +23,7 @@ public class ReturnTransactionImpl implements it.polito.ezshop.data.ReturnTransa
 		this.discountRate = 0;
 		this.amount = 0;
 		this.price = 0;
-		this.saleTransaction = saleTransaction;
+		this.saleTransaction = null;
 
 	}
 

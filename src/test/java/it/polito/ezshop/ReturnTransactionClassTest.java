@@ -14,7 +14,7 @@ public class ReturnTransactionClassTest {
 
 		// constructor+setters+getters
 		SaleTransaction saleTransaction = null;
-		ReturnTransactionImpl returnTransaction = new ReturnTransactionImpl(1, saleTransaction);
+		ReturnTransactionImpl returnTransaction = new ReturnTransactionImpl(1);
 		assertEquals(Integer.valueOf(1), returnTransaction.getReturnId());
 		assertEquals(saleTransaction, returnTransaction.getSaleTransaction());
 
