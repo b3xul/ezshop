@@ -11,9 +11,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import it.polito.ezshop.data.BalanceOperation;
 import it.polito.ezshop.data.Customer;
 import it.polito.ezshop.data.Order;
 import it.polito.ezshop.data.ProductType;
+import it.polito.ezshop.data.SaleTransaction;
 import it.polito.ezshop.data.TicketEntry;
 import it.polito.ezshop.data.User;
 import it.polito.ezshop.exceptions.InvalidCustomerCardException;
@@ -1051,9 +1053,6 @@ public class EZShopDAO {
 				pstmt.executeUpdate();
 				pstmt.close();
 			}
-			// Insert BalanceOperation
-			recordBalanceUpdate(openSaleTransaction.getPrice());
-			openSaleTransaction = null;
 		} catch (Exception ex) {
 			System.out.println(ex.getMessage());
 			return false;
@@ -1061,17 +1060,148 @@ public class EZShopDAO {
 		return true;
 	}
 	
+	public SaleTransaction getSaleTransaction(Integer transactionId, SaleTransactionImpl openSaleTransaction) {
+		String getSale = "SELECT price,discountRate,balanceId FROM saleTransaction WHERE ticketNumber=?";
+		String getBalance = "SELECT balanceId,date,money,type FROM balanceOperation WHERE balanceId=?";
+		String getTicketEntries = "SELECT barCode,productDescription,pricePerUnit,discountRate,amount FROM ticketEntry WHERE ticketNumber=?";
+		SaleTransactionImpl result = null;
+		try (Connection conn = this.dbAccess();) {
+			// getSale
+			PreparedStatement pstmt = conn.prepareStatement(getSale);
+			pstmt.setInt(1, transactionId);
+			ResultSet rs = pstmt.executeQuery();
+			if (rs == null)
+				return null;
+			// only 1 result because ticketNumber is primary key
+			result = new SaleTransactionImpl(transactionId);
+			result.setPrice(rs.getDouble("price"));
+			result.setDiscountRate(rs.getDouble("discountRate"));
+			Integer balanceId = rs.getInt("balanceId");
+			System.out.println(result.getTicketNumber() + " " + result.getDiscountRate());
+			pstmt.close();
+			rs.close();
+			// getBalance
+			pstmt = conn.prepareStatement(getBalance);
+			pstmt.setInt(1, balanceId);
+			rs = pstmt.executeQuery();
+			if (rs == null)
+				return null;
+			// only 1 result because balanceId is primary key
+			BalanceOperationImpl balanceOperation = new BalanceOperationImpl(rs.getInt("balanceId"),
+					LocalDate.parse(rs.getString("date")), rs.getDouble("money"), rs.getString("type"));
+			openSaleTransaction.setBalanceOperation(balanceOperation);
+			pstmt.close();
+			rs.close();
+			// getTicketEntries
+			pstmt = conn.prepareStatement(getTicketEntries);
+			pstmt.setInt(1, transactionId);
+			rs = pstmt.executeQuery();
+			while (rs.next()) {
+				result.getEntries().add(new TicketEntryImpl(rs.getString("barCode"), rs.getString("productDescription"),
+						rs.getDouble("pricePerUnit"), rs.getDouble("discountRate"), rs.getInt("amount")));
+			}
+			System.out.println(result);
+			pstmt.close();
+			rs.close();
+		} catch (Exception ex) {
+			System.out.println(ex.getMessage());
+		}
+		return result;
+
+	}
 	
+	public Integer startReturnTransaction(Integer transactionId) {
+		Integer returnId = 0; // 0=error
+		String getNextAutoincrement = "SELECT seq FROM sqlite_sequence WHERE name=\"returnTransaction\"";
+		try (Connection conn = this.dbAccess();
+				Statement stmt = conn.createStatement();
+				ResultSet rs = stmt.executeQuery(getNextAutoincrement)) {
+			returnId = rs.getInt("seq") + 1;
+		} catch (Exception e) {
+			System.err.println(e.getClass().getName() + ": " + e.getMessage());
+			System.exit(0);
+		}
+		return returnId;
+	}
 	
+	public boolean endReturnTransaction(Integer returnId, boolean commit) {
+		return false;
+	}
 	
+	public boolean recordBalanceUpdate(double toBeAdded) {
+		Connection conn = null;
+		boolean positiveBalance = false;
+		try {
+			conn = dbAccess();
+			String sql2 = "INSERT INTO balanceOperation (date, money, type) VALUES (?,?,?)";
+			PreparedStatement statement2 = conn.prepareStatement(sql2);
+			statement2.setString(1, LocalDate.now().toString());
+			statement2.setDouble(2, toBeAdded < 0 ? -toBeAdded : toBeAdded);
+			statement2.setString(3, toBeAdded < 0 ? "DEBIT" : "CREDIT");
+			statement2.executeUpdate();
+			positiveBalance = true;
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		} finally {
+			dbClose(conn);
+		}
+		return positiveBalance;
+	}
 	
+	public List<BalanceOperation> getCreditsAndDebits(LocalDate from, LocalDate to){
+		List<BalanceOperation> bo = new ArrayList<BalanceOperation>();
+		LocalDate tmp;
+		if (from != null && to != null && from.isAfter(to)) {
+			tmp = to;
+			to = from;
+			from = tmp;
+		}
+		Connection conn = null;
+		try {
+			conn = dbAccess();
+			String sql = "SELECT * FROM balanceOperation WHERE date >= ? AND date <= ?";
+			PreparedStatement statement = conn.prepareStatement(sql);
+			statement.setString(1, from == null ? "0001-01-01" : from.toString());
+			statement.setString(2, to == null ? "9999-12-31" : to.toString());
+			ResultSet rs = statement.executeQuery();
+			while (rs.next()) {
+				bo.add(new BalanceOperationImpl(rs.getInt("balanceId"), LocalDate.parse(rs.getString("date")),
+						rs.getDouble("money"), rs.getString("type")));
+//				System.out.println(bo.get(bo.size()-1).toString());
+			}
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		} finally {
+			dbClose(conn);
+		}
+		return bo;
+	}
 	
-	
-	
-	
-	
-	
-	
+	public double computeBalance() {
+		Connection conn = null;
+		double balance = 0;
+		String type = null;
+		double money = 0;
+		try {
+			conn = dbAccess();
+			String sql = "SELECT money, type FROM balanceOperation";
+			Statement statement = conn.createStatement();
+			ResultSet rs = statement.executeQuery(sql);
+			while (rs.next()) {
+				type = rs.getString("type");
+				if (type.equals("DEBIT"))
+					money = -rs.getDouble("money");
+				else
+					money = rs.getDouble("money");
+				balance += money;
+			}
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		} finally {
+			dbClose(conn);
+		}
+		return balance;
+	}
 	
 	
 }
