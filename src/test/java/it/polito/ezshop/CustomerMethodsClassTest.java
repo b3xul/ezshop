@@ -82,7 +82,7 @@ public class CustomerMethodsClassTest {
 		}
 		
 		
-		// Attach a card to the customer (scenario?)
+		// Attach a card to the customer
 		@Test
 		public void testCase4() throws InvalidUsernameException, InvalidPasswordException, InvalidRoleException, InvalidCustomerNameException, UnauthorizedException, InvalidCustomerIdException, InvalidCustomerCardException {
 			shop.login("Francesco","pass");
