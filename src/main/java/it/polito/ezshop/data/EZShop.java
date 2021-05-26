@@ -554,7 +554,13 @@ public class EZShop implements EZShopInterface {
 				|| userLoggedIn.getRole().equals("ShopManager")) {
 			if (id != null && id > 0) {
 				if (newCustomerName != null && newCustomerName.isEmpty() == false) {
-					return DAO.modifyCustomer(id, newCustomerName, newCustomerCard);
+					Pattern p = Pattern.compile("\\d+");
+					if (newCustomerCard != null && newCustomerCard.isEmpty() == false 
+							&& (newCustomerCard.length() < 10 || p.matcher(newCustomerCard).matches() == false)) {
+						throw new InvalidCustomerCardException("Invalid card");
+					}else {
+						return DAO.modifyCustomer(id, newCustomerName, newCustomerCard);
+					}
 				} else
 					throw new InvalidCustomerNameException("Invalid customer name");
 			} else
