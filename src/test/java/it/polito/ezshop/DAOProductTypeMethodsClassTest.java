@@ -1,6 +1,9 @@
 package it.polito.ezshop;
 
 import static org.junit.Assert.*;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import it.polito.ezshop.exceptions.*;
 
 import org.junit.Test;
 
@@ -78,6 +81,20 @@ public class DAOProductTypeMethodsClassTest {
 		assertTrue(DAO.updateQuantity(productId, 100));
 		assertTrue(DAO.updateQuantity(productId, -10));
 		DAO.deleteProductType(productId);
+
+	}
+
+	@BeforeClass
+	  static public void BeforeClass() throws InvalidUsernameException, InvalidPasswordException, InvalidRoleException {
+		
+		DAO.reset();
+		
+	}
+	
+	@AfterClass
+	  static public void AfterClass() {
+
+	    DAO.reset();
 
 	}
 
