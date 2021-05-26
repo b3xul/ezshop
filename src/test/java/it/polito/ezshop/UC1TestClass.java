@@ -17,7 +17,7 @@ public class UC1TestClass {
 	EZShopInterface ezShop = new it.polito.ezshop.data.EZShop();
 	
 	@Test
-	public void Scenario1_1TestCase() {
+	public void testCaseScenario1_1() {
 		try {
 			ezShop.login("admin","admin");
 			Integer productId = ezShop.createProductType("new product","12637482635892",2.5,"note");
@@ -32,7 +32,7 @@ public class UC1TestClass {
 	}
 	
 	@Test
-	public void ExceptionsScenario1_1TestCase(){
+	public void testCaseExceptionsScenario1_1(){
 		assertThrows(UnauthorizedException.class, () -> {ezShop.createProductType("valid description","4563728908417",2.5,"note");});
 		assertThrows(InvalidPricePerUnitException.class, () -> {ezShop.createProductType("valid description","12637482635892",-2.5,"note");});
 		assertThrows(InvalidProductCodeException.class, () -> {ezShop.createProductType("valid description","",2.5,"note");});
@@ -45,7 +45,7 @@ public class UC1TestClass {
 	}
 	
 	@Test
-	public void Scenario1_2TestCase() {
+	public void testCaseScenario1_2() {
 		try {
 			ezShop.login("admin","admin");
 			Integer productId = ezShop.createProductType("valid description","12637482635892",2.5,"note");
@@ -58,7 +58,7 @@ public class UC1TestClass {
 	}
 	
 	@Test
-	public void ExceptionsScenario1_2TestCase(){
+	public void testCaseExceptionsScenario1_2(){
 		try {
 			ezShop.login("admin","admin");
 			Integer productId1 = ezShop.createProductType("valid description","12637482635892",2.5,"note");
@@ -82,7 +82,7 @@ public class UC1TestClass {
 	}
 	
 	@Test
-	public void Scenario1_3TestCase() {
+	public void testCaseScenario1_3() {
 		try {
 			ezShop.login("admin","admin");
 			Integer productId = ezShop.createProductType("valid description","12637482635892",2.5,"note");
@@ -96,7 +96,7 @@ public class UC1TestClass {
 	}
 	
 	@Test
-	public void ExceptionsScenario1_3TestCase(){
+	public void testCaseExceptionsScenario1_3(){
 		try {
 			ezShop.login("admin","admin");
 			Integer productId = ezShop.createProductType("valid description","12637482635892",2.5,"note");
@@ -121,7 +121,7 @@ public class UC1TestClass {
 	}
 	
 	@Test
-	public void Scenario1_4TestCase() {
+	public void testCaseScenario1_4() {
 		try {
 			ezShop.login("admin","admin");
 			Integer productId = ezShop.createProductType("valid description","12637482635892",2.5,"note");
@@ -134,7 +134,7 @@ public class UC1TestClass {
 	}
 	
 	@Test
-	public void ExceptionsScenario1_4TestCase(){
+	public void testCaseExceptionsScenario1_4(){
 		try {
 			ezShop.login("admin","admin");
 			
@@ -147,7 +147,7 @@ public class UC1TestClass {
 	}
 	
 	@Test
-	public void Scenario1_5TestCase() {
+	public void testCaseScenario1_5() {
 		try {
 			ezShop.login("admin","admin");
 			Integer productId1 = ezShop.createProductType("valid description","12637482635892",2.5,"note");
@@ -162,7 +162,7 @@ public class UC1TestClass {
 	}
 	
 	@Test
-	public void ExceptionsScenario1_5TestCase(){
+	public void testCaseExceptionsScenario1_5(){
 		try {
 			ezShop.login("admin","admin");
 			
