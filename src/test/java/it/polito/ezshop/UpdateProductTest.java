@@ -92,7 +92,7 @@ public class UpdateProductTest {
 	
 	@Test
 	public void testCase9() throws InvalidUsernameException, InvalidPasswordException {
-		ezShop.login("MRKrab","wow");
+		ezShop.login("admin","admin");
 		assertThrows(InvalidProductDescriptionException.class, () -> {ezShop.updateProduct(1, null, "12343212343219", 2.5, "note");});
 		ezShop.logout();
 
@@ -100,7 +100,7 @@ public class UpdateProductTest {
 	
 	@Test
 	public void testCase10() throws InvalidUsernameException, InvalidPasswordException {
-		ezShop.login("MRKrab","wow");
+		ezShop.login("admin","admin");
 		assertThrows(InvalidProductIdException.class, () -> {ezShop.updateProduct(-1, "valid descr", "12343212343219", 2.5, "note");});
 		ezShop.logout();
 
