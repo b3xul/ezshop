@@ -1,6 +1,9 @@
 package it.polito.ezshop.data.Implementations;
 
-import it.polito.ezshop.data.SaleTransaction;
+import java.util.List;
+
+import it.polito.ezshop.data.ProductType;
+import it.polito.ezshop.data.TicketEntry;
 
 public class ReturnTransactionImpl implements it.polito.ezshop.data.ReturnTransaction {
 
@@ -11,7 +14,7 @@ public class ReturnTransactionImpl implements it.polito.ezshop.data.ReturnTransa
 	private double discountRate;
 	private int amount;
 	private double price;
-	private SaleTransaction saleTransaction;
+	private SaleTransactionImpl saleTransaction;
 	// BalanceOperation balanceOperation; isn't necessary because no getReturnTransaction exists
 
 	public ReturnTransactionImpl(Integer returnId) {
@@ -24,6 +27,32 @@ public class ReturnTransactionImpl implements it.polito.ezshop.data.ReturnTransa
 		this.amount = 0;
 		this.price = 0;
 		this.saleTransaction = null;
+
+	}
+
+	public boolean returnProduct(ProductType productType, int amount) {
+
+		List<TicketEntry> entries = this.getSaleTransaction().getEntries();
+		Boolean updated = false;
+		for (TicketEntry entry : entries) {
+			if (entry.getBarCode().equals(productCode)) {
+				if (amount > entry.getAmount()) // the amount is higher than the one in the sale transaction
+					updated = false;
+				else {
+					this.setProductId(productType.getId());
+					this.setProductCode(productCode);
+					this.setPricePerUnit(entry.getPricePerUnit());
+					this.setDiscountRate(entry.getDiscountRate());
+					this.setAmount(amount);
+					this.setPrice(this.getPrice() + entry.getPricePerUnit() * amount * (1 - entry.getDiscountRate()));
+					updated = true;
+					// System.out.println(entry);
+				}
+				break;
+			}
+		}
+		// if (updated == false) productCode was not in the transaction
+		return updated;
 
 	}
 
@@ -41,12 +70,14 @@ public class ReturnTransactionImpl implements it.polito.ezshop.data.ReturnTransa
 
 	}
 
+	@Override
 	public Integer getProductId() {
 
 		return productId;
 
 	}
 
+	@Override
 	public void setProductId(Integer productId) {
 
 		this.productId = productId;
@@ -67,24 +98,28 @@ public class ReturnTransactionImpl implements it.polito.ezshop.data.ReturnTransa
 
 	}
 
+	@Override
 	public double getPricePerUnit() {
 
 		return pricePerUnit;
 
 	}
 
+	@Override
 	public void setPricePerUnit(double pricePerUnit) {
 
 		this.pricePerUnit = pricePerUnit;
 
 	}
 
+	@Override
 	public double getDiscountRate() {
 
 		return discountRate;
 
 	}
 
+	@Override
 	public void setDiscountRate(double discountRate) {
 
 		this.discountRate = discountRate;
@@ -120,14 +155,14 @@ public class ReturnTransactionImpl implements it.polito.ezshop.data.ReturnTransa
 	}
 
 	@Override
-	public SaleTransaction getSaleTransaction() {
+	public SaleTransactionImpl getSaleTransaction() {
 
 		return saleTransaction;
 
 	}
 
 	@Override
-	public void setSaleTransaction(SaleTransaction saleTransaction) {
+	public void setSaleTransaction(SaleTransactionImpl saleTransaction) {
 
 		this.saleTransaction = saleTransaction;
 

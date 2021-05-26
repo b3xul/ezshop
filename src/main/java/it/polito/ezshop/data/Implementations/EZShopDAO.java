@@ -8,6 +8,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -15,14 +16,13 @@ import it.polito.ezshop.data.BalanceOperation;
 import it.polito.ezshop.data.Customer;
 import it.polito.ezshop.data.Order;
 import it.polito.ezshop.data.ProductType;
-import it.polito.ezshop.data.SaleTransaction;
 import it.polito.ezshop.data.TicketEntry;
 import it.polito.ezshop.data.User;
 import it.polito.ezshop.exceptions.InvalidCustomerCardException;
 import it.polito.ezshop.exceptions.InvalidLocationException;
 
 public class EZShopDAO {
-	
+
 	public Connection dbAccess() {
 
 		Connection conn = null;
@@ -50,38 +50,48 @@ public class EZShopDAO {
 		}
 
 	}
-	
-	
-	
+
 	public void reset() {
+
 		Connection conn = dbAccess();
 		try {
-    		String sql = "DELETE FROM product";
-    		PreparedStatement pstmt = conn.prepareStatement(sql);
-    		pstmt.executeUpdate(); 
-    		sql = "DELETE FROM order_";
-		    pstmt = conn.prepareStatement(sql);
-		    pstmt.executeUpdate(); 
-		    sql = "DELETE FROM saleTransaction";
-		    pstmt = conn.prepareStatement(sql);
-		    pstmt.executeUpdate(); 
-		    sql = "DELETE FROM returnTransaction";
-		    pstmt = conn.prepareStatement(sql);
-		    pstmt.executeUpdate(); 
-	   		sql = "DELETE FROM balanceOperation";   
-		    pstmt = conn.prepareStatement(sql);
-		    pstmt.executeUpdate();   
-		    sql = "DELETE FROM ticketEntry";   
-		    pstmt = conn.prepareStatement(sql);
-		    pstmt.executeUpdate();   
-		 } catch (Exception e) {  
-		    System.out.println(e.getMessage()); 
-    	 }finally {
- 			dbClose(conn);
- 		}
+			String sql = "DELETE FROM product";
+			PreparedStatement pstmt = conn.prepareStatement(sql);
+			pstmt.executeUpdate();
+			sql = "DELETE FROM order_";
+			pstmt = conn.prepareStatement(sql);
+			pstmt.executeUpdate();
+			sql = "DELETE FROM saleTransaction";
+			pstmt = conn.prepareStatement(sql);
+			pstmt.executeUpdate();
+			sql = "DELETE FROM returnTransaction";
+			pstmt = conn.prepareStatement(sql);
+			pstmt.executeUpdate();
+			sql = "DELETE FROM balanceOperation";
+			pstmt = conn.prepareStatement(sql);
+			pstmt.executeUpdate();
+			sql = "DELETE FROM ticketEntry";
+			pstmt = conn.prepareStatement(sql);
+			pstmt.executeUpdate();
+			sql = "DELETE FROM Customers";
+			pstmt = conn.prepareStatement(sql);
+			pstmt.executeUpdate();
+			sql = "DELETE FROM Cards";
+			pstmt = conn.prepareStatement(sql);
+			pstmt.executeUpdate();
+			sql = "DELETE FROM Users";
+			pstmt = conn.prepareStatement(sql);
+			pstmt.executeUpdate();
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		} finally {
+			dbClose(conn);
+		}
+
 	}
-	
+
 	public Integer createUser(String username, String password, String role) {
+
 		Connection conn = dbAccess();
 		try {
 			String sql = "SELECT seq FROM sqlite_sequence WHERE name = 'Users'";
@@ -95,22 +105,20 @@ public class EZShopDAO {
 			pstmt.setString(3, password);
 			pstmt.setString(4, role);
 			int res = pstmt.executeUpdate();
-			if (res == 0) { // no modified row
-				return -1;
-			} else {
-				return id;
-			}
+			return id;
 
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
 			return -1;
 
-		}finally {
+		} finally {
 			dbClose(conn);
 		}
+
 	}
 
 	public boolean deleteUser(Integer id) {
+
 		Connection conn = dbAccess();
 		try {
 			String sql = "DELETE FROM Users WHERE id = ?";
@@ -131,9 +139,11 @@ public class EZShopDAO {
 			dbClose(conn);
 
 		}
+
 	}
-	
-	public List<User> getAllUsers(){
+
+	public List<User> getAllUsers() {
+
 		Connection conn = null;
 		List<User> users = new ArrayList<User>();
 		try {
@@ -154,9 +164,11 @@ public class EZShopDAO {
 		} finally {
 			dbClose(conn);
 		}
+
 	}
 
 	public User getUser(Integer id) {
+
 		Connection conn = null;
 		try {
 			conn = dbAccess();
@@ -177,9 +189,11 @@ public class EZShopDAO {
 		} finally {
 			dbClose(conn);
 		}
+
 	}
-	
+
 	public boolean updateUserRights(Integer id, String role) {
+
 		Connection conn = null;
 		try {
 			conn = dbAccess();
@@ -201,9 +215,11 @@ public class EZShopDAO {
 		} finally {
 			dbClose(conn);
 		}
+
 	}
 
 	public User login(String username, String password) {
+
 		Connection conn = null;
 		User userLoggedIn = new UserImpl();
 		try {
@@ -233,8 +249,9 @@ public class EZShopDAO {
 		}
 
 	}
-	
+
 	public Integer createProductType(String description, String productCode, double pricePerUnit, String note) {
+
 		Connection conn = dbAccess();
 		Integer id = -1;
 		ProductTypeImpl newProduct = new ProductTypeImpl(note, description, productCode, pricePerUnit);
@@ -250,9 +267,8 @@ public class EZShopDAO {
 				// Statement to insert a new product into the database, populating its fields
 				// (except quantity and location)
 				String sql = "INSERT INTO product (description, price, barcode, location, quantity, note, discountRate) VALUES ('"
-						+ description + "', '" + pricePerUnit + "', '" + productCode + "', '"
-						+ newProduct.getLocation() + "', " + newProduct.getQuantity() + ", '" + note + "', "
-						+ newProduct.getDiscountRate() + ")";
+						+ description + "', '" + pricePerUnit + "', '" + productCode + "', '" + newProduct.getLocation()
+						+ "', " + newProduct.getQuantity() + ", '" + note + "', " + newProduct.getDiscountRate() + ")";
 				Statement statement = conn.createStatement();
 				statement.executeUpdate(sql);
 				System.out.println("Product created");
@@ -269,13 +285,15 @@ public class EZShopDAO {
 		} catch (SQLException e) {
 			e.printStackTrace();
 			id = -1;
-		}finally {
+		} finally {
 			dbClose(conn);
 		}
 		return id;
+
 	}
-	
+
 	public boolean updateProduct(Integer id, String newDescription, String newCode, double newPrice, String newNote) {
+
 		boolean success = false;
 		Connection conn = dbAccess();
 		// Statement to select the barcode of a product when the id does not match: it
@@ -309,13 +327,15 @@ public class EZShopDAO {
 		} catch (SQLException e) {
 			e.printStackTrace();
 			success = false;
-		}finally {
+		} finally {
 			dbClose(conn);
 		}
 		return success;
+
 	}
 
 	public boolean deleteProductType(Integer id) {
+
 		boolean success = false;
 		Connection conn = null;
 		conn = dbAccess();
@@ -334,9 +354,11 @@ public class EZShopDAO {
 			dbClose(conn);
 		}
 		return success;
+
 	}
 
-	public List<ProductType> getAllProductTypes(){
+	public List<ProductType> getAllProductTypes() {
+
 		Connection conn = null;
 		List<ProductType> inventory = new ArrayList<ProductType>();
 		conn = dbAccess();
@@ -373,9 +395,11 @@ public class EZShopDAO {
 			dbClose(conn);
 		}
 		return inventory;
+
 	}
 
 	public ProductType getProductTypeByBarCode(String barCode) {
+
 		ProductType product = new ProductTypeImpl();
 		Connection conn = null;
 		conn = dbAccess();
@@ -407,7 +431,7 @@ public class EZShopDAO {
 				product.setQuantity(q);
 				if (!l.isBlank())
 					product.setLocation(l);
-//				product.setDiscountRate(dr);
+				// product.setDiscountRate(dr);
 				System.out.println("product found");
 				// product.print();
 			}
@@ -417,9 +441,11 @@ public class EZShopDAO {
 			dbClose(conn);
 		}
 		return product;
+
 	}
-	
-	public List<ProductType> getProductTypesByDescription(String description){
+
+	public List<ProductType> getProductTypesByDescription(String description) {
+
 		List<ProductType> matchingProducts = new ArrayList<ProductType>();
 		Connection conn = null;
 		conn = dbAccess();
@@ -456,9 +482,11 @@ public class EZShopDAO {
 			dbClose(conn);
 		}
 		return matchingProducts;
+
 	}
-	
+
 	public boolean updateQuantity(Integer productId, int toBeAdded) {
+
 		boolean success = false;
 		Connection conn = null;
 		conn = dbAccess();
@@ -484,8 +512,7 @@ public class EZShopDAO {
 				} else {
 					int newQuantity = oldQuantity + toBeAdded;
 					// Statement to update quantity of a product given its ID
-					String sql2 = "UPDATE product SET quantity = " + newQuantity + " WHERE id = '" + productId
-							+ "'";
+					String sql2 = "UPDATE product SET quantity = " + newQuantity + " WHERE id = '" + productId + "'";
 					Statement statement2 = conn.createStatement();
 					statement2.executeUpdate(sql2);
 					System.out.println("quantity correctly updated");
@@ -499,9 +526,11 @@ public class EZShopDAO {
 			dbClose(conn);
 		}
 		return success;
+
 	}
-	
+
 	public boolean updatePosition(Integer productId, String newPos) {
+
 		boolean success = false;
 		Connection conn = null;
 		conn = dbAccess();
@@ -530,8 +559,8 @@ public class EZShopDAO {
 			} else {
 				// Statement to select the location of a product given its ID and location:
 				// those value are needed for future checks
-				String sql3 = "SELECT location FROM product WHERE location = '" + newPos + "' AND id != '"
-						+ productId + "'";
+				String sql3 = "SELECT location FROM product WHERE location = '" + newPos + "' AND id != '" + productId
+						+ "'";
 				Statement statement3 = conn.createStatement();
 				ResultSet result3 = statement3.executeQuery(sql3);
 				if (result3.next()) {
@@ -539,8 +568,7 @@ public class EZShopDAO {
 					success = false;
 				} else {
 					// Statement to update the location of a product given its ID
-					String sql4 = "UPDATE product SET location = '" + newPos + "' WHERE id = '" + productId
-							+ "'";
+					String sql4 = "UPDATE product SET location = '" + newPos + "' WHERE id = '" + productId + "'";
 					Statement statement4 = conn.createStatement();
 					statement4.executeUpdate(sql4);
 					System.out.println("position correctly updated");
@@ -554,9 +582,11 @@ public class EZShopDAO {
 			dbClose(conn);
 		}
 		return success;
+
 	}
-	
+
 	public Integer issueOrder(String productCode, int quantity, double pricePerUnit) {
+
 		Connection conn = null;
 		int id = -1;
 		try {
@@ -589,9 +619,11 @@ public class EZShopDAO {
 			dbClose(conn);
 		}
 		return id;
+
 	}
 
 	public Integer payOrderFor(String productCode, int quantity, double pricePerUnit) {
+
 		Connection conn = null;
 		int orderId = -1;
 		int balanceId = 0;
@@ -633,10 +665,11 @@ public class EZShopDAO {
 			dbClose(conn);
 		}
 		return orderId;
+
 	}
-	
-	
+
 	public boolean payOrder(Integer orderId) {
+
 		boolean validOrderId = false;
 		Connection conn = null;
 		double money = 0;
@@ -663,7 +696,7 @@ public class EZShopDAO {
 			ResultSet rs3 = statement3.executeQuery();
 			money = rs3.getDouble("money");
 			dbClose(conn);
-			if(!recordBalanceUpdate(-money))
+			if (!recordBalanceUpdate(-money))
 				return validOrderId = false;
 			conn = dbAccess();
 			String sql4 = "SELECT MAX(balanceId) AS MaxBId FROM balanceOperation";
@@ -682,9 +715,11 @@ public class EZShopDAO {
 			dbClose(conn);
 		}
 		return validOrderId;
+
 	}
-	
+
 	public boolean recordOrderArrival(Integer orderId) throws InvalidLocationException {
+
 		boolean valid = false;
 		Connection conn = null;
 		String barcode = null;
@@ -700,8 +735,7 @@ public class EZShopDAO {
 			if (rs.next()) {
 				barcode = rs.getString("productCode");
 				qty = rs.getInt("quantity");
-			}
-			else {
+			} else {
 				System.out.println("There is no PAYED order with this id");
 				return valid;
 			}
@@ -736,9 +770,11 @@ public class EZShopDAO {
 			dbClose(conn);
 		}
 		return valid;
+
 	}
 
-	public List<Order> getAllOrders(){
+	public List<Order> getAllOrders() {
+
 		List<Order> orders = new ArrayList<Order>();
 		Connection conn = null;
 		try {
@@ -750,7 +786,7 @@ public class EZShopDAO {
 				orders.add(new OrderImpl(rs.getInt("orderId"), rs.getInt("balanceId"),
 						LocalDate.parse(rs.getString("date")), rs.getDouble("money"), rs.getString("productCode"),
 						rs.getDouble("pricePerUnit"), rs.getInt("quantity"), rs.getString("status")));
-//				System.out.println(orders.get(orders.size()-1).toString());
+				// System.out.println(orders.get(orders.size()-1).toString());
 			}
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
@@ -760,8 +796,9 @@ public class EZShopDAO {
 		return orders;
 
 	}
-	
+
 	public Integer defineCustomer(String customerName) {
+
 		Connection conn = null;
 		try {
 			conn = dbAccess();
@@ -788,38 +825,51 @@ public class EZShopDAO {
 			dbClose(conn);
 
 		}
+
 	}
 
 	public boolean modifyCustomer(Integer id, String newCustomerName, String newCustomerCard) {
+
 		Connection conn = null;
 		try {
-			Pattern p = Pattern.compile("\\d+");
 			conn = dbAccess();
-			String cardQuery = "";
-			if (newCustomerCard != null)
-				cardQuery = ", card = ?";
-			String sql = "UPDATE Customers SET name = ?" + cardQuery + "WHERE id = ?";
-			PreparedStatement pstmt = conn.prepareStatement(sql);
-			pstmt.setString(1, newCustomerName);
-			if (newCustomerCard == null) // card value doesn't change
-				pstmt.setInt(2, id);
-			else if (newCustomerCard.isEmpty()) { // card value erased (no more card for this customer)
-				pstmt.setString(2, null);
-				pstmt.setInt(3, id);
-			} else if (newCustomerCard.length() >= 10 && p.matcher(newCustomerCard).matches()) { // check
-																									// card
-																									// validity
-				pstmt.setString(2, newCustomerCard); // set new card value
-				pstmt.setInt(3, id);
-			} else {
-				throw new InvalidCustomerCardException("Invalid card");
-			}
-			int rs = pstmt.executeUpdate();
-			if (rs == 0) {
-				return false;
-			} else {
-				return true;
-			}
+							String cardQuery = "";
+							int rs;
+							if (newCustomerCard != null)
+								cardQuery = ", card = ?";
+							String sql = "UPDATE Customers SET name = ?" + cardQuery + "WHERE id = ?";
+							PreparedStatement pstmt = conn.prepareStatement(sql);
+							pstmt.setString(1, newCustomerName);
+							if (newCustomerCard == null) { // card value doesn't change
+								pstmt.setInt(2, id);
+								rs = pstmt.executeUpdate();
+							}
+							else if (newCustomerCard.isEmpty()) { // card value erased (no more card for this customer)
+								//delete the card also in Cards table
+								String sql1 = "SELECT CU.id, card FROM Customers CU, Cards CA WHERE CU.card = CA.id AND CU.id = "+ id;
+								Statement statement = conn.createStatement();
+								ResultSet res = statement.executeQuery(sql1);
+								if (res.next()) {
+									String card = res.getString("card");
+									sql1 = "DELETE FROM Cards WHERE id = ?";
+									PreparedStatement pstmt1 = conn.prepareStatement(sql1);
+									pstmt1.setString(1, card);
+									pstmt1.executeUpdate();
+								}
+								//set parameter for the UPDATE query 
+								pstmt.setString(2, null);
+								pstmt.setInt(3, id);
+								rs = pstmt.executeUpdate();
+							} else{ //  if (newCustomerCard.length() >= 10 && p.matcher(newCustomerCard).matches()) 																				// validity
+								pstmt.setString(2, newCustomerCard); // set new card value
+								pstmt.setInt(3, id);
+								rs = pstmt.executeUpdate();
+							} 
+							if (rs == 0) {
+								return false;
+							} else {
+								return true;
+							}
 
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
@@ -828,22 +878,34 @@ public class EZShopDAO {
 		} finally {
 			dbClose(conn);
 		}
+
 	}
 
 	public boolean deleteCustomer(Integer id) {
+
 		Connection conn = null;
 		try {
-			conn = dbAccess();
-			String sql = "DELETE FROM Customers WHERE id = ?";
-			PreparedStatement pstmt = conn.prepareStatement(sql);
-			pstmt.setInt(1, id);
-			int rs = pstmt.executeUpdate();
-			if (rs == 0) {
-				return false;
-			} else {
-				return true;
-			}
-
+				conn = dbAccess();
+					String sql = "SELECT CU.id, card FROM Customers CU, Cards CA WHERE CU.card = CA.id AND CU.id = "+ id;
+					Statement statement = conn.createStatement();
+					ResultSet rs = statement.executeQuery(sql);
+					if (rs.next()) {
+						String card = rs.getString("card");
+						sql = "DELETE FROM Cards WHERE id = ?";
+						PreparedStatement pstmt = conn.prepareStatement(sql);
+						pstmt.setString(1, card);
+						pstmt.executeUpdate();
+						sql = "DELETE FROM Customers WHERE id = ?";
+						pstmt = conn.prepareStatement(sql);
+						pstmt.setInt(1, id);
+						pstmt.executeUpdate();
+						
+						return true;
+					}
+					else {
+						return false;
+					}
+					
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
 			return false;
@@ -851,9 +913,11 @@ public class EZShopDAO {
 		} finally {
 			dbClose(conn);
 		}
+
 	}
-	
+
 	public Customer getCustomer(Integer id) {
+
 		Connection conn = null;
 		try {
 			conn = dbAccess();
@@ -864,14 +928,13 @@ public class EZShopDAO {
 			if (rs.next()) {
 				return new CustomerImpl(rs.getInt("id"), rs.getString("name"), rs.getString("card"),
 						rs.getInt("points"));
-			} else {	// search for a customer without an associated card
-				sql = "SELECT id, name FROM Customers WHERE id = "+ id;	
+			} else { // search for a customer without an associated card
+				sql = "SELECT id, name FROM Customers WHERE id = " + id;
 				statement = conn.createStatement();
 				rs = statement.executeQuery(sql);
 				if (rs.next()) {
 					return new CustomerImpl(rs.getInt("id"), rs.getString("name"), null, null);
-				}
-				else
+				} else
 					return null;
 			}
 
@@ -882,9 +945,11 @@ public class EZShopDAO {
 		} finally {
 			dbClose(conn);
 		}
+
 	}
-	
-	public List<Customer> getAllCustomers(){
+
+	public List<Customer> getAllCustomers() {
+
 		Connection conn = null;
 		List<Customer> customers = new ArrayList<Customer>();
 		try {
@@ -911,36 +976,41 @@ public class EZShopDAO {
 		} finally {
 			dbClose(conn);
 		}
+
 	}
-	
+
 	public String createCard() {
+
 		Connection conn = null;
 		try {
-
-			String cardId;
-			conn = dbAccess();
-			String sql = "SELECT COALESCE(MAX(id),'') AS lastId FROM Cards";
-			Statement statement = conn.createStatement();
-			ResultSet rs = statement.executeQuery(sql);
-			rs.next();
-			if (rs.getString("lastId").isEmpty()) {
-				// System.out.println("first element");
-				cardId = "1000000000";
-			} else {
-				// System.out.println("next element");
-				Integer id = Integer.parseInt(rs.getString("lastId")) + 1;
-				cardId = Integer.toString(id);
-			}
-
-			sql = "INSERT INTO Cards (id, points) VALUES(?,0)";
-			PreparedStatement pstmt = conn.prepareStatement(sql);
-			pstmt.setString(1, cardId);
-			int res = pstmt.executeUpdate();
-			if (res == 0) {
-				return "";
-			} else {
-				return cardId;
-			}
+				String cardId;
+				conn = dbAccess();
+				String sql = "SELECT COALESCE(MAX(id),'') AS lastId FROM Cards";
+				Statement statement = conn.createStatement();
+				ResultSet rs = statement.executeQuery(sql);
+				rs.next();
+				if (rs.getString("lastId").isEmpty()) {
+					cardId = "1000000000";
+				} else {
+					String lastId = rs.getString("lastId");
+					sql = "SELECT card FROM Customers WHERE card = '"+lastId+"'";
+					statement = conn.createStatement();
+					rs = statement.executeQuery(sql);
+					if(rs.next()==false) {
+						return lastId;
+					}
+					Integer id = Integer.parseInt(lastId) + 1;
+					cardId = Integer.toString(id);
+				}
+				sql = "INSERT INTO Cards (id, points) VALUES(?,0)";
+				PreparedStatement pstmt = conn.prepareStatement(sql);
+				pstmt.setString(1, cardId);
+				int res = pstmt.executeUpdate();
+				if (res == 0) {
+					return "";
+				} else {
+					return cardId;
+				}
 
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
@@ -950,9 +1020,11 @@ public class EZShopDAO {
 			dbClose(conn);
 
 		}
+
 	}
 
 	public boolean attachCardToCustomer(String customerCard, Integer customerId) {
+
 		Connection conn = null;
 		try {
 			conn = dbAccess();
@@ -974,9 +1046,11 @@ public class EZShopDAO {
 		} finally {
 			dbClose(conn);
 		}
+
 	}
-	
+
 	public boolean modifyPointsOnCard(String customerCard, int pointsToBeAdded) {
+
 		Connection conn = null;
 		try {
 			conn = dbAccess();
@@ -1006,28 +1080,32 @@ public class EZShopDAO {
 		} finally {
 			dbClose(conn);
 		}
+
 	}
-	
+
 	public Integer startSaleTransaction() {
+
 		String getNextAutoincrement = "SELECT seq FROM sqlite_sequence WHERE name=\"saleTransaction\"";
 		Integer id = 0; // 0=error
-		try (Connection conn = this.dbAccess();
-				Statement stmt = conn.createStatement();
-				ResultSet rs = stmt.executeQuery(getNextAutoincrement)) {
-			id = rs.getInt("seq") + 1;
+		Connection conn = this.dbAccess();
+		try (Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery(getNextAutoincrement)) {
+			id = rs.getInt("seq");
 		} catch (Exception e) {
-			System.err.println(e.getClass().getName() + ": " + e.getMessage());
+			e.printStackTrace();
+		} finally {
+			dbClose(conn);
 		}
 		return id;
+
 	}
-	
-	public boolean endSaleTransaction(Integer transactionId, SaleTransactionImpl openSaleTransaction) {
+
+	public boolean endSaleTransaction(SaleTransactionImpl openSaleTransaction) {
+
 		String getNextAutoincrement = "SELECT seq FROM sqlite_sequence WHERE name=\"saleTransaction\"";
 		String insertSale = "INSERT INTO saleTransaction(price,discountRate,balanceId) VALUES(?,?,?)";
 		String insertTicketEntry = "INSERT INTO ticketEntry(ticketNumber,barCode,productDescription,pricePerUnit,discountRate,amount) VALUES(?,?,?,?,?,?)";
-		String decreaseProductQuantity = "UPDATE product SET quantity=quantity - ? WHERE barcode=?";
-		try (Connection conn = this.dbAccess();) {
-
+		Connection conn = this.dbAccess();
+		try {
 			Statement stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery(getNextAutoincrement);
 			BalanceOperationImpl balanceOperation = new BalanceOperationImpl(rs.getInt("seq") + 1, LocalDate.now(),
@@ -1052,50 +1130,70 @@ public class EZShopDAO {
 				pstmt.setInt(6, entry.getAmount());
 				pstmt.executeUpdate();
 				pstmt.close();
-				// decreaseProductQuantity
-				pstmt = conn.prepareStatement(decreaseProductQuantity);
-				pstmt.setInt(1, entry.getAmount());
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		} finally {
+			this.dbClose(conn);
+		}
+		return true;
+
+	}
+
+	public boolean addProductsFromSaleTransaction(SaleTransactionImpl openSaleTransaction) {
+
+		for (TicketEntry entry : openSaleTransaction.getEntries()) {
+			// increaseProductQuantity
+			String increaseProductQuantity = "UPDATE product SET quantity=quantity + ? WHERE barcode=?";
+			try (Connection conn = DriverManager.getConnection("jdbc:sqlite:EZShopDB.sqlite");) {
+				PreparedStatement pstmt = conn.prepareStatement(increaseProductQuantity);
+				pstmt.setInt(1, entry.getAmount()); // amount to remove from sale, amount to add to store
 				pstmt.setString(2, entry.getBarCode());
 				pstmt.executeUpdate();
 				pstmt.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+				return false;
 			}
-		} catch (Exception ex) {
-			System.out.println(ex.getMessage());
-			return false;
 		}
 		return true;
+
 	}
-	
-	public SaleTransaction getSaleTransaction(Integer transactionId, SaleTransactionImpl openSaleTransaction) {
-		String getSale = "SELECT price,discountRate,balanceId FROM saleTransaction WHERE ticketNumber=?";
+
+	public SaleTransactionImpl getSaleTransaction(Integer transactionId) {
+
+		String getSale = "SELECT price,discountRate,creditCard,balanceId FROM saleTransaction WHERE ticketNumber=?";
 		String getBalance = "SELECT balanceId,date,money,type FROM balanceOperation WHERE balanceId=?";
 		String getTicketEntries = "SELECT barCode,productDescription,pricePerUnit,discountRate,amount FROM ticketEntry WHERE ticketNumber=?";
 		SaleTransactionImpl result = null;
-		try (Connection conn = this.dbAccess();) {
+		Connection conn = this.dbAccess();
+		try {
 			// getSale
 			PreparedStatement pstmt = conn.prepareStatement(getSale);
 			pstmt.setInt(1, transactionId);
 			ResultSet rs = pstmt.executeQuery();
-			if (rs == null)
+			if (!rs.isBeforeFirst())
 				return null;
 			// only 1 result because ticketNumber is primary key
 			result = new SaleTransactionImpl(transactionId);
 			result.setPrice(rs.getDouble("price"));
 			result.setDiscountRate(rs.getDouble("discountRate"));
+			result.setCreditCard(rs.getString("creditCard"));
 			Integer balanceId = rs.getInt("balanceId");
-			System.out.println(result.getTicketNumber() + " " + result.getDiscountRate());
+			// System.out.println(result.getTicketNumber() + " " + result.getDiscountRate());
 			pstmt.close();
 			rs.close();
 			// getBalance
 			pstmt = conn.prepareStatement(getBalance);
 			pstmt.setInt(1, balanceId);
 			rs = pstmt.executeQuery();
-			if (rs == null)
-				return null;
 			// only 1 result because balanceId is primary key
-			BalanceOperationImpl balanceOperation = new BalanceOperationImpl(rs.getInt("balanceId"),
-					LocalDate.parse(rs.getString("date")), rs.getDouble("money"), rs.getString("type"));
-			openSaleTransaction.setBalanceOperation(balanceOperation);
+			if (rs.isBeforeFirst()) { // false if there are no rows in the ResultSet
+				BalanceOperationImpl balanceOperation = new BalanceOperationImpl(rs.getInt("balanceId"),
+						LocalDate.parse(rs.getString("date")), rs.getDouble("money"), rs.getString("type"));
+				result.setBalanceOperation(balanceOperation);
+			}
 			pstmt.close();
 			rs.close();
 			// getTicketEntries
@@ -1106,35 +1204,176 @@ public class EZShopDAO {
 				result.getEntries().add(new TicketEntryImpl(rs.getString("barCode"), rs.getString("productDescription"),
 						rs.getDouble("pricePerUnit"), rs.getDouble("discountRate"), rs.getInt("amount")));
 			}
-			System.out.println(result);
+			// System.out.println(result);
 			pstmt.close();
 			rs.close();
-		} catch (Exception ex) {
-			System.out.println(ex.getMessage());
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			this.dbClose(conn);
 		}
 		return result;
 
 	}
-	
-	public Integer startReturnTransaction(Integer transactionId) {
-		Integer returnId = 0; // 0=error
+
+	public Integer startReturnTransaction() {
+
+		Integer returnId = -1;
 		String getNextAutoincrement = "SELECT seq FROM sqlite_sequence WHERE name=\"returnTransaction\"";
-		try (Connection conn = this.dbAccess();
-				Statement stmt = conn.createStatement();
-				ResultSet rs = stmt.executeQuery(getNextAutoincrement)) {
-			returnId = rs.getInt("seq") + 1;
+		Connection conn = this.dbAccess();
+		try (Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery(getNextAutoincrement)) {
+			returnId = rs.getInt("seq");
 		} catch (Exception e) {
-			System.err.println(e.getClass().getName() + ": " + e.getMessage());
-			System.exit(0);
+			e.printStackTrace();
+		} finally {
+			this.dbClose(conn);
 		}
 		return returnId;
+
 	}
-	
-	public boolean endReturnTransaction(Integer returnId, boolean commit) {
-		return false;
+
+	public boolean endReturnTransaction(ReturnTransactionImpl openReturnTransaction) {
+
+		Connection conn = dbAccess();
+
+		try {
+			conn.setAutoCommit(false); // single transaction on the database
+			// 1. close the return transaction
+			String insertReturn = "INSERT INTO returnTransaction(productId,productCode,pricePerUnit,discountRate,amount,price,ticketNumber) VALUES(?,?,?,?,?,?,?)";
+			PreparedStatement pstmt = conn.prepareStatement(insertReturn);
+			pstmt.setInt(1, openReturnTransaction.getProductId());
+			pstmt.setString(2, openReturnTransaction.getProductCode());
+			pstmt.setDouble(3, openReturnTransaction.getPricePerUnit());
+			pstmt.setDouble(4, openReturnTransaction.getDiscountRate());
+			pstmt.setInt(5, openReturnTransaction.getAmount());
+			pstmt.setDouble(6, openReturnTransaction.getPrice());
+			pstmt.setInt(7, openReturnTransaction.getSaleTransaction().getTicketNumber());
+			pstmt.executeUpdate();
+			pstmt.close();
+
+			// 2. updates the transaction status (decreasing the number of units sold by the number of returned one)
+			String updateTicket = "UPDATE ticketEntry SET amount = ? WHERE ticketNumber = ? AND barCode = ? ";
+			String removeTicket = "DELETE FROM ticketEntry WHERE ticketNumber=? AND barCode = ?";
+			Iterator<TicketEntry> iter = openReturnTransaction.getSaleTransaction().getEntries().iterator();
+			while (iter.hasNext()) {
+				TicketEntry entry = iter.next();
+				if (entry.getBarCode().equals(openReturnTransaction.getProductCode())) { // product present in the
+					// saleTransaction
+					int previousAmount = entry.getAmount();
+					int amountToRemove = openReturnTransaction.getAmount();
+					if (amountToRemove < previousAmount) {
+
+						pstmt = conn.prepareStatement(updateTicket);
+						pstmt.setDouble(1, previousAmount - amountToRemove);
+						pstmt.setInt(2, openReturnTransaction.getSaleTransaction().getTicketNumber());
+						pstmt.setString(3, openReturnTransaction.getProductCode());
+						pstmt.executeUpdate();
+						pstmt.close();
+
+					} else if (amountToRemove == previousAmount) {
+
+						pstmt = conn.prepareStatement(removeTicket);
+						pstmt.setInt(1, openReturnTransaction.getSaleTransaction().getTicketNumber());
+						pstmt.setString(2, openReturnTransaction.getProductCode());
+						pstmt.executeUpdate();
+						pstmt.close();
+
+					}
+					// else if (amountToRemove > previousAmount) updated=false; (can't happen by construction)
+					// System.out.println("Found item to remove" + entry);
+					break;
+				}
+			}
+
+			// 3. updates the transaction status (decreasing the final price)
+			String updateSale = "UPDATE saleTransaction SET price = ? WHERE ticketNumber = ?";
+			// updateSale
+			pstmt = conn.prepareStatement(updateSale);
+			pstmt.setDouble(1,
+					openReturnTransaction.getSaleTransaction().getPrice() - openReturnTransaction.getPrice());
+			pstmt.setInt(2, openReturnTransaction.getSaleTransaction().getTicketNumber());
+			pstmt.executeUpdate();
+			pstmt.close();
+
+			// 4. increases the product quantity available on the shelves
+			updateQuantity(openReturnTransaction.getProductId(), openReturnTransaction.getAmount());
+
+			conn.commit();
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			return false;
+		} finally {
+			dbClose(conn);
+		}
+
+		return true;
+
 	}
-	
+
+	public double getCreditCardCredit(String creditCard) {
+
+		Connection conn = null;
+		try {
+			String url = "jdbc:sqlite:creditCards.sqlite";
+			conn = DriverManager.getConnection(url);
+			System.out.println("Connection to SQLite has been established.");
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			return -1;
+		}
+		double credit = -1;
+		try {
+			String getCard = "SELECT balance FROM creditCards WHERE creditCardNumber = ?";
+			PreparedStatement pstmt = conn.prepareStatement(getCard);
+			pstmt.setString(1, creditCard);
+			ResultSet rs = pstmt.executeQuery();
+			if (!rs.isBeforeFirst()) // card not registered
+				return -1;
+			// only 1 result because creditCard is primary key
+			credit = rs.getDouble("balance");
+			pstmt.close();
+			rs.close();
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			return -1;
+		} finally {
+			dbClose(conn);
+		}
+
+		return credit;
+
+	}
+
+	public boolean setCreditCardCredit(double newCredit, String creditCard) {
+
+		Connection conn = null;
+		try {
+			String url = "jdbc:sqlite:creditCards.sqlite";
+			conn = DriverManager.getConnection(url);
+			System.out.println("Connection to SQLite has been established.");
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			return false;
+		}
+		try {
+			String updateCard = "UPDATE creditCards SET balance = ? WHERE creditCardNumber = ?";
+			PreparedStatement pstmt = conn.prepareStatement(updateCard);
+			pstmt.setDouble(1, newCredit);
+			pstmt.setString(2, creditCard);
+			pstmt.executeUpdate();
+			pstmt.close();
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			return false;
+		} finally {
+			dbClose(conn);
+		}
+		return true;
+
+	}
+
 	public boolean recordBalanceUpdate(double toBeAdded) {
+
 		Connection conn = null;
 		boolean positiveBalance = false;
 		if (computeBalance() + toBeAdded < 0) {
@@ -1156,9 +1395,11 @@ public class EZShopDAO {
 			dbClose(conn);
 		}
 		return positiveBalance;
+
 	}
-	
-	public List<BalanceOperation> getCreditsAndDebits(LocalDate from, LocalDate to){
+
+	public List<BalanceOperation> getCreditsAndDebits(LocalDate from, LocalDate to) {
+
 		List<BalanceOperation> bo = new ArrayList<BalanceOperation>();
 		LocalDate tmp;
 		if (from != null && to != null && from.isAfter(to)) {
@@ -1177,7 +1418,7 @@ public class EZShopDAO {
 			while (rs.next()) {
 				bo.add(new BalanceOperationImpl(rs.getInt("balanceId"), LocalDate.parse(rs.getString("date")),
 						rs.getDouble("money"), rs.getString("type")));
-//				System.out.println(bo.get(bo.size()-1).toString());
+				// System.out.println(bo.get(bo.size()-1).toString());
 			}
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
@@ -1185,9 +1426,11 @@ public class EZShopDAO {
 			dbClose(conn);
 		}
 		return bo;
+
 	}
-	
+
 	public double computeBalance() {
+
 		Connection conn = null;
 		double balance = 0;
 		String type = null;
@@ -1211,7 +1454,7 @@ public class EZShopDAO {
 			dbClose(conn);
 		}
 		return balance;
+
 	}
-	
-	
+
 }

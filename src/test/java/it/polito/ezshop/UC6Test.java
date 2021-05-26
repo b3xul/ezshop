@@ -27,7 +27,7 @@ public class UC6Test {
 	static EZShopInterface ezShop;
 
 	@BeforeClass
-	public void init() {
+	public static void init() {
 
 		ezShop = new it.polito.ezshop.data.EZShop();
 		ezShop.reset();
@@ -64,7 +64,7 @@ public class UC6Test {
 	}
 
 	@AfterClass
-	public void teardown() {
+	public static void teardown() {
 
 		ezShop.reset();
 
