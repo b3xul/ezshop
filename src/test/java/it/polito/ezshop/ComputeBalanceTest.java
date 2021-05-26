@@ -2,7 +2,6 @@ package it.polito.ezshop;
 
 import static org.junit.Assert.*;
 
-import java.time.LocalDate;
 
 import org.junit.After;
 import org.junit.Before;

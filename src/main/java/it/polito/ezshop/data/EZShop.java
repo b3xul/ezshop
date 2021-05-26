@@ -498,10 +498,8 @@ public class EZShop implements EZShopInterface {
 					"Either the user doesn't have the rights to perform this action or doesn't exist");
 		if (orderId == null || orderId <= 0)
 			throw new InvalidOrderIdException("There is no order with this id");
-		validOrderId = DAO.payOrder(orderId, money);
-		if (!recordBalanceUpdate(-money))
-			return validOrderId = false;
-
+		validOrderId = DAO.payOrder(orderId);
+			
 		return validOrderId;
 
 	}

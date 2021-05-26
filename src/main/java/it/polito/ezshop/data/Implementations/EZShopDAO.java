@@ -634,7 +634,8 @@ public class EZShopDAO {
 				return orderId;
 			}
 			dbClose(conn);
-
+			if (!recordBalanceUpdate(-pricePerUnit * quantity))
+				return orderId;
 			conn = dbAccess();
 			String sql2 = "SELECT MAX(balanceId) AS MaxBId FROM balanceOperation";
 			Statement statement2 = conn.createStatement();
@@ -662,17 +663,19 @@ public class EZShopDAO {
 		return orderId;
 
 	}
-
-	public boolean payOrder(Integer orderId, double money) {
-
+	
+	
+	public boolean payOrder(Integer orderId) {
 		boolean validOrderId = false;
 		Connection conn = null;
+		double money = 0;
 		int balanceId = 0;
 		try {
 			conn = dbAccess();
-			String sql = "SELECT orderId FROM order_ WHERE orderId = ?";
+			String sql = "SELECT orderId FROM order_ WHERE orderId = ? AND status = ?";
 			PreparedStatement statement = conn.prepareStatement(sql);
 			statement.setInt(1, orderId);
+			statement.setString(2, "ISSUED");
 			ResultSet rs = statement.executeQuery();
 			if (!rs.next()) {
 				System.out.println("There is no order with this ID");
@@ -689,6 +692,8 @@ public class EZShopDAO {
 			ResultSet rs3 = statement3.executeQuery();
 			money = rs3.getDouble("money");
 			dbClose(conn);
+			if(!recordBalanceUpdate(-money))
+				return validOrderId = false;
 			conn = dbAccess();
 			String sql4 = "SELECT MAX(balanceId) AS MaxBId FROM balanceOperation";
 			Statement statement4 = conn.createStatement();
@@ -1343,6 +1348,10 @@ public class EZShopDAO {
 
 		Connection conn = null;
 		boolean positiveBalance = false;
+		if (computeBalance() + toBeAdded < 0) {
+			System.out.println("The operation can't be performed due to negative balance");
+			return positiveBalance;
+		}
 		try {
 			conn = dbAccess();
 			String sql2 = "INSERT INTO balanceOperation (date, money, type) VALUES (?,?,?)";
