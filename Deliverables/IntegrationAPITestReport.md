@@ -81,9 +81,9 @@ Bottom up approach
 
 step 1: class UserImpl, class BalanceOperationImpl, class ProductTypeImpl, class TicketEntryImpl, class SaleTransactionImpl, class CustomerImpl, class OrderImpl, class ReturnTransactionImpl, class PositionImpl (Unit test)
   
-step 2: class EZShopDAO
+step 2: class EZShopDAO + UserImpl, class BalanceOperationImpl, class ProductTypeImpl, class TicketEntryImpl, class SaleTransactionImpl, class CustomerImpl, class OrderImpl, class ReturnTransactionImpl, class PositionImpl
 
-step 3: class EZShop + class UserImpl, class BalanceOperationImpl, class ProductTypeImpl, class SaleTransactionImpl, class CustomerImpl, class OrderImpl, class ReturnTransactionImpl, class PositionImpl
+step 3: class EZShop + EZShopDAO + class UserImpl, class BalanceOperationImpl, class ProductTypeImpl, class SaleTransactionImpl, class CustomerImpl, class OrderImpl, class ReturnTransactionImpl, class PositionImpl
   
 
 #  Tests
