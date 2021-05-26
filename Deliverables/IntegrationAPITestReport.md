@@ -1,10 +1,10 @@
 # Integration and API Test Documentation
 
-Authors:
+Authors: Elia Fontana, Andrea Palomba, Leonardo Perugini, Francesco Sattolo
 
-Date:
+Date: 26/05/2021
 
-Version:
+Version: 1.0
 
 # Contents
 
@@ -81,9 +81,9 @@ Bottom up approach
 
 step 1: class UserImpl, class BalanceOperationImpl, class ProductTypeImpl, class TicketEntryImpl, class SaleTransactionImpl, class CustomerImpl, class OrderImpl, class ReturnTransactionImpl, class PositionImpl (Unit test)
   
-step 2: class EZShopDAO
+step 2: class EZShopDAO + UserImpl, class BalanceOperationImpl, class ProductTypeImpl, class TicketEntryImpl, class SaleTransactionImpl, class CustomerImpl, class OrderImpl, class ReturnTransactionImpl, class PositionImpl
 
-step 3: class EZShop + class UserImpl, class BalanceOperationImpl, class ProductTypeImpl, class SaleTransactionImpl, class CustomerImpl, class OrderImpl, class ReturnTransactionImpl, class PositionImpl
+step 3: class EZShop + EZShopDAO + class UserImpl, class BalanceOperationImpl, class ProductTypeImpl, class SaleTransactionImpl, class CustomerImpl, class OrderImpl, class ReturnTransactionImpl, class PositionImpl
   
 
 #  Tests
@@ -255,22 +255,22 @@ Report also for each of the scenarios the (one or more) API JUnit tests that cov
 | 4-5         | FR5.3, FR5.2                                                                              | UC4TestClass: testCaseScenario4_5 |
 | 5-1         |                                                                                           | UC5TestClass: testCaseScenario5_1, testCaseScenario5_1_variant                                  |
 | 5-2         |                                                                                           |UC5TestClass: testCaseScenario5_2|
-| 6-1         | FR6.1, FR6.7, FR6.2, FR4.1, FR6.10, FR7.1/7.2, FR6.8, FR6.11, FR8.2, FR8.4                |                                    |
-| 6-2         | FR6.1, FR6.7, FR6.2, FR4.1, FR6.5, FR6.10, FR7.1/7.2, FR6.8, FR6.11, FR8.2, FR8.4         |                                    |
-| 6-3         | FR6.1, FR6.7, FR6.2, FR4.1, FR6.4, FR6.10, FR7.1/7.2, FR6.8, FR6.11, FR8.2, FR6.11, FR8.4 |                                    |
-| 6-4         | FR6.1, FR6.7, FR6.2, FR4.1, FR6.10, FR7.1/7.2, FR6.6, FR5.7, FR6.8, FR6.11, FR8.2, FR8.4  |                                    |
-| 6-5         | FR6.1, FR6.7, FR6.2, FR4.1, FR6.10                                                        |                                    |
-| 6-6         | FR6.1, FR6.7, FR6.2, FR4.1, FR6.10, FR7.1, FR6.8, FR6.11, FR8.2, FR8.4                    |                                    |
-| 6-7         | FR6.1, FR6.7, FR6.2, FR4.1, FR6.3, FR6.10, FR7.1/7.2, FR6.8, FR6.11, FR8.2, FR8.4         |                                    |
-| 7-1         | FR7.2                                                                                     |                                    |
-| 7-2         |                                                                                           |                                    |
-| 7-3         |                                                                                           |                                    |
-| 7-4         | FR7.1                                                                                     |                                    |
-| 8-1         | FR6.9, FR6.12, FR6.7, FR6.13, FR4.1, FR7.4, FR6.14, FR6.15, FR8.4                         |                                    |
-| 8-2         | FR6.9, FR6.12, FR6.7, FR6.13, FR4.1, FR7.3, FR6.14, FR6.15, FR8.4                         |                                    |
+| 6-1         | FR6.1, FR6.7, FR6.2, FR4.1, FR6.10, FR7.1/7.2, FR6.8, FR6.11, FR8.2, FR8.4                |UC6TestClass: testCaseScenario6_1|
+| 6-2         | FR6.1, FR6.7, FR6.2, FR4.1, FR6.5, FR6.10, FR7.1/7.2, FR6.8, FR6.11, FR8.2, FR8.4         |UC6TestClass: testCaseScenario6_2|
+| 6-3         | FR6.1, FR6.7, FR6.2, FR4.1, FR6.4, FR6.10, FR7.1/7.2, FR6.8, FR6.11, FR8.2, FR6.11, FR8.4 |UC6TestClass: testCaseScenario6_3|
+| 6-4         | FR6.1, FR6.7, FR6.2, FR4.1, FR6.10, FR7.1/7.2, FR6.6, FR5.7, FR6.8, FR6.11, FR8.2, FR8.4  | UC6TestClass: testCaseScenario6_4|
+| 6-5         | FR6.1, FR6.7, FR6.2, FR4.1, FR6.10                                                        |UC6TestClass: testCaseScenario6_5|
+| 6-6         | FR6.1, FR6.7, FR6.2, FR4.1, FR6.10, FR7.1, FR6.8, FR6.11, FR8.2, FR8.4                    | UC6TestClass: testCaseScenario6_6|
+| 6-7         | FR6.1, FR6.7, FR6.2, FR4.1, FR6.3, FR6.10, FR7.1/7.2, FR6.8, FR6.11, FR8.2, FR8.4         | UC6TestClass: testCaseScenario6_7|
+| 7-1         | FR7.2                                                                                     |UC7TestClass: testCaseScenario7_1|
+| 7-2         |                                                                                           | UC7TestClass: testCaseScenario7_2 |
+| 7-3         |                                                                                           |UC7TestClass: testCaseScenario7_3|
+| 7-4         | FR7.1                                                                                     |UC7TestClass: testCaseScenario7_4 |
+| 8-1         | FR6.9, FR6.12, FR6.7, FR6.13, FR4.1, FR7.4, FR6.14, FR6.15, FR8.4                         |UC8TestClass: testCaseScenario8_1|
+| 8-2         | FR6.9, FR6.12, FR6.7, FR6.13, FR4.1, FR7.3, FR6.14, FR6.15, FR8.4                         |UC8TestClass: testCaseScenario8_2|
 | 9-1         | FR8.3                                                                                     | UC9TestClass: testCaseScenario9_1  |
-| 10-1        | FR7.4                                                                                     |                                    |
-| 10-2        | FR7.3                                                                                     |                                    |
+| 10-1        | FR7.4                                                                                     | UC10TestClass: testCaseScenario10_1|
+| 10-2        | FR7.3                                                                                     | UC10TestClass: testCaseScenario10_2|
 
 
 

@@ -300,8 +300,17 @@ public class CustomerMethodsClassTest {
 			shop.logout();
 		}
 			
-		
-
+		// Attach card to customer, customer not found
+		@Test
+		public void testCase20() throws InvalidUsernameException, InvalidPasswordException, InvalidRoleException, InvalidCustomerNameException, UnauthorizedException, InvalidCustomerIdException, InvalidCustomerCardException {
+			shop.login("Francesco","pass");
+			String customerName = "Carla";
+			int customerId = shop.defineCustomer(customerName);
+			shop.deleteCustomer(customerId);
+			String customerCard = shop.createCard();
+			assertFalse(shop.attachCardToCustomer(customerCard,customerId));
+			shop.login("Francesco","pass");
+		}
 				
 }
 			
