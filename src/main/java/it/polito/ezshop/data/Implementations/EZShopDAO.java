@@ -1007,12 +1007,7 @@ public class EZShopDAO {
 				PreparedStatement pstmt = conn.prepareStatement(sql);
 				pstmt.setString(1, cardId);
 				int res = pstmt.executeUpdate();
-				if (res == 0) {
-					return "";
-				} else {
-					return cardId;
-				}
-
+				return cardId;
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
 			return "";
