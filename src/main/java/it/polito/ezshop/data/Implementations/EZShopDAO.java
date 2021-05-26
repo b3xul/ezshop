@@ -1060,11 +1060,7 @@ public class EZShopDAO {
 				pstmt.setInt(1, points);
 				pstmt.setString(2, customerCard);
 				int res = pstmt.executeUpdate();
-				if (res == 0) {
-					return false;
-				} else {
-					return true;
-				}
+				return true;
 			} else {
 				return false;
 			}
