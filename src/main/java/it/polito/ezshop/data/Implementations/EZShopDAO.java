@@ -10,15 +10,14 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.regex.Pattern;
 
 import it.polito.ezshop.data.BalanceOperation;
 import it.polito.ezshop.data.Customer;
 import it.polito.ezshop.data.Order;
 import it.polito.ezshop.data.ProductType;
+import it.polito.ezshop.data.ReturnTransaction;
 import it.polito.ezshop.data.TicketEntry;
 import it.polito.ezshop.data.User;
-import it.polito.ezshop.exceptions.InvalidCustomerCardException;
 import it.polito.ezshop.exceptions.InvalidLocationException;
 
 public class EZShopDAO {
@@ -82,6 +81,9 @@ public class EZShopDAO {
 			sql = "DELETE FROM Users";
 			pstmt = conn.prepareStatement(sql);
 			pstmt.executeUpdate();
+			sql = "UPDATE sqlite_sequence SET seq=0";
+			pstmt = conn.prepareStatement(sql);
+			pstmt.executeUpdate();
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
 		} finally {
@@ -104,7 +106,7 @@ public class EZShopDAO {
 			pstmt.setString(2, username);
 			pstmt.setString(3, password);
 			pstmt.setString(4, role);
-			int res = pstmt.executeUpdate();
+			pstmt.executeUpdate();
 			return id;
 
 		} catch (Exception e) {
@@ -810,13 +812,8 @@ public class EZShopDAO {
 			PreparedStatement pstmt = conn.prepareStatement(sql);
 			pstmt.setInt(1, id);
 			pstmt.setString(2, customerName);
-			int res = pstmt.executeUpdate();
-			if (res == 0) {
-				return -1;
-			} else {
-				return id;
-			}
-
+			pstmt.executeUpdate();
+			return id;
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
 			return -1;
@@ -833,43 +830,42 @@ public class EZShopDAO {
 		Connection conn = null;
 		try {
 			conn = dbAccess();
-							String cardQuery = "";
-							int rs;
-							if (newCustomerCard != null)
-								cardQuery = ", card = ?";
-							String sql = "UPDATE Customers SET name = ?" + cardQuery + "WHERE id = ?";
-							PreparedStatement pstmt = conn.prepareStatement(sql);
-							pstmt.setString(1, newCustomerName);
-							if (newCustomerCard == null) { // card value doesn't change
-								pstmt.setInt(2, id);
-								rs = pstmt.executeUpdate();
-							}
-							else if (newCustomerCard.isEmpty()) { // card value erased (no more card for this customer)
-								//delete the card also in Cards table
-								String sql1 = "SELECT CU.id, card FROM Customers CU, Cards CA WHERE CU.card = CA.id AND CU.id = "+ id;
-								Statement statement = conn.createStatement();
-								ResultSet res = statement.executeQuery(sql1);
-								if (res.next()) {
-									String card = res.getString("card");
-									sql1 = "DELETE FROM Cards WHERE id = ?";
-									PreparedStatement pstmt1 = conn.prepareStatement(sql1);
-									pstmt1.setString(1, card);
-									pstmt1.executeUpdate();
-								}
-								//set parameter for the UPDATE query 
-								pstmt.setString(2, null);
-								pstmt.setInt(3, id);
-								rs = pstmt.executeUpdate();
-							} else{ //  if (newCustomerCard.length() >= 10 && p.matcher(newCustomerCard).matches()) 																				// validity
-								pstmt.setString(2, newCustomerCard); // set new card value
-								pstmt.setInt(3, id);
-								rs = pstmt.executeUpdate();
-							} 
-							if (rs == 0) {
-								return false;
-							} else {
-								return true;
-							}
+			String cardQuery = "";
+			int rs;
+			if (newCustomerCard != null)
+				cardQuery = ", card = ?";
+			String sql = "UPDATE Customers SET name = ?" + cardQuery + "WHERE id = ?";
+			PreparedStatement pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, newCustomerName);
+			if (newCustomerCard == null) { // card value doesn't change
+				pstmt.setInt(2, id);
+				rs = pstmt.executeUpdate();
+			} else if (newCustomerCard.isEmpty()) { // card value erased (no more card for this customer)
+				// delete the card also in Cards table
+				String sql1 = "SELECT CU.id, card FROM Customers CU, Cards CA WHERE CU.card = CA.id AND CU.id = " + id;
+				Statement statement = conn.createStatement();
+				ResultSet res = statement.executeQuery(sql1);
+				if (res.next()) {
+					String card = res.getString("card");
+					sql1 = "DELETE FROM Cards WHERE id = ?";
+					PreparedStatement pstmt1 = conn.prepareStatement(sql1);
+					pstmt1.setString(1, card);
+					pstmt1.executeUpdate();
+				}
+				// set parameter for the UPDATE query
+				pstmt.setString(2, null);
+				pstmt.setInt(3, id);
+				rs = pstmt.executeUpdate();
+			} else { // if (newCustomerCard.length() >= 10 && p.matcher(newCustomerCard).matches()) // validity
+				pstmt.setString(2, newCustomerCard); // set new card value
+				pstmt.setInt(3, id);
+				rs = pstmt.executeUpdate();
+			}
+			if (rs == 0) {
+				return false;
+			} else {
+				return true;
+			}
 
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
@@ -899,11 +895,17 @@ public class EZShopDAO {
 						pstmt = conn.prepareStatement(sql);
 						pstmt.setInt(1, id);
 						pstmt.executeUpdate();
-						
 						return true;
 					}
 					else {
-						return false;
+						sql = "DELETE FROM Customers WHERE id = ?";
+						PreparedStatement pstmt = conn.prepareStatement(sql);
+						pstmt.setInt(1, id);
+						int res = pstmt.executeUpdate();
+						if(res == 0)
+							return false;
+						else
+							return true;
 					}
 					
 		} catch (Exception e) {
@@ -1005,13 +1007,8 @@ public class EZShopDAO {
 				sql = "INSERT INTO Cards (id, points) VALUES(?,0)";
 				PreparedStatement pstmt = conn.prepareStatement(sql);
 				pstmt.setString(1, cardId);
-				int res = pstmt.executeUpdate();
-				if (res == 0) {
-					return "";
-				} else {
-					return cardId;
-				}
-
+				pstmt.executeUpdate();
+				return cardId;
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
 			return "";
@@ -1064,11 +1061,7 @@ public class EZShopDAO {
 				pstmt.setInt(1, points);
 				pstmt.setString(2, customerCard);
 				int res = pstmt.executeUpdate();
-				if (res == 0) {
-					return false;
-				} else {
-					return true;
-				}
+				return true;
 			} else {
 				return false;
 			}
@@ -1089,7 +1082,7 @@ public class EZShopDAO {
 		Integer id = 0; // 0=error
 		Connection conn = this.dbAccess();
 		try (Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery(getNextAutoincrement)) {
-			id = rs.getInt("seq");
+			id = rs.getInt("seq") + 1;
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
@@ -1101,22 +1094,23 @@ public class EZShopDAO {
 
 	public boolean endSaleTransaction(SaleTransactionImpl openSaleTransaction) {
 
-		String getNextAutoincrement = "SELECT seq FROM sqlite_sequence WHERE name=\"saleTransaction\"";
-		String insertSale = "INSERT INTO saleTransaction(price,discountRate,balanceId) VALUES(?,?,?)";
+		// String getNextAutoincrement = "SELECT seq FROM sqlite_sequence WHERE name=\"saleTransaction\"";
+		String insertSale = "INSERT INTO saleTransaction(price,discountRate,creditCard) VALUES(?,?,?)";
 		String insertTicketEntry = "INSERT INTO ticketEntry(ticketNumber,barCode,productDescription,pricePerUnit,discountRate,amount) VALUES(?,?,?,?,?,?)";
 		Connection conn = this.dbAccess();
 		try {
-			Statement stmt = conn.createStatement();
-			ResultSet rs = stmt.executeQuery(getNextAutoincrement);
-			BalanceOperationImpl balanceOperation = new BalanceOperationImpl(rs.getInt("seq") + 1, LocalDate.now(),
-					openSaleTransaction.getPrice(), "CREDIT");
-			openSaleTransaction.setBalanceOperation(balanceOperation);
-			stmt.close();
-			rs.close();
+			// Statement stmt = conn.createStatement();
+			// ResultSet rs = stmt.executeQuery(getNextAutoincrement);
+			// BalanceOperationImpl balanceOperation = new BalanceOperationImpl(rs.getInt("seq") + 1, LocalDate.now(),
+			// openSaleTransaction.getPrice(), "CREDIT");
+			// // openSaleTransaction.setBalanceOperation(balanceOperation);
+			// stmt.close();
+			// rs.close();
 			// Insert SaleTransaction
 			PreparedStatement pstmt = conn.prepareStatement(insertSale);
 			pstmt.setDouble(1, openSaleTransaction.getPrice());
 			pstmt.setDouble(2, openSaleTransaction.getDiscountRate());
+			pstmt.setString(3, openSaleTransaction.getCreditCard());
 			pstmt.executeUpdate();
 			pstmt.close();
 			for (TicketEntry entry : openSaleTransaction.getEntries()) {
@@ -1164,7 +1158,7 @@ public class EZShopDAO {
 	public SaleTransactionImpl getSaleTransaction(Integer transactionId) {
 
 		String getSale = "SELECT price,discountRate,creditCard,balanceId FROM saleTransaction WHERE ticketNumber=?";
-		String getBalance = "SELECT balanceId,date,money,type FROM balanceOperation WHERE balanceId=?";
+		// String getBalance = "SELECT balanceId,date,money,type FROM balanceOperation WHERE balanceId=?";
 		String getTicketEntries = "SELECT barCode,productDescription,pricePerUnit,discountRate,amount FROM ticketEntry WHERE ticketNumber=?";
 		SaleTransactionImpl result = null;
 		Connection conn = this.dbAccess();
@@ -1180,22 +1174,22 @@ public class EZShopDAO {
 			result.setPrice(rs.getDouble("price"));
 			result.setDiscountRate(rs.getDouble("discountRate"));
 			result.setCreditCard(rs.getString("creditCard"));
-			Integer balanceId = rs.getInt("balanceId");
+			// Integer balanceId = rs.getInt("balanceId");
 			// System.out.println(result.getTicketNumber() + " " + result.getDiscountRate());
 			pstmt.close();
 			rs.close();
 			// getBalance
-			pstmt = conn.prepareStatement(getBalance);
-			pstmt.setInt(1, balanceId);
-			rs = pstmt.executeQuery();
-			// only 1 result because balanceId is primary key
-			if (rs.isBeforeFirst()) { // false if there are no rows in the ResultSet
-				BalanceOperationImpl balanceOperation = new BalanceOperationImpl(rs.getInt("balanceId"),
-						LocalDate.parse(rs.getString("date")), rs.getDouble("money"), rs.getString("type"));
-				result.setBalanceOperation(balanceOperation);
-			}
-			pstmt.close();
-			rs.close();
+			// pstmt = conn.prepareStatement(getBalance);
+			// pstmt.setInt(1, balanceId);
+			// rs = pstmt.executeQuery();
+			// // only 1 result because balanceId is primary key
+			// if (rs.isBeforeFirst()) { // false if there are no rows in the ResultSet
+			// BalanceOperationImpl balanceOperation = new BalanceOperationImpl(rs.getInt("balanceId"),
+			// LocalDate.parse(rs.getString("date")), rs.getDouble("money"), rs.getString("type"));
+			// // result.setBalanceOperation(balanceOperation);
+			// }
+			// pstmt.close();
+			// rs.close();
 			// getTicketEntries
 			pstmt = conn.prepareStatement(getTicketEntries);
 			pstmt.setInt(1, transactionId);
@@ -1222,7 +1216,7 @@ public class EZShopDAO {
 		String getNextAutoincrement = "SELECT seq FROM sqlite_sequence WHERE name=\"returnTransaction\"";
 		Connection conn = this.dbAccess();
 		try (Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery(getNextAutoincrement)) {
-			returnId = rs.getInt("seq");
+			returnId = rs.getInt("seq") + 1;
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
@@ -1233,6 +1227,118 @@ public class EZShopDAO {
 	}
 
 	public boolean endReturnTransaction(ReturnTransactionImpl openReturnTransaction) {
+
+		Connection conn = dbAccess();
+
+		try {
+			conn.setAutoCommit(false); // single transaction on the database
+			// 1. close the return transaction
+			String insertReturn = "INSERT INTO returnTransaction(productId,productCode,pricePerUnit,discountRate,amount,price,ticketNumber) VALUES(?,?,?,?,?,?,?)";
+			PreparedStatement pstmt = conn.prepareStatement(insertReturn);
+			pstmt.setInt(1, openReturnTransaction.getProductId());
+			pstmt.setString(2, openReturnTransaction.getProductCode());
+			pstmt.setDouble(3, openReturnTransaction.getPricePerUnit());
+			pstmt.setDouble(4, openReturnTransaction.getDiscountRate());
+			pstmt.setInt(5, openReturnTransaction.getAmount());
+			pstmt.setDouble(6, openReturnTransaction.getPrice());
+			pstmt.setInt(7, openReturnTransaction.getSaleTransaction().getTicketNumber());
+			pstmt.executeUpdate();
+			pstmt.close();
+
+			// 2. updates the transaction status (decreasing the number of units sold by the number of returned one)
+			String updateTicket = "UPDATE ticketEntry SET amount = ? WHERE ticketNumber = ? AND barCode = ? ";
+			String removeTicket = "DELETE FROM ticketEntry WHERE ticketNumber=? AND barCode = ?";
+			Iterator<TicketEntry> iter = openReturnTransaction.getSaleTransaction().getEntries().iterator();
+			while (iter.hasNext()) {
+				TicketEntry entry = iter.next();
+				if (entry.getBarCode().equals(openReturnTransaction.getProductCode())) { // product present in the
+					// saleTransaction
+					int previousAmount = entry.getAmount();
+					int amountToRemove = openReturnTransaction.getAmount();
+					if (amountToRemove < previousAmount) {
+
+						pstmt = conn.prepareStatement(updateTicket);
+						pstmt.setDouble(1, previousAmount - amountToRemove);
+						pstmt.setInt(2, openReturnTransaction.getSaleTransaction().getTicketNumber());
+						pstmt.setString(3, openReturnTransaction.getProductCode());
+						pstmt.executeUpdate();
+						pstmt.close();
+
+					} else if (amountToRemove == previousAmount) {
+
+						pstmt = conn.prepareStatement(removeTicket);
+						pstmt.setInt(1, openReturnTransaction.getSaleTransaction().getTicketNumber());
+						pstmt.setString(2, openReturnTransaction.getProductCode());
+						pstmt.executeUpdate();
+						pstmt.close();
+
+					}
+					// else if (amountToRemove > previousAmount) updated=false; (can't happen by construction)
+					// System.out.println("Found item to remove" + entry);
+					break;
+				}
+			}
+
+			// 3. updates the transaction status (decreasing the final price)
+			String updateSale = "UPDATE saleTransaction SET price = ? WHERE ticketNumber = ?";
+			// updateSale
+			pstmt = conn.prepareStatement(updateSale);
+			pstmt.setDouble(1,
+					openReturnTransaction.getSaleTransaction().getPrice() - openReturnTransaction.getPrice());
+			pstmt.setInt(2, openReturnTransaction.getSaleTransaction().getTicketNumber());
+			pstmt.executeUpdate();
+			pstmt.close();
+
+			conn.commit();
+
+			// 4. increases the product quantity available on the shelves
+			updateQuantity(openReturnTransaction.getProductId(), openReturnTransaction.getAmount());
+
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			return false;
+		} finally {
+			dbClose(conn);
+		}
+
+		return true;
+
+	}
+
+	public ReturnTransaction getReturnTransaction(Integer returnId) {
+
+		String getReturn = "SELECT productId,productCode,pricePerUnit,discountRate,amount,price,ticketNumber FROM returnTransaction WHERE returnId=?";
+		ReturnTransaction result = null;
+		Connection conn = this.dbAccess();
+		try {
+			// getReturn
+			PreparedStatement pstmt = conn.prepareStatement(getReturn);
+			pstmt.setInt(1, returnId);
+			ResultSet rs = pstmt.executeQuery();
+			if (!rs.isBeforeFirst())
+				return null;
+			// only 1 result because returnId is primary key
+			result = new ReturnTransactionImpl(returnId);
+			result.setProductId(rs.getInt("productId"));
+			result.setProductCode(rs.getString("productCode"));
+			result.setPricePerUnit(rs.getDouble("pricePerUnit"));
+			result.setDiscountRate(rs.getDouble("discountRate"));
+			result.setAmount(rs.getInt("amount"));
+			result.setPrice(rs.getDouble("price"));
+			result.setSaleTransaction(this.getSaleTransaction(rs.getInt("ticketNumber")));
+			// System.out.println(result.getTicketNumber() + " " + result.getDiscountRate());
+			pstmt.close();
+			rs.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			this.dbClose(conn);
+		}
+		return result;
+
+	}
+
+	public boolean deleteReturnTransaction(ReturnTransactionImpl openReturnTransaction) {
 
 		Connection conn = dbAccess();
 

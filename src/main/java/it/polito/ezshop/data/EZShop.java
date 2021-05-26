@@ -144,8 +144,8 @@ public class EZShop implements EZShopInterface {
 
 		Connection conn = null;
 		DAO.reset();
-		openSaleTransaction = null;
-		openReturnTransaction = null;
+		openSaleTransaction = new SaleTransactionImpl(-1);
+		openReturnTransaction = new ReturnTransactionImpl(-1);
 
 	}
 
@@ -554,7 +554,13 @@ public class EZShop implements EZShopInterface {
 				|| userLoggedIn.getRole().equals("ShopManager")) {
 			if (id != null && id > 0) {
 				if (newCustomerName != null && newCustomerName.isEmpty() == false) {
-					return DAO.modifyCustomer(id, newCustomerName, newCustomerCard);
+					Pattern p = Pattern.compile("\\d+");
+					if (newCustomerCard != null && newCustomerCard.isEmpty() == false 
+							&& (newCustomerCard.length() < 10 || p.matcher(newCustomerCard).matches() == false)) {
+						throw new InvalidCustomerCardException("Invalid card");
+					}else {
+						return DAO.modifyCustomer(id, newCustomerName, newCustomerCard);
+					}
 				} else
 					throw new InvalidCustomerNameException("Invalid customer name");
 			} else
@@ -659,7 +665,12 @@ public class EZShop implements EZShopInterface {
 		if (userLoggedIn.getRole() == "")
 			throw new UnauthorizedException("User not logged in");
 
-		return DAO.startSaleTransaction();
+		Integer transactionId = DAO.startSaleTransaction();
+		if (transactionId != -1)
+			openSaleTransaction.setTicketNumber(transactionId);
+		// transaction will be added to the db only when it ends
+
+		return transactionId;
 
 	}
 
@@ -830,6 +841,7 @@ public class EZShop implements EZShopInterface {
 			throw new UnauthorizedException("User not logged in");
 		if (transactionId == null || transactionId <= 0)
 			throw new InvalidTransactionIdException("Transaction id cannot be null or <=0");
+
 		SaleTransaction result = (SaleTransaction) DAO.getSaleTransaction(transactionId);
 
 		return result;
@@ -875,7 +887,7 @@ public class EZShop implements EZShopInterface {
 																											// does
 			// not exist
 			return false;
-		ProductType productType = getProductTypeByBarCode(productCode); // could throw InvalidProductCodeException
+		ProductType productType = DAO.getProductTypeByBarCode(productCode); // could throw InvalidProductCodeException
 		// System.out.println(productType);
 		if (productType == null) // the product to be returned does not exists
 			return false;
@@ -918,12 +930,13 @@ public class EZShop implements EZShopInterface {
 			throw new UnauthorizedException("User not logged in");
 		if (returnId == null || returnId <= 0)
 			throw new InvalidTransactionIdException("Return id cannot be null or <=0");
-		if (openReturnTransaction.getReturnId() == -1 || returnId != openReturnTransaction.getReturnId())
-			return false;
+		// if (openReturnTransaction.getReturnId() == -1 || returnId != openReturnTransaction.getReturnId())
+		// return false;
 
-		// can only delete open transaction
-		openReturnTransaction = new ReturnTransactionImpl(-1);
-		return true;
+		ReturnTransaction returnTransaction = DAO.getReturnTransaction(returnId);
+		System.out.println(returnTransaction);
+		boolean result = true;// DAO.deleteReturnTransaction(returnTransaction);
+		return result;
 
 	}
 
@@ -1019,7 +1032,7 @@ public class EZShop implements EZShopInterface {
 		if (usedCreditCard.equals("") || !usedCreditCard.equals(creditCard))
 			return -1;
 
-		double price = openSaleTransaction.getPrice();
+		double price = openReturnTransaction.getPrice();
 		double credit = DAO.getCreditCardCredit(creditCard);
 
 		double newCredit = credit + price;

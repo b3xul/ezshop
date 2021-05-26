@@ -4,7 +4,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-import it.polito.ezshop.data.BalanceOperation;
 import it.polito.ezshop.data.ProductType;
 import it.polito.ezshop.data.SaleTransaction;
 import it.polito.ezshop.data.TicketEntry;
@@ -16,7 +15,7 @@ public class SaleTransactionImpl implements SaleTransaction {
 	private LinkedList<TicketEntry> entries;
 	private double discountRate;
 	private String creditCard;
-	private BalanceOperation balanceOperation;
+	// private BalanceOperation balanceOperation;
 
 	public SaleTransactionImpl(Integer ticketNumber) {
 
@@ -25,7 +24,7 @@ public class SaleTransactionImpl implements SaleTransaction {
 		this.entries = new LinkedList<TicketEntry>();
 		this.discountRate = 0;
 		this.creditCard = "";
-		this.balanceOperation = null;
+		// this.balanceOperation = null;
 
 	}
 
@@ -177,24 +176,27 @@ public class SaleTransactionImpl implements SaleTransaction {
 
 	}
 
-	public BalanceOperation getBalanceOperation() {
-
-		return balanceOperation;
-
-	}
-
-	public void setBalanceOperation(BalanceOperation balanceOperation) {
-
-		this.balanceOperation = balanceOperation;
-
-	}
+	// public BalanceOperation getBalanceOperation() {
+	//
+	// return balanceOperation;
+	//
+	// }
+	//
+	// public void setBalanceOperation(BalanceOperation balanceOperation) {
+	//
+	// this.balanceOperation = balanceOperation;
+	//
+	// }
 
 	@Override
 	public String toString() {
 
 		return "SaleTransactionImpl [ticketNumber=" + ticketNumber + ", price=" + price + ", entries=" + entries
-				+ ", discountRate=" + discountRate + ", creditCard=" + creditCard + ", balanceOperation="
-				+ balanceOperation + "]";
+				+ ", discountRate=" + discountRate + ", creditCard=" + creditCard + "]";
+
+		// return "SaleTransactionImpl [ticketNumber=" + ticketNumber + ", price=" + price + ", entries=" + entries
+		// + ", discountRate=" + discountRate + ", creditCard=" + creditCard + ", balanceOperation="
+		// + balanceOperation + "]";
 
 	}
 

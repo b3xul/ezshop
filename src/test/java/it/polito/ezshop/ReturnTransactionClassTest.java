@@ -6,6 +6,7 @@ import org.junit.Test;
 
 import it.polito.ezshop.data.SaleTransaction;
 import it.polito.ezshop.data.Implementations.ReturnTransactionImpl;
+import it.polito.ezshop.data.Implementations.SaleTransactionImpl;
 
 public class ReturnTransactionClassTest {
 
@@ -39,7 +40,7 @@ public class ReturnTransactionClassTest {
 		returnTransaction.setPrice(5.0);
 		assertEquals(5.0, returnTransaction.getPrice(), 0.001);
 
-		SaleTransaction saleTransaction2 = null;
+		SaleTransactionImpl saleTransaction2 = null;
 		returnTransaction.setSaleTransaction(saleTransaction2);
 		assertEquals(saleTransaction2, returnTransaction.getSaleTransaction());
 

@@ -2,21 +2,16 @@ package it.polito.ezshop;
 
 import static org.junit.Assert.*;
 
-import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import it.polito.ezshop.data.EZShopInterface;
-import it.polito.ezshop.exceptions.InvalidPasswordException;
-import it.polito.ezshop.exceptions.InvalidPricePerUnitException;
-import it.polito.ezshop.exceptions.InvalidProductCodeException;
-import it.polito.ezshop.exceptions.InvalidProductDescriptionException;
-import it.polito.ezshop.exceptions.InvalidProductIdException;
-import it.polito.ezshop.exceptions.InvalidUsernameException;
-import it.polito.ezshop.exceptions.UnauthorizedException;
+import it.polito.ezshop.exceptions.*;
 
 public class UpdateProductTest {
 
-	EZShopInterface ezShop = new it.polito.ezshop.data.EZShop();
+	static EZShopInterface ezShop = new it.polito.ezshop.data.EZShop();
 	
 	@Test
 	public void testCase1() throws InvalidProductIdException, InvalidProductDescriptionException, InvalidProductCodeException, InvalidPricePerUnitException, UnauthorizedException, InvalidUsernameException, InvalidPasswordException {
@@ -97,7 +92,7 @@ public class UpdateProductTest {
 	
 	@Test
 	public void testCase9() throws InvalidUsernameException, InvalidPasswordException {
-		ezShop.login("MRKrab","wow");
+		ezShop.login("admin","admin");
 		assertThrows(InvalidProductDescriptionException.class, () -> {ezShop.updateProduct(1, null, "12343212343219", 2.5, "note");});
 		ezShop.logout();
 
@@ -105,18 +100,27 @@ public class UpdateProductTest {
 	
 	@Test
 	public void testCase10() throws InvalidUsernameException, InvalidPasswordException {
-		ezShop.login("MRKrab","wow");
+		ezShop.login("admin","admin");
 		assertThrows(InvalidProductIdException.class, () -> {ezShop.updateProduct(-1, "valid descr", "12343212343219", 2.5, "note");});
 		ezShop.logout();
 
 	}
 	
-	@After
-	  public void teardown() {
+	@BeforeClass
+	  static public void BeforeClass() throws InvalidUsernameException, InvalidPasswordException, InvalidRoleException {
+		
+		ezShop.reset();
+		ezShop.createUser("admin", "admin", "Administrator");
+		
+	}
+	
+	@AfterClass
+	  static public void AfterClass() {
 
 	    ezShop.reset();
 
 	}
+
 
 
 }

@@ -35,12 +35,12 @@ public class ReturnTransactionImpl implements it.polito.ezshop.data.ReturnTransa
 		List<TicketEntry> entries = this.getSaleTransaction().getEntries();
 		Boolean updated = false;
 		for (TicketEntry entry : entries) {
-			if (entry.getBarCode().equals(productCode)) {
+			if (entry.getBarCode().equals(productType.getBarCode())) {
 				if (amount > entry.getAmount()) // the amount is higher than the one in the sale transaction
 					updated = false;
 				else {
 					this.setProductId(productType.getId());
-					this.setProductCode(productCode);
+					this.setProductCode(entry.getBarCode());
 					this.setPricePerUnit(entry.getPricePerUnit());
 					this.setDiscountRate(entry.getDiscountRate());
 					this.setAmount(amount);
