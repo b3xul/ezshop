@@ -18,6 +18,7 @@ public class UC2TestClass {
 	
 	@BeforeClass
 	public static void beforeOp() throws InvalidUsernameException, InvalidPasswordException, InvalidRoleException {
+		shop.reset();
 		idAdmin = shop.createUser("Giuseppe","pass","Administrator");
 		shop.login("Giuseppe","pass");	
 	}
