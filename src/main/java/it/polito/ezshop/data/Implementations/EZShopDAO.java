@@ -899,11 +899,17 @@ public class EZShopDAO {
 						pstmt = conn.prepareStatement(sql);
 						pstmt.setInt(1, id);
 						pstmt.executeUpdate();
-						
 						return true;
 					}
 					else {
-						return false;
+						sql = "DELETE FROM Customers WHERE id = ?";
+						PreparedStatement pstmt = conn.prepareStatement(sql);
+						pstmt.setInt(1, id);
+						int res = pstmt.executeUpdate();
+						if(res == 0)
+							return false;
+						else
+							return true;
 					}
 					
 		} catch (Exception e) {
