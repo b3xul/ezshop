@@ -96,11 +96,7 @@ public class EZShopDAO {
 			pstmt.setString(3, password);
 			pstmt.setString(4, role);
 			int res = pstmt.executeUpdate();
-			if (res == 0) { // no modified row
-				return -1;
-			} else {
-				return id;
-			}
+			return id;
 
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
@@ -869,17 +865,27 @@ public class EZShopDAO {
 
 		Connection conn = null;
 		try {
-			conn = dbAccess();
-			String sql = "DELETE FROM Customers WHERE id = ?";
-			PreparedStatement pstmt = conn.prepareStatement(sql);
-			pstmt.setInt(1, id);
-			int rs = pstmt.executeUpdate();
-			if (rs == 0) {
-				return false;
-			} else {
-				return true;
-			}
-
+				conn = dbAccess();
+					String sql = "SELECT CU.id, card FROM Customers CU, Cards CA WHERE CU.card = CA.id AND CU.id = "+ id;
+					Statement statement = conn.createStatement();
+					ResultSet rs = statement.executeQuery(sql);
+					if (rs.next()) {
+						String card = rs.getString("card");
+						sql = "DELETE FROM Cards WHERE id = ?";
+						PreparedStatement pstmt = conn.prepareStatement(sql);
+						pstmt.setString(1, card);
+						pstmt.executeUpdate();
+						sql = "DELETE FROM Customers WHERE id = ?";
+						pstmt = conn.prepareStatement(sql);
+						pstmt.setInt(1, id);
+						pstmt.executeUpdate();
+						
+						return true;
+					}
+					else {
+						return false;
+					}
+					
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
 			return false;
@@ -957,31 +963,34 @@ public class EZShopDAO {
 
 		Connection conn = null;
 		try {
-
-			String cardId;
-			conn = dbAccess();
-			String sql = "SELECT COALESCE(MAX(id),'') AS lastId FROM Cards";
-			Statement statement = conn.createStatement();
-			ResultSet rs = statement.executeQuery(sql);
-			rs.next();
-			if (rs.getString("lastId").isEmpty()) {
-				// System.out.println("first element");
-				cardId = "1000000000";
-			} else {
-				// System.out.println("next element");
-				Integer id = Integer.parseInt(rs.getString("lastId")) + 1;
-				cardId = Integer.toString(id);
-			}
-
-			sql = "INSERT INTO Cards (id, points) VALUES(?,0)";
-			PreparedStatement pstmt = conn.prepareStatement(sql);
-			pstmt.setString(1, cardId);
-			int res = pstmt.executeUpdate();
-			if (res == 0) {
-				return "";
-			} else {
-				return cardId;
-			}
+				String cardId;
+				conn = dbAccess();
+				String sql = "SELECT COALESCE(MAX(id),'') AS lastId FROM Cards";
+				Statement statement = conn.createStatement();
+				ResultSet rs = statement.executeQuery(sql);
+				rs.next();
+				if (rs.getString("lastId").isEmpty()) {
+					cardId = "1000000000";
+				} else {
+					String lastId = rs.getString("lastId");
+					sql = "SELECT card FROM Customers WHERE card = '"+lastId+"'";
+					statement = conn.createStatement();
+					rs = statement.executeQuery(sql);
+					if(rs.next()==false) {
+						return lastId;
+					}
+					Integer id = Integer.parseInt(lastId) + 1;
+					cardId = Integer.toString(id);
+				}
+				sql = "INSERT INTO Cards (id, points) VALUES(?,0)";
+				PreparedStatement pstmt = conn.prepareStatement(sql);
+				pstmt.setString(1, cardId);
+				int res = pstmt.executeUpdate();
+				if (res == 0) {
+					return "";
+				} else {
+					return cardId;
+				}
 
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
