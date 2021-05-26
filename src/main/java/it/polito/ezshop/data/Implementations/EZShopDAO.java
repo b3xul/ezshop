@@ -832,26 +832,45 @@ public class EZShopDAO {
 
 		Connection conn = null;
 		try {
-			Pattern p = Pattern.compile("\\d+");
 			conn = dbAccess();
-					String sql = "SELECT points FROM Cards WHERE id = '" + customerCard + "'";
-					Statement statement = conn.createStatement();
-					ResultSet rs = statement.executeQuery(sql);
-					if (rs.next() && rs.getInt("points") + pointsToBeAdded >= 0) {
-						int points = rs.getInt("points") + pointsToBeAdded;
-						sql = "UPDATE Cards SET points = ? WHERE id = ?";
-						PreparedStatement pstmt = conn.prepareStatement(sql);
-						pstmt.setInt(1, points);
-						pstmt.setString(2, customerCard);
-						int res = pstmt.executeUpdate();
-						if (res == 0) {
-							return false;
-						} else {
-							return true;
-						}
-					} else {
-						return false;
-					}
+							String cardQuery = "";
+							int rs;
+							if (newCustomerCard != null)
+								cardQuery = ", card = ?";
+							String sql = "UPDATE Customers SET name = ?" + cardQuery + "WHERE id = ?";
+							PreparedStatement pstmt = conn.prepareStatement(sql);
+							pstmt.setString(1, newCustomerName);
+							if (newCustomerCard == null) { // card value doesn't change
+								pstmt.setInt(2, id);
+								rs = pstmt.executeUpdate();
+							}
+							else if (newCustomerCard.isEmpty()) { // card value erased (no more card for this customer)
+								//delete the card also in Cards table
+								String sql1 = "SELECT CU.id, card FROM Customers CU, Cards CA WHERE CU.card = CA.id AND CU.id = "+ id;
+								Statement statement = conn.createStatement();
+								ResultSet res = statement.executeQuery(sql1);
+								if (res.next()) {
+									String card = res.getString("card");
+									sql1 = "DELETE FROM Cards WHERE id = ?";
+									PreparedStatement pstmt1 = conn.prepareStatement(sql1);
+									pstmt1.setString(1, card);
+									pstmt1.executeUpdate();
+								}
+								//set parameter for the UPDATE query 
+								pstmt.setString(2, null);
+								pstmt.setInt(3, id);
+								rs = pstmt.executeUpdate();
+							} else{ //  if (newCustomerCard.length() >= 10 && p.matcher(newCustomerCard).matches()) 																				// validity
+								pstmt.setString(2, newCustomerCard); // set new card value
+								pstmt.setInt(3, id);
+								rs = pstmt.executeUpdate();
+							} 
+							if (rs == 0) {
+								return false;
+							} else {
+								return true;
+							}
+
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
 			return false;
