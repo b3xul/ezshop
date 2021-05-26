@@ -25,9 +25,8 @@ public class UC2TestClass {
 	
 	@AfterClass
 	public static void AfterClassOp() throws InvalidUserIdException, UnauthorizedException, InvalidUsernameException, InvalidPasswordException {
-		shop.logout();
-		shop.login("Mario","pass");
-		shop.deleteUser(idAdmin);
+		shop.reset();
+
 	}
 	
 	
