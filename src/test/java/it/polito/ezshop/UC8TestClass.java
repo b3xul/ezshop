@@ -14,11 +14,12 @@ import org.junit.Before;
 import org.junit.Test;
 
 import it.polito.ezshop.data.EZShopInterface;
+import it.polito.ezshop.exceptions.InvalidCreditCardException;
 import it.polito.ezshop.exceptions.InvalidQuantityException;
 import it.polito.ezshop.exceptions.InvalidTransactionIdException;
 import it.polito.ezshop.exceptions.UnauthorizedException;
 
-public class UC8Test {
+public class UC8TestClass {
 
 	static EZShopInterface ezShop;
 	static Integer transactionId;
@@ -26,6 +27,7 @@ public class UC8Test {
 	static String barcode = "12637482635892";
 	static String barcode2 = "6253478956438";
 	static String creditCard = "4485370086510891";
+	static String creditCard2 = "5100293991053009";
 
 	@Before
 	public void init() {
@@ -296,6 +298,92 @@ public class UC8Test {
 
 		} catch (Exception ex) {
 			ex.printStackTrace();
+		}
+
+	}
+
+	@Test
+	public void testCaseScenario8_8() {
+		// return cash payment exceptions
+
+		try {
+			ezShop.logout();
+			assertThrows(UnauthorizedException.class, () -> {
+				ezShop.returnCashPayment(-1);
+			});
+			ezShop.login("Casper", "casper101");
+
+			Integer returnId = ezShop.startReturnTransaction(transactionId);
+			assertEquals(Integer.valueOf(1), returnId);
+			assertTrue(ezShop.returnProduct(returnId, barcode, 2));
+
+			assertThrows(InvalidTransactionIdException.class, () -> {
+				ezShop.returnCashPayment(null);
+			});
+			assertThrows(InvalidTransactionIdException.class, () -> {
+				ezShop.returnCashPayment(0);
+			});
+			assertThrows(InvalidTransactionIdException.class, () -> {
+				ezShop.returnCashPayment(-1);
+			});
+
+			assertEquals(-1, ezShop.returnCashPayment(2), 0.001);
+
+			ezShop.endReturnTransaction(returnId, true);
+			assertEquals(-1, ezShop.returnCashPayment(returnId), 0.001);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+	}
+
+	@Test
+	public void testCaseScenario8_9() {
+
+		// return credit card payment exceptions
+		try {
+			ezShop.logout();
+			assertThrows(UnauthorizedException.class, () -> {
+				ezShop.returnCashPayment(-1);
+			});
+			ezShop.login("Casper", "casper101");
+
+			Integer returnId = ezShop.startReturnTransaction(transactionId);
+			assertEquals(Integer.valueOf(1), returnId);
+			assertTrue(ezShop.returnProduct(returnId, barcode, 2));
+
+			ezShop.addProductToSale(returnId, barcode, 100);
+
+			assertThrows(InvalidTransactionIdException.class, () -> {
+				ezShop.returnCreditCardPayment(null, creditCard);
+			});
+			assertThrows(InvalidTransactionIdException.class, () -> {
+				ezShop.returnCreditCardPayment(0, creditCard);
+			});
+			assertThrows(InvalidTransactionIdException.class, () -> {
+				ezShop.returnCreditCardPayment(-1, creditCard);
+			});
+
+			assertThrows(InvalidCreditCardException.class, () -> {
+				ezShop.returnCreditCardPayment(transactionId, null);
+			});
+
+			assertThrows(InvalidCreditCardException.class, () -> {
+				ezShop.returnCreditCardPayment(transactionId, "abc");
+			});
+
+			assertEquals(-1, ezShop.returnCreditCardPayment(transactionId, creditCard2), 0.001); // cash <
+
+			assertEquals(-1, ezShop.returnCreditCardPayment(transactionId2, creditCard), 0.001);
+
+			assertEquals(-1, ezShop.returnCreditCardPayment(2, creditCard), 0.001);
+
+			ezShop.endReturnTransaction(returnId, true);
+			assertEquals(-1, ezShop.returnCreditCardPayment(1, creditCard), 0.01);
+
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 
 	}

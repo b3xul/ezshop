@@ -974,9 +974,9 @@ public class EZShop implements EZShopInterface {
 
 		if (userLoggedIn.getRole() == "")
 			throw new UnauthorizedException("User not logged in");
-		if (transactionId <= 0 || transactionId == null)
+		if (transactionId == null || transactionId <= 0)
 			throw new InvalidTransactionIdException();
-		if (creditCard.equals(null) || !checkLuhn(creditCard))
+		if (creditCard == null || !checkLuhn(creditCard))
 			throw new InvalidCreditCardException();
 		if (openSaleTransaction.getTicketNumber() == -1 || transactionId != openSaleTransaction.getTicketNumber())
 			return false;
@@ -1023,9 +1023,9 @@ public class EZShop implements EZShopInterface {
 		System.out.println("Executing returnCreditCardPayment...");
 		if (userLoggedIn.getRole() == "")
 			throw new UnauthorizedException("User not logged in");
-		if (returnId <= 0 || returnId == null)
+		if (returnId == null || returnId <= 0)
 			throw new InvalidTransactionIdException();
-		if (creditCard.equals(null) || !checkLuhn(creditCard))
+		if (creditCard == null || !checkLuhn(creditCard))
 			throw new InvalidCreditCardException();
 		if (openReturnTransaction == null || returnId != openReturnTransaction.getReturnId())
 			return -1;

@@ -14,17 +14,22 @@ import org.junit.Before;
 import org.junit.Test;
 
 import it.polito.ezshop.data.EZShopInterface;
+import it.polito.ezshop.exceptions.InvalidCreditCardException;
 import it.polito.ezshop.exceptions.InvalidDiscountRateException;
+import it.polito.ezshop.exceptions.InvalidPaymentException;
 import it.polito.ezshop.exceptions.InvalidQuantityException;
 import it.polito.ezshop.exceptions.InvalidTransactionIdException;
 import it.polito.ezshop.exceptions.UnauthorizedException;
 
-public class UC6Test {
+public class UC6TestClass {
 
 	static EZShopInterface ezShop;
 
 	String barcode = "12637482635892";
 	String barcode2 = "6253478956438";
+	String customerCard;
+	String creditCard = "4485370086510891";
+	String creditCard2 = "5100293991053009";
 
 	@Before
 	public void init() {
@@ -43,6 +48,13 @@ public class UC6Test {
 			Integer productId2 = ezShop.createProductType("insalata", "6253478956438", 1.99, "in busta");
 			ezShop.updatePosition(productId2, "3-aisle-3");
 			ezShop.updateQuantity(productId2, 300);
+
+			Integer idCustomer = ezShop.defineCustomer("Andrea");
+			assertEquals(Integer.valueOf(1), idCustomer);
+
+			customerCard = ezShop.createCard();
+			assertTrue(customerCard != null && !customerCard.isEmpty());
+			assertTrue(ezShop.attachCardToCustomer(customerCard, idCustomer));
 
 			ezShop.createUser("Casper", "casper101", "Cashier");
 			ezShop.logout();
@@ -71,7 +83,7 @@ public class UC6Test {
 	}
 
 	@Test
-	public void testCase1() {
+	public void testCaseScenario6_Scenario6_1() {
 		// Scenario 6-1 Sale of product type X completed (credit card)
 
 		try {
@@ -92,7 +104,7 @@ public class UC6Test {
 	}
 
 	@Test
-	public void testCase2() {
+	public void testCaseScenario6_Scenario6_2() {
 		// Scenario 6-2 Sale of product type X with product discount
 
 		try {
@@ -115,7 +127,7 @@ public class UC6Test {
 	}
 
 	@Test
-	public void testCase3() {
+	public void testCaseScenario6_3() {
 		// Scenario 6-3 Sale of product type X with sale discount
 
 		try {
@@ -138,7 +150,7 @@ public class UC6Test {
 	}
 
 	@Test
-	public void testCase4() {
+	public void testCaseScenario6_4() {
 		// Scenario 6-4 Sale of product type X with Loyalty Card update
 
 		try {
@@ -156,7 +168,7 @@ public class UC6Test {
 			int points = ezShop.computePointsForSale(transactionId);
 			assertEquals(1, points);
 
-			assertTrue(ezShop.modifyPointsOnCard("1000000000", points));
+			assertTrue(ezShop.modifyPointsOnCard(customerCard, points));
 
 			assertTrue(ezShop.endSaleTransaction(transactionId));
 
@@ -168,7 +180,7 @@ public class UC6Test {
 	}
 
 	@Test
-	public void testCase5() {
+	public void testCaseScenario6_5() {
 		// Scenario 6-5 Sale of product type X cancelled
 
 		try {
@@ -194,7 +206,7 @@ public class UC6Test {
 	}
 
 	@Test
-	public void testCase6() {
+	public void testCaseScenario6_6() {
 		// Scenario 6-6 Sale of product type X completed (Cash)
 
 		try {
@@ -225,7 +237,7 @@ public class UC6Test {
 	}
 
 	@Test
-	public void testCase7() {
+	public void testCaseScenario6_7() {
 		// Scenario 6-7 Delete of an open SaleTransaction
 
 		try {
@@ -247,7 +259,7 @@ public class UC6Test {
 	}
 
 	@Test
-	public void testCase8() {
+	public void testCaseScenario6_8() {
 		// startSaleTransaction exceptions
 
 		try {
@@ -268,7 +280,7 @@ public class UC6Test {
 	}
 
 	@Test
-	public void testCase9() {
+	public void testCaseScenario6_9() {
 		// addProductToSale exceptions
 
 		try {
@@ -339,7 +351,7 @@ public class UC6Test {
 	}
 
 	@Test
-	public void testCase10() {
+	public void testCaseScenario6_10() {
 		// deleteProductFromSale exceptions
 
 		try {
@@ -411,7 +423,7 @@ public class UC6Test {
 	}
 
 	@Test
-	public void testCase11() {
+	public void testCaseScenario6_11() {
 		// applyDiscountRateToProduct exceptions
 
 		try {
@@ -478,7 +490,7 @@ public class UC6Test {
 	}
 
 	@Test
-	public void testCase12() {
+	public void testCaseScenario6_12() {
 		// applyDiscountRateToSale exceptions
 
 		try {
@@ -524,7 +536,7 @@ public class UC6Test {
 	}
 
 	@Test
-	public void testCase13() {
+	public void testCaseScenario6_13() {
 		// computePointsForSale exceptions
 
 		try {
@@ -563,7 +575,7 @@ public class UC6Test {
 	}
 
 	@Test
-	public void testCase14() {
+	public void testCaseScenario6_14() {
 		// endSaleTransaction exceptions
 
 		try {
@@ -604,7 +616,7 @@ public class UC6Test {
 	}
 
 	@Test
-	public void testCase15() {
+	public void testCaseScenario6_15() {
 		// deleteSaleTransaction exceptions
 
 		try {
@@ -643,7 +655,7 @@ public class UC6Test {
 	}
 
 	@Test
-	public void testCase16() {
+	public void testCaseScenario6_16() {
 		// getSaleTransaction exceptions
 
 		try {
@@ -672,6 +684,96 @@ public class UC6Test {
 			assertEquals(null, ezShop.getSaleTransaction(transactionId)); // transactionId has not been ended yet
 
 			// TODO: assertTrue(ezShop.recordBalanceUpdate(price));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+	}
+
+	@Test
+	public void testCaseScenario6_17() {
+		// receive cash payment exceptions
+
+		try {
+			ezShop.logout();
+			assertThrows(UnauthorizedException.class, () -> {
+				ezShop.receiveCashPayment(-1, 10.0);
+			});
+			ezShop.login("Casper", "casper101");
+
+			Integer transactionId = ezShop.startSaleTransaction();
+			assertEquals(Integer.valueOf(1), transactionId);
+
+			ezShop.addProductToSale(transactionId, barcode, 16);
+
+			assertThrows(InvalidTransactionIdException.class, () -> {
+				ezShop.receiveCashPayment(null, 10.0);
+			});
+			assertThrows(InvalidTransactionIdException.class, () -> {
+				ezShop.receiveCashPayment(0, 10.0);
+			});
+			assertThrows(InvalidTransactionIdException.class, () -> {
+				ezShop.receiveCashPayment(-1, 10.0);
+			});
+
+			assertThrows(InvalidPaymentException.class, () -> {
+				ezShop.receiveCashPayment(transactionId, -1);
+			});
+
+			assertEquals(-1, ezShop.receiveCashPayment(2, 1.0), 0.001); // cash <
+
+			assertEquals(-1, ezShop.receiveCashPayment(2, 10.0), 0.001);
+
+			ezShop.endSaleTransaction(transactionId);
+			assertEquals(-1, ezShop.receiveCashPayment(1, 10.0), 0.001);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+	}
+
+	@Test
+	public void testCaseScenario6_18() {
+
+		// receive credit card payment
+		try {
+			ezShop.logout();
+			assertThrows(UnauthorizedException.class, () -> {
+				ezShop.receiveCreditCardPayment(-1, creditCard);
+			});
+			ezShop.login("Casper", "casper101");
+
+			Integer transactionId = ezShop.startSaleTransaction();
+			assertEquals(Integer.valueOf(1), transactionId);
+
+			ezShop.addProductToSale(transactionId, barcode, 100);
+
+			assertThrows(InvalidTransactionIdException.class, () -> {
+				ezShop.receiveCreditCardPayment(null, creditCard);
+			});
+			assertThrows(InvalidTransactionIdException.class, () -> {
+				ezShop.receiveCreditCardPayment(0, creditCard);
+			});
+			assertThrows(InvalidTransactionIdException.class, () -> {
+				ezShop.receiveCreditCardPayment(-1, creditCard);
+			});
+
+			assertThrows(InvalidCreditCardException.class, () -> {
+				ezShop.receiveCreditCardPayment(transactionId, null);
+			});
+
+			assertThrows(InvalidCreditCardException.class, () -> {
+				ezShop.receiveCreditCardPayment(transactionId, "abc");
+			});
+
+			assertFalse(ezShop.receiveCreditCardPayment(transactionId, creditCard2)); // cash <
+
+			assertFalse(ezShop.receiveCreditCardPayment(2, creditCard));
+
+			ezShop.endSaleTransaction(transactionId);
+			assertFalse(ezShop.receiveCreditCardPayment(1, creditCard));
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

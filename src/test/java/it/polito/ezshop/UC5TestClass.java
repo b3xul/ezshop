@@ -12,35 +12,47 @@ import it.polito.ezshop.exceptions.InvalidRoleException;
 import it.polito.ezshop.exceptions.InvalidUsernameException;
 
 public class UC5TestClass {
-	static EZShop shop = new EZShop();	
-	
+
+	static EZShop shop = new EZShop();
+
 	@BeforeClass
 	public static void beforeOp() throws InvalidUsernameException, InvalidPasswordException, InvalidRoleException {
+
 		shop.reset();
-		shop.createUser("Giuseppe","pass","Administrator");
+		shop.createUser("Giuseppe", "pass", "Administrator");
+
 	}
+
 	@AfterClass
 	public static void AfterOp() throws InvalidUsernameException, InvalidPasswordException, InvalidRoleException {
+
 		shop.reset();
+
 	}
-	
-	// Scenario 5-1 
+
+	// Scenario 5-1
 	@Test
 	public void testCase5_1() throws InvalidUsernameException, InvalidPasswordException, InvalidRoleException {
-		assertTrue(shop.login("Giuseppe","pass")!=null);
+
+		assertTrue(shop.login("Giuseppe", "pass") != null);
+
 	}
-				
-	// Scenario 5-1 variant (wrong password) 
+
+	// Scenario 5-1 variant (wrong password)
 	@Test
 	public void testCase5_1_variant() throws InvalidUsernameException, InvalidPasswordException, InvalidRoleException {
-		assertTrue(shop.login("Giuseppe","password")==null);
+
+		assertTrue(shop.login("Giuseppe", "password") == null);
+
 	}
-	
-	// Scenario 5-2 	
+
+	// Scenario 5-2
 	@Test
 	public void testCase5_2() throws InvalidUsernameException, InvalidPasswordException, InvalidRoleException {
-		shop.login("Maria","pass");
+
+		shop.login("Giuseppe", "pass");
 		assertTrue(shop.logout());
+
 	}
-	
+
 }
