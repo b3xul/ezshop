@@ -2,7 +2,8 @@ package it.polito.ezshop;
 
 import static org.junit.Assert.*;
 
-import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import it.polito.ezshop.data.EZShopInterface;
@@ -78,12 +79,21 @@ public class UpdateQuantityTest {
 
 	}
 
-	@After
-	  public void teardown() {
+	@BeforeClass
+	  static public void BeforeClass() throws InvalidUsernameException, InvalidPasswordException, InvalidRoleException {
+		
+		ezShop.reset();
+		ezShop.createUser("admin", "admin", "Administrator");
+		
+	}
+	
+	@AfterClass
+	  static public void AfterClass() {
 
 	    ezShop.reset();
 
 	}
+
 
 
 }
