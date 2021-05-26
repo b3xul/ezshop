@@ -9,6 +9,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import it.polito.ezshop.data.EZShop1;
 import it.polito.ezshop.data.EZShopInterface;
 import it.polito.ezshop.data.Order;
 import it.polito.ezshop.exceptions.InvalidOrderIdException;
@@ -23,12 +24,12 @@ import it.polito.ezshop.exceptions.UnauthorizedException;
 
 public class GetAllOrdersTest {
 
-	EZShopInterface ezShop;
+	EZShop1 ezShop;
 	int orderId;
 	
 	@Before
 	public void init() throws InvalidUsernameException, InvalidPasswordException, InvalidRoleException, InvalidProductDescriptionException, InvalidProductCodeException, InvalidPricePerUnitException, UnauthorizedException, InvalidQuantityException, InvalidOrderIdException {
-		ezShop = new it.polito.ezshop.data.EZShop();
+		ezShop = new it.polito.ezshop.data.EZShop1();
 		ezShop.reset();
 		ezShop.login("admin", "admin");
 		ezShop.createProductType("biscotti", "12637482635892", 1.5, "piccoli");

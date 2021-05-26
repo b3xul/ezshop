@@ -6,6 +6,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import it.polito.ezshop.data.EZShop1;
 import it.polito.ezshop.data.EZShopInterface;
 import it.polito.ezshop.exceptions.InvalidPasswordException;
 import it.polito.ezshop.exceptions.InvalidUsernameException;
@@ -13,11 +14,11 @@ import it.polito.ezshop.exceptions.UnauthorizedException;
 
 public class RecordBalanceUpdateTest {
 	
-	EZShopInterface ezShop;
+	EZShop1 ezShop;
 	
 	@Before
 	public void init() throws InvalidUsernameException, InvalidPasswordException {
-		ezShop = new it.polito.ezshop.data.EZShop();
+		ezShop = new it.polito.ezshop.data.EZShop1();
 		ezShop.reset();
 		ezShop.login("admin", "admin");
 	}

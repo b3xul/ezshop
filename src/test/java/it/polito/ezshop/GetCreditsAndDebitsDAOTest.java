@@ -1,28 +1,29 @@
 package it.polito.ezshop;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 
 import java.time.LocalDate;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
-import it.polito.ezshop.data.EZShop1;
-import it.polito.ezshop.data.EZShopInterface;
-import it.polito.ezshop.exceptions.InvalidPasswordException;
-import it.polito.ezshop.exceptions.InvalidUsernameException;
-import it.polito.ezshop.exceptions.UnauthorizedException;
+import it.polito.ezshop.data.Implementations.EZShopDAO;
 
-public class getCreditsAndDebitsTest {
 
-	EZShop1 ezShop;
+public class GetCreditsAndDebitsDAOTest {
+	
+static EZShopDAO ezShop;
+	
+	@BeforeClass
+	public static void init() {
+		ezShop = new it.polito.ezshop.data.Implementations.EZShopDAO();
+	}
 	
 	@Before
-	public void init() throws InvalidUsernameException, InvalidPasswordException {
-		ezShop = new it.polito.ezshop.data.EZShop1();
+	public void initDb() {
 		ezShop.reset();
-		ezShop.login("admin", "admin");
 	}
 	
 	@After
@@ -31,7 +32,7 @@ public class getCreditsAndDebitsTest {
 	}
 	
 	@Test
-	public void testCase1() throws UnauthorizedException {
+	public void testCase1() {
 		//This method asserts that the list of all the balance operations can be retrieved correctly 
 		ezShop.recordBalanceUpdate(20);
 		ezShop.recordBalanceUpdate(30);
@@ -40,17 +41,16 @@ public class getCreditsAndDebitsTest {
 	}
 	
 	@Test
-	public void testCase2() throws UnauthorizedException {
+	public void testCase2() {
 		//This method asserts that the list of all the balance operations can be retrieved correctly even though the from and to date are inverted
 		ezShop.recordBalanceUpdate(20);
 		ezShop.recordBalanceUpdate(30);
 		ezShop.recordBalanceUpdate(50);
 		assertTrue((ezShop.getCreditsAndDebits(LocalDate.now().plusDays(1), LocalDate.now())).size() > 0);
-	} 
-	
+	}
 	
 	@Test
-	public void testCase3() throws UnauthorizedException {
+	public void testCase3() {
 		//This method asserts that the list of all the balance operations can be retrieved correctly even though there is a null date
 		ezShop.recordBalanceUpdate(20);
 		ezShop.recordBalanceUpdate(30);
@@ -58,10 +58,5 @@ public class getCreditsAndDebitsTest {
 		assertTrue((ezShop.getCreditsAndDebits(LocalDate.now(), null)).size() > 0);
 	}
 	
-	@Test
-	public void testCase4() {
-		//This test verifies that the list of all the balance operations can't be retrieved if the user does not have the rights
-		ezShop.logout();
-		assertThrows(UnauthorizedException.class, () -> {ezShop.getCreditsAndDebits(LocalDate.now(), LocalDate.now().plusDays(1));});
-	}
+	
 }
