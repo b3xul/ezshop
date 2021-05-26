@@ -9,8 +9,8 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 import it.polito.ezshop.data.EZShopInterface;
@@ -22,33 +22,35 @@ public class UC8Test {
 
 	static EZShopInterface ezShop;
 	static Integer transactionId;
+	static Integer transactionId2;
 	static String barcode = "12637482635892";
 	static String barcode2 = "6253478956438";
+	static String creditCard = "4485370086510891";
 
-	@BeforeClass
+	@Before
 	public void init() {
 
 		ezShop = new it.polito.ezshop.data.EZShop();
 		ezShop.reset();
 		try {
-			// ezShop.createUser("admin", "admin", "Administrator");
+			ezShop.createUser("admin", "admin", "Administrator");
 			ezShop.login("admin", "admin");
 
 			// Product type X exists and has enough units to complete the sale
 			Integer productId = ezShop.createProductType("biscotti", "12637482635892", 1.5, "piccoli");
 			ezShop.updatePosition(productId, "2-aisle-2");
-			ezShop.updateQuantity(productId, 25);
+			ezShop.updateQuantity(productId, 250);
 
-			Integer productId2 = ezShop.createProductType("insalata", "6253478956438", 1.99, "in busta");
+			Integer productId2 = ezShop.createProductType("insalata", "6253478956438", 2, "in busta");
 			ezShop.updatePosition(productId2, "3-aisle-3");
-			ezShop.updateQuantity(productId2, 30);
+			ezShop.updateQuantity(productId2, 300);
 
-			// ezShop.createUser("Casper", "casper101", "Cashier");
+			ezShop.createUser("Casper", "casper101", "Cashier");
 			ezShop.logout();
 
 			// Cashier C exists and is logged in
-			// ezShop.login("Casper", "casper101");
-			ezShop.login("admin", "admin");
+			ezShop.login("Casper", "casper101");
+			// ezShop.login("admin", "admin");
 
 			transactionId = ezShop.startSaleTransaction();
 			assertEquals(Integer.valueOf(1), transactionId);
@@ -56,13 +58,19 @@ public class UC8Test {
 			assertTrue(ezShop.addProductToSale(transactionId, barcode, 5));
 			assertTrue(ezShop.addProductToSale(transactionId, barcode2, 10));
 
-			assertTrue(ezShop.receiveCreditCardPayment(transactionId, "4485370086510891"));
+			assertTrue(ezShop.receiveCreditCardPayment(transactionId, creditCard));
 
 			assertTrue(ezShop.endSaleTransaction(transactionId));
 
-			double price = ezShop.getSaleTransaction(transactionId).getPrice();
+			transactionId2 = ezShop.startSaleTransaction();
+			assertEquals(Integer.valueOf(2), transactionId2);
 
-			// assertTrue(ezShop.recordBalanceUpdate(price));
+			assertTrue(ezShop.addProductToSale(transactionId2, barcode, 8));
+
+			assertEquals(3, ezShop.receiveCashPayment(transactionId2, 15), 0.001);
+
+			assertTrue(ezShop.endSaleTransaction(transactionId2));
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -77,7 +85,7 @@ public class UC8Test {
 
 	}
 
-	@AfterClass
+	@After
 	public void teardown() {
 
 		ezShop.reset();
@@ -93,7 +101,7 @@ public class UC8Test {
 			Integer returnId = ezShop.startReturnTransaction(transactionId);
 			assertEquals(Integer.valueOf(1), returnId);
 			assertTrue(ezShop.returnProduct(returnId, barcode, 2));
-			assertEquals(3, ezShop.returnCreditCardPayment(returnId, "4485370086510891"), 0.001);
+			assertEquals(3, ezShop.returnCreditCardPayment(returnId, creditCard), 0.001);
 			assertTrue(ezShop.endReturnTransaction(returnId, true));
 
 		} catch (Exception ex) {
@@ -123,6 +131,25 @@ public class UC8Test {
 	@Test
 	public void testCaseScenario8_3() {
 
+		// Scenario 8-3 Delete return transaction
+		try {
+
+			Integer returnId = ezShop.startReturnTransaction(transactionId);
+			assertEquals(Integer.valueOf(1), returnId);
+			assertTrue(ezShop.returnProduct(returnId, barcode, 2));
+			assertEquals(3, ezShop.returnCashPayment(returnId), 0.001);
+			assertTrue(ezShop.endReturnTransaction(returnId, true));
+			assertTrue(ezShop.deleteReturnTransaction(returnId));
+
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+
+	}
+
+	@Test
+	public void testCaseScenario8_4() {
+
 		// Scenario 8-3 startReturnTransaction exceptions
 		try {
 
@@ -141,7 +168,7 @@ public class UC8Test {
 			assertThrows(InvalidTransactionIdException.class, () -> {
 				ezShop.startReturnTransaction(-1);
 			});
-			assertEquals(Integer.valueOf(-1), ezShop.startReturnTransaction(2));
+			assertEquals(Integer.valueOf(-1), ezShop.startReturnTransaction(3));
 
 		} catch (Exception ex) {
 			ex.printStackTrace();
@@ -150,7 +177,7 @@ public class UC8Test {
 	}
 
 	@Test
-	public void testCaseScenario8_4() {
+	public void testCaseScenario8_5() {
 
 		// Scenario 8-4 returnProduct exceptions
 		try {
@@ -195,7 +222,7 @@ public class UC8Test {
 	}
 
 	@Test
-	public void testCaseScenario8_5() {
+	public void testCaseScenario8_6() {
 
 		// Scenario 8-5 endReturnTransaction exceptions
 		try {
@@ -233,7 +260,7 @@ public class UC8Test {
 	}
 
 	@Test
-	public void testCaseScenario8_6() {
+	public void testCaseScenario8_7() {
 
 		// Scenario 8-6 deleteReturnTransaction exceptions
 		try {
