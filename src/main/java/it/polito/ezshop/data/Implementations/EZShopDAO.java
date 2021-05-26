@@ -811,12 +811,7 @@ public class EZShopDAO {
 			pstmt.setInt(1, id);
 			pstmt.setString(2, customerName);
 			int res = pstmt.executeUpdate();
-			if (res == 0) {
-				return -1;
-			} else {
-				return id;
-			}
-
+			return id;
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
 			return -1;
