@@ -1,10 +1,10 @@
 # Integration and API Test Documentation
 
-Authors:
+Authors: Elia Fontana, Andrea Palomba, Leonardo Perugini, Francesco Sattolo
 
-Date:
+Date: 26/05/2021
 
-Version:
+Version: 1.0
 
 # Contents
 
