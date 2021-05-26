@@ -29,6 +29,7 @@ public class RecordOrderArrivalTest {
 	public void init() throws UnauthorizedException, InvalidUsernameException, InvalidPasswordException, InvalidRoleException, InvalidProductDescriptionException, InvalidProductCodeException, InvalidPricePerUnitException, InvalidQuantityException, InvalidProductIdException, InvalidLocationException {
 		ezShop = new it.polito.ezshop.data.EZShop();
 		ezShop.reset();
+		ezShop.createUser("admin", "admin", "Administrator");
 		ezShop.login("admin", "admin");
 		productId = ezShop.createProductType("biscotti", "12637482635892", 1.5, "piccoli");
 		ezShop.recordBalanceUpdate(1000);   							//recording a positive balance before paying an order, so it can be placed

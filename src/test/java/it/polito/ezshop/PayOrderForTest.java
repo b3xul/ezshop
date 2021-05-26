@@ -24,6 +24,7 @@ public class PayOrderForTest {
 	public void init() throws UnauthorizedException, InvalidUsernameException, InvalidPasswordException, InvalidRoleException, InvalidProductDescriptionException, InvalidProductCodeException, InvalidPricePerUnitException {
 		ezShop = new it.polito.ezshop.data.EZShop();
 		ezShop.reset();
+		ezShop.createUser("admin", "admin", "Administrator");
 		ezShop.login("admin", "admin");
 		ezShop.createProductType("biscotti", "12637482635892", 1.5, "piccoli");
 	}
