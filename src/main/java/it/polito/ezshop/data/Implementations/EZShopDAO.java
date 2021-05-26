@@ -825,32 +825,24 @@ public class EZShopDAO {
 		try {
 			Pattern p = Pattern.compile("\\d+");
 			conn = dbAccess();
-			String cardQuery = "";
-			if (newCustomerCard != null)
-				cardQuery = ", card = ?";
-			String sql = "UPDATE Customers SET name = ?" + cardQuery + "WHERE id = ?";
-			PreparedStatement pstmt = conn.prepareStatement(sql);
-			pstmt.setString(1, newCustomerName);
-			if (newCustomerCard == null) // card value doesn't change
-				pstmt.setInt(2, id);
-			else if (newCustomerCard.isEmpty()) { // card value erased (no more card for this customer)
-				pstmt.setString(2, null);
-				pstmt.setInt(3, id);
-			} else if (newCustomerCard.length() >= 10 && p.matcher(newCustomerCard).matches()) { // check
-																									// card
-																									// validity
-				pstmt.setString(2, newCustomerCard); // set new card value
-				pstmt.setInt(3, id);
-			} else {
-				throw new InvalidCustomerCardException("Invalid card");
-			}
-			int rs = pstmt.executeUpdate();
-			if (rs == 0) {
-				return false;
-			} else {
-				return true;
-			}
-
+					String sql = "SELECT points FROM Cards WHERE id = '" + customerCard + "'";
+					Statement statement = conn.createStatement();
+					ResultSet rs = statement.executeQuery(sql);
+					if (rs.next() && rs.getInt("points") + pointsToBeAdded >= 0) {
+						int points = rs.getInt("points") + pointsToBeAdded;
+						sql = "UPDATE Cards SET points = ? WHERE id = ?";
+						PreparedStatement pstmt = conn.prepareStatement(sql);
+						pstmt.setInt(1, points);
+						pstmt.setString(2, customerCard);
+						int res = pstmt.executeUpdate();
+						if (res == 0) {
+							return false;
+						} else {
+							return true;
+						}
+					} else {
+						return false;
+					}
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
 			return false;
