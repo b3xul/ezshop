@@ -107,11 +107,9 @@ public class EZShopDAO {
 			pstmt.setString(4, role);
 			pstmt.executeUpdate();
 			return id;
-
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
 			return -1;
-
 		} finally {
 			dbClose(conn);
 		}
@@ -131,14 +129,11 @@ public class EZShopDAO {
 			} else {
 				return true;
 			}
-
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
 			return false;
-
 		} finally {
 			dbClose(conn);
-
 		}
 
 	}
@@ -157,11 +152,9 @@ public class EZShopDAO {
 						rs.getString("role")));
 			}
 			return users;
-
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
 			return users;
-
 		} finally {
 			dbClose(conn);
 		}
@@ -182,11 +175,9 @@ public class EZShopDAO {
 			} else {
 				return null;
 			}
-
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
 			return null;
-
 		} finally {
 			dbClose(conn);
 		}
@@ -208,11 +199,9 @@ public class EZShopDAO {
 			} else {
 				return true;
 			}
-
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
 			return false;
-
 		} finally {
 			dbClose(conn);
 		}
@@ -228,7 +217,6 @@ public class EZShopDAO {
 			String sql = "SELECT id, username, password, role FROM Users WHERE username = '" + username + "'";
 			Statement statement = conn.createStatement();
 			ResultSet rs = statement.executeQuery(sql);
-
 			if (rs.next() == true && password.equals(rs.getString("password"))) {
 				// System.out.println("Log in");
 				userLoggedIn.setId(rs.getInt("id"));
@@ -239,11 +227,9 @@ public class EZShopDAO {
 			} else {
 				return null;
 			}
-
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
 			return null;
-
 		} finally {
 			dbClose(conn);
 			// System.out.println("connection closed");
@@ -816,10 +802,8 @@ public class EZShopDAO {
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
 			return -1;
-
 		} finally {
 			dbClose(conn);
-
 		}
 
 	}
@@ -865,11 +849,9 @@ public class EZShopDAO {
 			} else {
 				return true;
 			}
-
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
 			return false;
-
 		} finally {
 			dbClose(conn);
 		}
@@ -905,11 +887,9 @@ public class EZShopDAO {
 				else
 					return true;
 			}
-
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
 			return false;
-
 		} finally {
 			dbClose(conn);
 		}
@@ -937,11 +917,9 @@ public class EZShopDAO {
 				} else
 					return null;
 			}
-
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
 			return null;
-
 		} finally {
 			dbClose(conn);
 		}
@@ -972,7 +950,6 @@ public class EZShopDAO {
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
 			return customers;
-
 		} finally {
 			dbClose(conn);
 		}
@@ -1010,10 +987,8 @@ public class EZShopDAO {
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
 			return "";
-
 		} finally {
 			dbClose(conn);
-
 		}
 
 	}
@@ -1033,11 +1008,9 @@ public class EZShopDAO {
 			} else {
 				return true;
 			}
-
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
 			return false;
-
 		} finally {
 			dbClose(conn);
 		}
@@ -1063,11 +1036,9 @@ public class EZShopDAO {
 			} else {
 				return false;
 			}
-
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
 			return false;
-
 		} finally {
 			dbClose(conn);
 		}
@@ -1155,7 +1126,7 @@ public class EZShopDAO {
 
 	public SaleTransactionImpl getSaleTransaction(Integer transactionId) {
 
-		String getSale = "SELECT price,discountRate,creditCard,balanceId FROM saleTransaction WHERE ticketNumber=?";
+		String getSale = "SELECT price,discountRate,creditCard FROM saleTransaction WHERE ticketNumber=?";
 		// String getBalance = "SELECT balanceId,date,money,type FROM balanceOperation WHERE balanceId=?";
 		String getTicketEntries = "SELECT barCode,productDescription,pricePerUnit,discountRate,amount FROM ticketEntry WHERE ticketNumber=?";
 		SaleTransactionImpl result = null;
@@ -1227,7 +1198,6 @@ public class EZShopDAO {
 	public boolean endReturnTransaction(ReturnTransactionImpl openReturnTransaction) {
 
 		Connection conn = dbAccess();
-
 		try {
 			conn.setAutoCommit(false); // single transaction on the database
 			// 1. close the return transaction
@@ -1242,7 +1212,6 @@ public class EZShopDAO {
 			pstmt.setInt(7, openReturnTransaction.getSaleTransaction().getTicketNumber());
 			pstmt.executeUpdate();
 			pstmt.close();
-
 			// 2. updates the transaction status (decreasing the number of units sold by the number of returned one)
 			String updateTicket = "UPDATE ticketEntry SET amount = ? WHERE ticketNumber = ? AND barCode = ? ";
 			Iterator<TicketEntry> iter = openReturnTransaction.getSaleTransaction().getEntries().iterator();
@@ -1253,21 +1222,18 @@ public class EZShopDAO {
 					int previousAmount = entry.getAmount();
 					int amountToRemove = openReturnTransaction.getAmount();
 					if (amountToRemove <= previousAmount) {
-
 						pstmt = conn.prepareStatement(updateTicket);
 						pstmt.setDouble(1, previousAmount - amountToRemove);
 						pstmt.setInt(2, openReturnTransaction.getSaleTransaction().getTicketNumber());
 						pstmt.setString(3, openReturnTransaction.getProductCode());
 						pstmt.executeUpdate();
 						pstmt.close();
-
 					}
 					// else if (amountToRemove > previousAmount) updated=false; (can't happen by construction)
 					// System.out.println("Found item to remove" + entry);
 					break;
 				}
 			}
-
 			// 3. updates the transaction status (decreasing the final price)
 			String updateSale = "UPDATE saleTransaction SET price = ? WHERE ticketNumber = ?";
 			// updateSale
@@ -1277,19 +1243,15 @@ public class EZShopDAO {
 			pstmt.setInt(2, openReturnTransaction.getSaleTransaction().getTicketNumber());
 			pstmt.executeUpdate();
 			pstmt.close();
-
 			conn.commit();
-
 			// 4. increases the product quantity available on the shelves
 			updateQuantity(openReturnTransaction.getProductId(), openReturnTransaction.getAmount());
-
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			return false;
 		} finally {
 			dbClose(conn);
 		}
-
 		return true;
 
 	}
@@ -1330,15 +1292,13 @@ public class EZShopDAO {
 	public boolean deleteReturnTransaction(ReturnTransactionImpl returnTransaction) {
 
 		Connection conn = dbAccess();
-
 		try {
-
-			// 1. decrease the product quantity available on the shelves
+			// 1. add record balance update to compensate
+			this.recordBalanceUpdate(returnTransaction.getPrice());
+			// 2. decrease the product quantity available on the shelves
 			updateQuantity(returnTransaction.getProductId(), -returnTransaction.getAmount());
-
 			conn.setAutoCommit(false); // single transaction on the database
-
-			// 2. updates the transaction status (increasing the final price)
+			// 3. updates the transaction status (increasing the final price)
 			String updateSale = "UPDATE saleTransaction SET price = ? WHERE ticketNumber = ?";
 			// updateSale
 			PreparedStatement pstmt = conn.prepareStatement(updateSale);
@@ -1346,8 +1306,7 @@ public class EZShopDAO {
 			pstmt.setInt(2, returnTransaction.getSaleTransaction().getTicketNumber());
 			pstmt.executeUpdate();
 			pstmt.close();
-
-			// 3. updates the transaction status (decreasing the number of units sold by the number of returned one)
+			// 4. updates the transaction status (decreasing the number of units sold by the number of returned one)
 			String updateTicket = "UPDATE ticketEntry SET amount = ? WHERE ticketNumber = ? AND barCode = ? ";
 			Iterator<TicketEntry> iter = returnTransaction.getSaleTransaction().getEntries().iterator();
 			while (iter.hasNext()) {
@@ -1356,27 +1315,23 @@ public class EZShopDAO {
 					// saleTransaction
 					int previousAmount = entry.getAmount();
 					int amountToAdd = returnTransaction.getAmount();
-
 					pstmt = conn.prepareStatement(updateTicket);
 					pstmt.setDouble(1, previousAmount + amountToAdd);
 					pstmt.setInt(2, returnTransaction.getSaleTransaction().getTicketNumber());
 					pstmt.setString(3, returnTransaction.getProductCode());
 					pstmt.executeUpdate();
 					pstmt.close();
-
 					// else if (amountToAdd > previousAmount) updated=false; (can't happen by construction)
 					// System.out.println("Found item to remove" + entry);
 					break;
 				}
 			}
-
-			// 4. close the return transaction
+			// 5. close the return transaction
 			String deleteReturn = "DELETE FROM returnTransaction WHERE returnId = ?";
 			pstmt = conn.prepareStatement(deleteReturn);
 			pstmt.setInt(1, returnTransaction.getReturnId());
 			pstmt.executeUpdate();
 			pstmt.close();
-
 			conn.commit();
 		} catch (Exception ex) {
 			ex.printStackTrace();
@@ -1384,7 +1339,6 @@ public class EZShopDAO {
 		} finally {
 			dbClose(conn);
 		}
-
 		return true;
 
 	}
@@ -1418,7 +1372,6 @@ public class EZShopDAO {
 		} finally {
 			dbClose(conn);
 		}
-
 		return credit;
 
 	}
