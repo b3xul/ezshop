@@ -107,7 +107,7 @@ step 3: class EZShop + EZShopDAO + class UserImpl, class BalanceOperationImpl, c
 ## Step 2
 | Classes    | JUnit test cases |
 | -------    | ---------------- |
-| EZShopDAO  |                  |
+| EZShopDAO  |   ComputeBalanceDAOTest  <br> DAOCustomerMethodsClass <br> DAOProductTypeMethodsClass <br> DAOSaleTransactionMethodsClass<br> DAOUserMethodsClass<br>  GetAllOrdersDAOTest <br>   GetCreditsAndDebitsDAOTest <br> PayOrderDAOTest <br> RecordBalanceUpdateDAOTest <br> RecordOrderArrivalDAOTest <br> issueOrderDAOTest <br> payOrderForDAOTest                  |
 
 ## Step 3 
 
@@ -115,7 +115,7 @@ step 3: class EZShop + EZShopDAO + class UserImpl, class BalanceOperationImpl, c
 
 | Classes | JUnit test cases |
 | ------- | ---------------- |
-| EZShop  |                  |
+| EZShop  | ComputeBalanceTest  <br> CreateProductTypeTest <br> CustomerMethodsClassTest <br> DeleteProductTypeTest<br> GetAllOrdersTest<br>  GetAllProductTypesTest <br>   GetProductTypeByBarCodeTest <br> GetProductTypeByDescriptionTest <br> IssueOrderTest <br> UpdatePositionTest <br>  PayOrderForTest <br> PayOrderTest <br> RecordBalanceUpdateTest <br> RecordOrderArrivalTest <br> UpdateProductTest <br> UpdateQuantityTest <br> UserMethodsClassTest <br>  GetCreditsAndDebitsTest                |
 
 
 
