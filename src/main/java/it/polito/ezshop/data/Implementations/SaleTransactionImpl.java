@@ -24,6 +24,7 @@ public class SaleTransactionImpl implements SaleTransaction {
 	private double price;
 	private LinkedList<TicketEntry> entries;
 	private double discountRate;
+	private String creditCard;
 	private BalanceOperation balanceOperation;
 
 	public SaleTransactionImpl(Integer ticketNumber) {
@@ -32,6 +33,7 @@ public class SaleTransactionImpl implements SaleTransaction {
 		this.price = 0;
 		this.entries = new LinkedList<TicketEntry>();
 		this.discountRate = 0;
+		this.creditCard = "";
 		this.balanceOperation = null;
 
 	}
@@ -179,7 +181,7 @@ public class SaleTransactionImpl implements SaleTransaction {
 	public Boolean endSaleTransaction() throws InvalidTransactionIdException, UnauthorizedException {
 
 		String getNextAutoincrement = "SELECT seq FROM sqlite_sequence WHERE name=\"balanceOperation\"";
-		String insertSale = "INSERT INTO saleTransaction(price,discountRate,balanceId) VALUES(?,?,?)";
+		String insertSale = "INSERT INTO saleTransaction(price,discountRate,creditCard,balanceId) VALUES(?,?,?,?)";
 		String insertTicketEntry = "INSERT INTO ticketEntry(ticketNumber,barCode,productDescription,pricePerUnit,discountRate,amount) VALUES(?,?,?,?,?,?)";
 
 		try (Connection conn = DriverManager.getConnection("jdbc:sqlite:EZShopDB.sqlite");) {
@@ -196,7 +198,8 @@ public class SaleTransactionImpl implements SaleTransaction {
 			PreparedStatement pstmt = conn.prepareStatement(insertSale);
 			pstmt.setDouble(1, this.getPrice());
 			pstmt.setDouble(2, this.getDiscountRate());
-			pstmt.setInt(3, balanceId);
+			pstmt.setString(3, this.getCreditCard());
+			pstmt.setInt(4, balanceId);
 			pstmt.executeUpdate();
 			pstmt.close();
 			for (TicketEntry entry : this.getEntries()) {
@@ -275,6 +278,18 @@ public class SaleTransactionImpl implements SaleTransaction {
 
 	}
 
+	public String getCreditCard() {
+
+		return creditCard;
+
+	}
+
+	public void setCreditCard(String creditCard) {
+
+		this.creditCard = creditCard;
+
+	}
+
 	public BalanceOperation getBalanceOperation() {
 
 		return balanceOperation;
@@ -290,8 +305,9 @@ public class SaleTransactionImpl implements SaleTransaction {
 	@Override
 	public String toString() {
 
-		return "SaleTransactionImpl [ticketNumber=" + this.getTicketNumber() + ", price=" + this.price + " entries="
-				+ entries + ", discountRate=" + discountRate + "]";
+		return "SaleTransactionImpl [ticketNumber=" + ticketNumber + ", price=" + price + ", entries=" + entries
+				+ ", discountRate=" + discountRate + ", creditCard=" + creditCard + ", balanceOperation="
+				+ balanceOperation + "]";
 
 	}
 

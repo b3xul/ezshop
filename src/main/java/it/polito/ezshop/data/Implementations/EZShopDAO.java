@@ -635,6 +635,7 @@ public class EZShopDAO {
 		return orderId;
 	}
 	
+	
 	public boolean payOrder(Integer orderId) {
 		boolean validOrderId = false;
 		Connection conn = null;

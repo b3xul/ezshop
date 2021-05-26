@@ -10,8 +10,8 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.util.List;
 
-import org.junit.After;
-import org.junit.Before;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import it.polito.ezshop.data.EZShopInterface;
@@ -26,7 +26,7 @@ public class UC6Test {
 
 	static EZShopInterface ezShop;
 
-	@Before
+	@BeforeClass
 	public void init() {
 
 		ezShop = new it.polito.ezshop.data.EZShop();
@@ -63,7 +63,7 @@ public class UC6Test {
 
 	}
 
-	@After
+	@AfterClass
 	public void teardown() {
 
 		ezShop.reset();
