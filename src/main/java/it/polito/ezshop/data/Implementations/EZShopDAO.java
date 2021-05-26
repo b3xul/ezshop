@@ -104,7 +104,7 @@ public class EZShopDAO {
 			pstmt.setString(2, username);
 			pstmt.setString(3, password);
 			pstmt.setString(4, role);
-			int res = pstmt.executeUpdate();
+			pstmt.executeUpdate();
 			return id;
 
 		} catch (Exception e) {
@@ -810,7 +810,7 @@ public class EZShopDAO {
 			PreparedStatement pstmt = conn.prepareStatement(sql);
 			pstmt.setInt(1, id);
 			pstmt.setString(2, customerName);
-			int res = pstmt.executeUpdate();
+			pstmt.executeUpdate();
 			return id;
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
@@ -1006,7 +1006,7 @@ public class EZShopDAO {
 				sql = "INSERT INTO Cards (id, points) VALUES(?,0)";
 				PreparedStatement pstmt = conn.prepareStatement(sql);
 				pstmt.setString(1, cardId);
-				int res = pstmt.executeUpdate();
+				pstmt.executeUpdate();
 				return cardId;
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
