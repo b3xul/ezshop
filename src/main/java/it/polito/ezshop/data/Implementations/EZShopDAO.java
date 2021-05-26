@@ -73,6 +73,15 @@ public class EZShopDAO {
 			sql = "DELETE FROM ticketEntry";
 			pstmt = conn.prepareStatement(sql);
 			pstmt.executeUpdate();
+			sql = "DELETE FROM Customers";
+			pstmt = conn.prepareStatement(sql);
+			pstmt.executeUpdate();
+			sql = "DELETE FROM Cards";
+			pstmt = conn.prepareStatement(sql);
+			pstmt.executeUpdate();
+			sql = "DELETE FROM Users";
+			pstmt = conn.prepareStatement(sql);
+			pstmt.executeUpdate();
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
 		} finally {
