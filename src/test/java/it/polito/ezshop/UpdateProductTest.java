@@ -7,17 +7,11 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import it.polito.ezshop.data.EZShopInterface;
-import it.polito.ezshop.exceptions.InvalidPasswordException;
-import it.polito.ezshop.exceptions.InvalidPricePerUnitException;
-import it.polito.ezshop.exceptions.InvalidProductCodeException;
-import it.polito.ezshop.exceptions.InvalidProductDescriptionException;
-import it.polito.ezshop.exceptions.InvalidProductIdException;
-import it.polito.ezshop.exceptions.InvalidUsernameException;
-import it.polito.ezshop.exceptions.UnauthorizedException;
+import it.polito.ezshop.exceptions.*;
 
 public class UpdateProductTest {
 
-	EZShopInterface ezShop = new it.polito.ezshop.data.EZShop();
+	static EZShopInterface ezShop = new it.polito.ezshop.data.EZShop();
 	
 	@Test
 	public void testCase1() throws InvalidProductIdException, InvalidProductDescriptionException, InvalidProductCodeException, InvalidPricePerUnitException, UnauthorizedException, InvalidUsernameException, InvalidPasswordException {
