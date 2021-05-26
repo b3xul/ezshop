@@ -1,4 +1,4 @@
-package it.polito.ezshop.methodsTests;
+package it.polito.ezshop;
 
 import static org.junit.Assert.*;
 

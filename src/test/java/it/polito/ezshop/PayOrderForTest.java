@@ -1,6 +1,5 @@
 package it.polito.ezshop;
 
-import it.polito.ezshop.data.EZShop1;
 import it.polito.ezshop.data.EZShopInterface;
 import it.polito.ezshop.exceptions.InvalidPasswordException;
 import it.polito.ezshop.exceptions.InvalidPricePerUnitException;
@@ -19,11 +18,11 @@ import org.junit.Test;
 
 public class PayOrderForTest {
 	
-	EZShop1 ezShop;
+	EZShopInterface ezShop;
 	
 	@Before
 	public void init() throws UnauthorizedException, InvalidUsernameException, InvalidPasswordException, InvalidRoleException, InvalidProductDescriptionException, InvalidProductCodeException, InvalidPricePerUnitException {
-		ezShop = new it.polito.ezshop.data.EZShop1();
+		ezShop = new it.polito.ezshop.data.EZShop();
 		ezShop.reset();
 		ezShop.login("admin", "admin");
 		ezShop.createProductType("biscotti", "12637482635892", 1.5, "piccoli");
