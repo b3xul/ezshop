@@ -16,6 +16,7 @@ public class UC5TestClass {
 	
 	@BeforeClass
 	public static void beforeOp() throws InvalidUsernameException, InvalidPasswordException, InvalidRoleException {
+		shop.reset();
 		shop.createUser("Giuseppe","pass","Administrator");
 	}
 	@AfterClass
