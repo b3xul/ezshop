@@ -1,5 +1,7 @@
 package it.polito.ezshop.data;
 
+import it.polito.ezshop.data.Implementations.SaleTransactionImpl;
+
 public interface ReturnTransaction {
 
 	Integer getReturnId();
@@ -30,9 +32,9 @@ public interface ReturnTransaction {
 
 	void setPrice(double price);
 
-	SaleTransaction getSaleTransaction();
+	SaleTransactionImpl getSaleTransaction();
 
-	void setSaleTransaction(SaleTransaction saleTransaction);
+	void setSaleTransaction(SaleTransactionImpl saleTransaction);
 
 	boolean returnProduct(ProductType productType, int amount);
 

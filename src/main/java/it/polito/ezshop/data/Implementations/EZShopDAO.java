@@ -16,7 +16,6 @@ import it.polito.ezshop.data.BalanceOperation;
 import it.polito.ezshop.data.Customer;
 import it.polito.ezshop.data.Order;
 import it.polito.ezshop.data.ProductType;
-import it.polito.ezshop.data.SaleTransaction;
 import it.polito.ezshop.data.TicketEntry;
 import it.polito.ezshop.data.User;
 import it.polito.ezshop.exceptions.InvalidCustomerCardException;
@@ -663,9 +662,9 @@ public class EZShopDAO {
 		return orderId;
 
 	}
-	
-	
+
 	public boolean payOrder(Integer orderId) {
+
 		boolean validOrderId = false;
 		Connection conn = null;
 		double money = 0;
@@ -692,7 +691,7 @@ public class EZShopDAO {
 			ResultSet rs3 = statement3.executeQuery();
 			money = rs3.getDouble("money");
 			dbClose(conn);
-			if(!recordBalanceUpdate(-money))
+			if (!recordBalanceUpdate(-money))
 				return validOrderId = false;
 			conn = dbAccess();
 			String sql4 = "SELECT MAX(balanceId) AS MaxBId FROM balanceOperation";
@@ -1133,7 +1132,7 @@ public class EZShopDAO {
 
 	}
 
-	public SaleTransaction getSaleTransaction(Integer transactionId) {
+	public SaleTransactionImpl getSaleTransaction(Integer transactionId) {
 
 		String getSale = "SELECT price,discountRate,creditCard,balanceId FROM saleTransaction WHERE ticketNumber=?";
 		String getBalance = "SELECT balanceId,date,money,type FROM balanceOperation WHERE balanceId=?";

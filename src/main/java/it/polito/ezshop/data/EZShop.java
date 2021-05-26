@@ -499,7 +499,7 @@ public class EZShop implements EZShopInterface {
 		if (orderId == null || orderId <= 0)
 			throw new InvalidOrderIdException("There is no order with this id");
 		validOrderId = DAO.payOrder(orderId);
-			
+
 		return validOrderId;
 
 	}
@@ -830,7 +830,7 @@ public class EZShop implements EZShopInterface {
 			throw new UnauthorizedException("User not logged in");
 		if (transactionId == null || transactionId <= 0)
 			throw new InvalidTransactionIdException("Transaction id cannot be null or <=0");
-		SaleTransaction result = DAO.getSaleTransaction(transactionId);
+		SaleTransaction result = (SaleTransaction) DAO.getSaleTransaction(transactionId);
 
 		return result;
 
@@ -845,7 +845,7 @@ public class EZShop implements EZShopInterface {
 			throw new UnauthorizedException("User not logged in");
 		if (transactionId == null || transactionId <= 0)
 			throw new InvalidTransactionIdException("Transaction id cannot be null or <=0");
-		SaleTransaction saleTransaction = getSaleTransaction(transactionId);
+		SaleTransactionImpl saleTransaction = DAO.getSaleTransaction(transactionId);
 		if (saleTransaction == null)
 			return -1;
 		Integer returnId = DAO.startReturnTransaction();
@@ -882,7 +882,7 @@ public class EZShop implements EZShopInterface {
 
 		boolean result = openReturnTransaction.returnProduct(productType, amount);
 
-		return true;
+		return result;
 
 	}
 
@@ -1013,6 +1013,10 @@ public class EZShop implements EZShopInterface {
 		if (creditCard.equals(null) || !checkLuhn(creditCard))
 			throw new InvalidCreditCardException();
 		if (openReturnTransaction == null || returnId != openReturnTransaction.getReturnId())
+			return -1;
+
+		String usedCreditCard = openReturnTransaction.getSaleTransaction().getCreditCard();
+		if (usedCreditCard.equals("") || !usedCreditCard.equals(creditCard))
 			return -1;
 
 		double price = openSaleTransaction.getPrice();

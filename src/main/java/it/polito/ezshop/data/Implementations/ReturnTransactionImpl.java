@@ -3,7 +3,6 @@ package it.polito.ezshop.data.Implementations;
 import java.util.List;
 
 import it.polito.ezshop.data.ProductType;
-import it.polito.ezshop.data.SaleTransaction;
 import it.polito.ezshop.data.TicketEntry;
 
 public class ReturnTransactionImpl implements it.polito.ezshop.data.ReturnTransaction {
@@ -15,7 +14,7 @@ public class ReturnTransactionImpl implements it.polito.ezshop.data.ReturnTransa
 	private double discountRate;
 	private int amount;
 	private double price;
-	private SaleTransaction saleTransaction;
+	private SaleTransactionImpl saleTransaction;
 	// BalanceOperation balanceOperation; isn't necessary because no getReturnTransaction exists
 
 	public ReturnTransactionImpl(Integer returnId) {
@@ -156,14 +155,14 @@ public class ReturnTransactionImpl implements it.polito.ezshop.data.ReturnTransa
 	}
 
 	@Override
-	public SaleTransaction getSaleTransaction() {
+	public SaleTransactionImpl getSaleTransaction() {
 
 		return saleTransaction;
 
 	}
 
 	@Override
-	public void setSaleTransaction(SaleTransaction saleTransaction) {
+	public void setSaleTransaction(SaleTransactionImpl saleTransaction) {
 
 		this.saleTransaction = saleTransaction;
 
