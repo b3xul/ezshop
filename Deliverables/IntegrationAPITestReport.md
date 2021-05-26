@@ -17,7 +17,7 @@ Version:
 - [Tests](#tests)
   - [Step 1](#step-1)
   - [Step 2](#step-2)
-  - [Step n](#step-n)
+  - [Step 3](#step-3)
 - [Scenarios](#scenarios)
   - [Scenario 1-4](#scenario-1-4)
   - [Scenario 1-5](#scenario-1-5)
@@ -79,9 +79,11 @@ ProductTypeImpl .down.> PositionImpl
     
 Bottom up approach  
 
-step1: class UserImpl, class BalanceOperationImpl, class ProductTypeImpl, class TicketEntryImpl, class SaleTransactionImpl, class CustomerImpl, class OrderImpl, class ReturnTransactionImpl, class PositionImpl (Unit test)
+step 1: class UserImpl, class BalanceOperationImpl, class ProductTypeImpl, class TicketEntryImpl, class SaleTransactionImpl, class CustomerImpl, class OrderImpl, class ReturnTransactionImpl, class PositionImpl (Unit test)
   
-step 2: class EZShop + class UserImpl, class BalanceOperationImpl, class ProductTypeImpl, class SaleTransactionImpl, class CustomerImpl, class OrderImpl, class ReturnTransactionImpl, class PositionImpl
+step 2: class EZShopDAO
+
+step 3: class EZShop + class UserImpl, class BalanceOperationImpl, class ProductTypeImpl, class SaleTransactionImpl, class CustomerImpl, class OrderImpl, class ReturnTransactionImpl, class PositionImpl
   
 
 #  Tests
@@ -103,19 +105,17 @@ step 2: class EZShop + class UserImpl, class BalanceOperationImpl, class Product
 | TicketEntryImpl       | TicketEntryClassTest       |
 
 ## Step 2
-| Classes | JUnit test cases |
-| ------- | ---------------- |
-| EZShop  | EZShopClassTest  |
+| Classes    | JUnit test cases |
+| -------    | ---------------- |
+| EZShopDAO  |                  |
 
-
-
-## Step n 
+## Step 3 
 
    
 
 | Classes | JUnit test cases |
 | ------- | ---------------- |
-|         |                  |
+| EZShop  |                  |
 
 
 
@@ -286,7 +286,7 @@ Report also for each of the scenarios the (one or more) API JUnit tests that cov
 | Non Functional Requirement | Test name                                                                                                                                                                                                                                |
 | -------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | NFR3                       | See 'response time' in every test case in src/test/java/it/polito/ezshop/scenariosTests                                                                                                                                                  |
-| NFR4                       | UC1TestClass: Scenario1_1TestCase, ExceptionsScenario1_1TestCase - test cases including checks for every case of validity and invalidity <br> EZShopClassTest: testCase6 - test case for the check only of the validity of the algorithm |
+| NFR4                       | UC1TestClass: testCaseScenario1_1, testCaseExceptionsScenario1_1 - test cases including checks for every case of validity and invalidity <br> EZShopClassTest: testCase6 - test case for the check only of the validity of the algorithm |
 | NFR5                       | EZShopClassTest: testCase7                                                                                                                                                                                                               |
 
 
