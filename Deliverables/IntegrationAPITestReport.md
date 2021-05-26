@@ -234,27 +234,27 @@ Report also for each of the scenarios the (one or more) API JUnit tests that cov
 
 | Scenario ID | Functional Requirements covered                                                           | JUnit  Test (s)                    |
 | ----------- | ----------------------------------------------------------------------------------------- | ---------------------------------- |
-| 1-1         | FR3.1                                                                                     | UC1TestClass: testCaseScenario1_1, |
-| 1-2         | FR3.4, FR4.2                                                                              | UC1TestClass: testCaseScenario1_2, |
-| 1-3         | FR3.4, FR3.1                                                                              | UC1TestClass: testCaseScenario1_3, |
-| 1-4         | FR3.4, FR3.2                                                                              | UC1TestClass: testCaseScenario1_4, |
-| 1-5         | FR3.3                                                                                     | UC1TestClass: testCaseScenario1_5, |
-| 2-1         | FR1.1, FR1.5                                                                              |                                    |
-| 2-2         | FR1.4, FR1.2                                                                              |                                    |
-| 2-3         | FR1.4, FR1.5                                                                              |                                    |
-| 2-4         | FR1.3                                                                                     |                                    |
+| 1-1         | FR3.1                                                                                     | UC1TestClass: testCaseScenario1_1 |
+| 1-2         | FR3.4, FR4.2                                                                              | UC1TestClass: testCaseScenario1_2 |
+| 1-3         | FR3.4, FR3.1                                                                              | UC1TestClass: testCaseScenario1_3 |
+| 1-4         | FR3.4, FR3.2                                                                              | UC1TestClass: testCaseScenario1_4 |
+| 1-5         | FR3.3                                                                                     | UC1TestClass: testCaseScenario1_5 |
+| 2-1         | FR1.1, FR1.5                                                                              |  UC2TestClass: testCaseScenario2_1 |
+| 2-2         | FR1.4, FR1.2                                                                              |UC2TestClass: testCaseScenario2_2 |
+| 2-3         | FR1.4, FR1.5                                                                              | UC2TestClass: testCaseScenario2_3  |
+| 2-4         | FR1.3                                                                                     | UC2TestClass: testCaseScenario2_4  |
 | 3-1         | FR4.3                                                                                     | UC3TestClass: testCaseScenario3_1  |
 | 3-2         | FR4.7, FR4.5, FR8.1, FR8.4                                                                | UC3TestClass: testCaseScenario3_2  |
 | 3-3         | FR4.6, FR4.1                                                                              | UC3TestClass: testCaseScenario3_3  |
 | 3-4         | FR4.4                                                                                     | UC3TestClass: testCaseScenario3_4  |
 | 3-5         | FR4.7                                                                                     | UC3TestClass: testCaseScenario3_5  |
-| 4-1         | FR5.1                                                                                     |                                    |
-| 4-2         | FR5.5, FR5.3, FR5.6                                                                       |                                    |
-| 4-3         | FR5.3, FR5.1                                                                              |                                    |
-| 4-4         | FR5.3, FR5.1                                                                              |                                    |
-| 4-5         | FR5.3, FR5.2                                                                              |                                    |
-| 5-1         |                                                                                           |                                    |
-| 5-2         |                                                                                           |                                    |
+| 4-1         | FR5.1                                                                                     | UC4TestClass: testCaseScenario4_1 |
+| 4-2         | FR5.5, FR5.3, FR5.6                                                                       |UC4TestClass: testCaseScenario4_2 |
+| 4-3         | FR5.3, FR5.1                                                                              |UC4TestClass: testCaseScenario4_3  |
+| 4-4         | FR5.3, FR5.1                                                                              | UC4TestClass: testCaseScenario4_4 |
+| 4-5         | FR5.3, FR5.2                                                                              | UC4TestClass: testCaseScenario4_5 |
+| 5-1         |                                                                                           | UC5TestClass: testCaseScenario5_1, testCaseScenario5_1_variant                                  |
+| 5-2         |                                                                                           |UC5TestClass: testCaseScenario5_2|
 | 6-1         | FR6.1, FR6.7, FR6.2, FR4.1, FR6.10, FR7.1/7.2, FR6.8, FR6.11, FR8.2, FR8.4                |                                    |
 | 6-2         | FR6.1, FR6.7, FR6.2, FR4.1, FR6.5, FR6.10, FR7.1/7.2, FR6.8, FR6.11, FR8.2, FR8.4         |                                    |
 | 6-3         | FR6.1, FR6.7, FR6.2, FR4.1, FR6.4, FR6.10, FR7.1/7.2, FR6.8, FR6.11, FR8.2, FR6.11, FR8.4 |                                    |
@@ -288,5 +288,6 @@ Report also for each of the scenarios the (one or more) API JUnit tests that cov
 | NFR3                       | See 'response time' in every test case in src/test/java/it/polito/ezshop/scenariosTests                                                                                                                                                  |
 | NFR4                       | UC1TestClass: testCaseScenario1_1, testCaseExceptionsScenario1_1 - test cases including checks for every case of validity and invalidity <br> EZShopClassTest: testCase6 - test case for the check only of the validity of the algorithm |
 | NFR5                       | EZShopClassTest: testCase7                                                                                                                                                                                                               |
+| NFR6                       | UC4TestClass: testCaseScenario4_2                                                                                                                                                                                                               |
 
 

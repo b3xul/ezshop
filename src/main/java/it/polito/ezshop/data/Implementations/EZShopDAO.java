@@ -106,7 +106,7 @@ public class EZShopDAO {
 			pstmt.setString(2, username);
 			pstmt.setString(3, password);
 			pstmt.setString(4, role);
-			int res = pstmt.executeUpdate();
+			pstmt.executeUpdate();
 			return id;
 
 		} catch (Exception e) {
@@ -812,13 +812,8 @@ public class EZShopDAO {
 			PreparedStatement pstmt = conn.prepareStatement(sql);
 			pstmt.setInt(1, id);
 			pstmt.setString(2, customerName);
-			int res = pstmt.executeUpdate();
-			if (res == 0) {
-				return -1;
-			} else {
-				return id;
-			}
-
+			pstmt.executeUpdate();
+			return id;
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
 			return -1;
@@ -886,26 +881,33 @@ public class EZShopDAO {
 
 		Connection conn = null;
 		try {
-			conn = dbAccess();
-			String sql = "SELECT CU.id, card FROM Customers CU, Cards CA WHERE CU.card = CA.id AND CU.id = " + id;
-			Statement statement = conn.createStatement();
-			ResultSet rs = statement.executeQuery(sql);
-			if (rs.next()) {
-				String card = rs.getString("card");
-				sql = "DELETE FROM Cards WHERE id = ?";
-				PreparedStatement pstmt = conn.prepareStatement(sql);
-				pstmt.setString(1, card);
-				pstmt.executeUpdate();
-				sql = "DELETE FROM Customers WHERE id = ?";
-				pstmt = conn.prepareStatement(sql);
-				pstmt.setInt(1, id);
-				pstmt.executeUpdate();
-
-				return true;
-			} else {
-				return false;
-			}
-
+				conn = dbAccess();
+					String sql = "SELECT CU.id, card FROM Customers CU, Cards CA WHERE CU.card = CA.id AND CU.id = "+ id;
+					Statement statement = conn.createStatement();
+					ResultSet rs = statement.executeQuery(sql);
+					if (rs.next()) {
+						String card = rs.getString("card");
+						sql = "DELETE FROM Cards WHERE id = ?";
+						PreparedStatement pstmt = conn.prepareStatement(sql);
+						pstmt.setString(1, card);
+						pstmt.executeUpdate();
+						sql = "DELETE FROM Customers WHERE id = ?";
+						pstmt = conn.prepareStatement(sql);
+						pstmt.setInt(1, id);
+						pstmt.executeUpdate();
+						return true;
+					}
+					else {
+						sql = "DELETE FROM Customers WHERE id = ?";
+						PreparedStatement pstmt = conn.prepareStatement(sql);
+						pstmt.setInt(1, id);
+						int res = pstmt.executeUpdate();
+						if(res == 0)
+							return false;
+						else
+							return true;
+					}
+					
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
 			return false;
@@ -983,35 +985,30 @@ public class EZShopDAO {
 
 		Connection conn = null;
 		try {
-			String cardId;
-			conn = dbAccess();
-			String sql = "SELECT COALESCE(MAX(id),'') AS lastId FROM Cards";
-			Statement statement = conn.createStatement();
-			ResultSet rs = statement.executeQuery(sql);
-			rs.next();
-			if (rs.getString("lastId").isEmpty()) {
-				cardId = "1000000000";
-			} else {
-				String lastId = rs.getString("lastId");
-				sql = "SELECT card FROM Customers WHERE card = '" + lastId + "'";
-				statement = conn.createStatement();
-				rs = statement.executeQuery(sql);
-				if (rs.next() == false) {
-					return lastId;
+				String cardId;
+				conn = dbAccess();
+				String sql = "SELECT COALESCE(MAX(id),'') AS lastId FROM Cards";
+				Statement statement = conn.createStatement();
+				ResultSet rs = statement.executeQuery(sql);
+				rs.next();
+				if (rs.getString("lastId").isEmpty()) {
+					cardId = "1000000000";
+				} else {
+					String lastId = rs.getString("lastId");
+					sql = "SELECT card FROM Customers WHERE card = '"+lastId+"'";
+					statement = conn.createStatement();
+					rs = statement.executeQuery(sql);
+					if(rs.next()==false) {
+						return lastId;
+					}
+					Integer id = Integer.parseInt(lastId) + 1;
+					cardId = Integer.toString(id);
 				}
-				Integer id = Integer.parseInt(lastId) + 1;
-				cardId = Integer.toString(id);
-			}
-			sql = "INSERT INTO Cards (id, points) VALUES(?,0)";
-			PreparedStatement pstmt = conn.prepareStatement(sql);
-			pstmt.setString(1, cardId);
-			int res = pstmt.executeUpdate();
-			if (res == 0) {
-				return "";
-			} else {
+				sql = "INSERT INTO Cards (id, points) VALUES(?,0)";
+				PreparedStatement pstmt = conn.prepareStatement(sql);
+				pstmt.setString(1, cardId);
+				pstmt.executeUpdate();
 				return cardId;
-			}
-
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
 			return "";
@@ -1064,11 +1061,7 @@ public class EZShopDAO {
 				pstmt.setInt(1, points);
 				pstmt.setString(2, customerCard);
 				int res = pstmt.executeUpdate();
-				if (res == 0) {
-					return false;
-				} else {
-					return true;
-				}
+				return true;
 			} else {
 				return false;
 			}

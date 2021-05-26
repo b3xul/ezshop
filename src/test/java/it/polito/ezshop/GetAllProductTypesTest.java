@@ -2,21 +2,17 @@ package it.polito.ezshop;
 
 import static org.junit.Assert.*;
 
-import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import it.polito.ezshop.data.EZShopInterface;
-import it.polito.ezshop.exceptions.InvalidPasswordException;
-import it.polito.ezshop.exceptions.InvalidPricePerUnitException;
-import it.polito.ezshop.exceptions.InvalidProductCodeException;
-import it.polito.ezshop.exceptions.InvalidProductDescriptionException;
-import it.polito.ezshop.exceptions.InvalidProductIdException;
-import it.polito.ezshop.exceptions.InvalidUsernameException;
-import it.polito.ezshop.exceptions.UnauthorizedException;
+
+import it.polito.ezshop.exceptions.*;
 
 public class GetAllProductTypesTest {
 
-	EZShopInterface ezShop = new it.polito.ezshop.data.EZShop();
+	static EZShopInterface ezShop = new it.polito.ezshop.data.EZShop();
 
 	
 	@Test
@@ -37,11 +33,20 @@ public class GetAllProductTypesTest {
 
 	}
 
-	@After
-	  public void teardown() {
+	@BeforeClass
+	  static public void BeforeClass() throws InvalidUsernameException, InvalidPasswordException, InvalidRoleException {
+		
+		ezShop.reset();
+		ezShop.createUser("admin", "admin", "Administrator");
+		
+	}
+	
+	@AfterClass
+	  static public void AfterClass() {
 
 	    ezShop.reset();
 
 	}
+
 
 }
