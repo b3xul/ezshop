@@ -17,7 +17,7 @@ Version:
 - [Tests](#tests)
   - [Step 1](#step-1)
   - [Step 2](#step-2)
-  - [Step n](#step-n)
+  - [Step 3](#step-3)
 - [Scenarios](#scenarios)
   - [Scenario 1-4](#scenario-1-4)
   - [Scenario 1-5](#scenario-1-5)
