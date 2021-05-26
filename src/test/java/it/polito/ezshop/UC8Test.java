@@ -212,6 +212,7 @@ public class UC8Test {
 
 			assertFalse(ezShop.returnProduct(2, barcode, 2)); // returnId != openReturnTransaction.getReturnId()
 
+			ezShop.endReturnTransaction(returnId, true);
 			ezShop.deleteReturnTransaction(returnId);
 			assertFalse(ezShop.returnProduct(returnId, barcode, 2)); // openSaleTransaction.getTicketNumber()==
 
@@ -250,6 +251,7 @@ public class UC8Test {
 
 			assertFalse(ezShop.endReturnTransaction(2, true)); // returnId != openReturnTransaction.getReturnId()
 
+			ezShop.endReturnTransaction(returnId, true);
 			ezShop.deleteReturnTransaction(returnId);
 			assertFalse(ezShop.endReturnTransaction(returnId, true)); // openSaleTransaction.getTicketNumber()==
 
@@ -286,6 +288,7 @@ public class UC8Test {
 			// exists
 			// TODO: add false returns
 
+			ezShop.endReturnTransaction(returnId, true);
 			assertFalse(ezShop.deleteReturnTransaction(2)); // returnId != openReturnTransaction.getReturnId()
 
 			ezShop.deleteReturnTransaction(returnId);

@@ -555,10 +555,10 @@ public class EZShop implements EZShopInterface {
 			if (id != null && id > 0) {
 				if (newCustomerName != null && newCustomerName.isEmpty() == false) {
 					Pattern p = Pattern.compile("\\d+");
-					if (newCustomerCard != null && newCustomerCard.isEmpty() == false 
+					if (newCustomerCard != null && newCustomerCard.isEmpty() == false
 							&& (newCustomerCard.length() < 10 || p.matcher(newCustomerCard).matches() == false)) {
 						throw new InvalidCustomerCardException("Invalid card");
-					}else {
+					} else {
 						return DAO.modifyCustomer(id, newCustomerName, newCustomerCard);
 					}
 				} else
@@ -933,9 +933,11 @@ public class EZShop implements EZShopInterface {
 		// if (openReturnTransaction.getReturnId() == -1 || returnId != openReturnTransaction.getReturnId())
 		// return false;
 
-		ReturnTransaction returnTransaction = DAO.getReturnTransaction(returnId);
+		ReturnTransactionImpl returnTransaction = DAO.getReturnTransaction(returnId);
+		if (returnTransaction == null)
+			return false;
 		System.out.println(returnTransaction);
-		boolean result = true;// DAO.deleteReturnTransaction(returnTransaction);
+		boolean result = DAO.deleteReturnTransaction(returnTransaction);
 		return result;
 
 	}

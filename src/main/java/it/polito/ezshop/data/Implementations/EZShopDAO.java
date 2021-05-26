@@ -15,7 +15,6 @@ import it.polito.ezshop.data.BalanceOperation;
 import it.polito.ezshop.data.Customer;
 import it.polito.ezshop.data.Order;
 import it.polito.ezshop.data.ProductType;
-import it.polito.ezshop.data.ReturnTransaction;
 import it.polito.ezshop.data.TicketEntry;
 import it.polito.ezshop.data.User;
 import it.polito.ezshop.exceptions.InvalidLocationException;
@@ -881,33 +880,32 @@ public class EZShopDAO {
 
 		Connection conn = null;
 		try {
-				conn = dbAccess();
-					String sql = "SELECT CU.id, card FROM Customers CU, Cards CA WHERE CU.card = CA.id AND CU.id = "+ id;
-					Statement statement = conn.createStatement();
-					ResultSet rs = statement.executeQuery(sql);
-					if (rs.next()) {
-						String card = rs.getString("card");
-						sql = "DELETE FROM Cards WHERE id = ?";
-						PreparedStatement pstmt = conn.prepareStatement(sql);
-						pstmt.setString(1, card);
-						pstmt.executeUpdate();
-						sql = "DELETE FROM Customers WHERE id = ?";
-						pstmt = conn.prepareStatement(sql);
-						pstmt.setInt(1, id);
-						pstmt.executeUpdate();
-						return true;
-					}
-					else {
-						sql = "DELETE FROM Customers WHERE id = ?";
-						PreparedStatement pstmt = conn.prepareStatement(sql);
-						pstmt.setInt(1, id);
-						int res = pstmt.executeUpdate();
-						if(res == 0)
-							return false;
-						else
-							return true;
-					}
-					
+			conn = dbAccess();
+			String sql = "SELECT CU.id, card FROM Customers CU, Cards CA WHERE CU.card = CA.id AND CU.id = " + id;
+			Statement statement = conn.createStatement();
+			ResultSet rs = statement.executeQuery(sql);
+			if (rs.next()) {
+				String card = rs.getString("card");
+				sql = "DELETE FROM Cards WHERE id = ?";
+				PreparedStatement pstmt = conn.prepareStatement(sql);
+				pstmt.setString(1, card);
+				pstmt.executeUpdate();
+				sql = "DELETE FROM Customers WHERE id = ?";
+				pstmt = conn.prepareStatement(sql);
+				pstmt.setInt(1, id);
+				pstmt.executeUpdate();
+				return true;
+			} else {
+				sql = "DELETE FROM Customers WHERE id = ?";
+				PreparedStatement pstmt = conn.prepareStatement(sql);
+				pstmt.setInt(1, id);
+				int res = pstmt.executeUpdate();
+				if (res == 0)
+					return false;
+				else
+					return true;
+			}
+
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
 			return false;
@@ -985,30 +983,30 @@ public class EZShopDAO {
 
 		Connection conn = null;
 		try {
-				String cardId;
-				conn = dbAccess();
-				String sql = "SELECT COALESCE(MAX(id),'') AS lastId FROM Cards";
-				Statement statement = conn.createStatement();
-				ResultSet rs = statement.executeQuery(sql);
-				rs.next();
-				if (rs.getString("lastId").isEmpty()) {
-					cardId = "1000000000";
-				} else {
-					String lastId = rs.getString("lastId");
-					sql = "SELECT card FROM Customers WHERE card = '"+lastId+"'";
-					statement = conn.createStatement();
-					rs = statement.executeQuery(sql);
-					if(rs.next()==false) {
-						return lastId;
-					}
-					Integer id = Integer.parseInt(lastId) + 1;
-					cardId = Integer.toString(id);
+			String cardId;
+			conn = dbAccess();
+			String sql = "SELECT COALESCE(MAX(id),'') AS lastId FROM Cards";
+			Statement statement = conn.createStatement();
+			ResultSet rs = statement.executeQuery(sql);
+			rs.next();
+			if (rs.getString("lastId").isEmpty()) {
+				cardId = "1000000000";
+			} else {
+				String lastId = rs.getString("lastId");
+				sql = "SELECT card FROM Customers WHERE card = '" + lastId + "'";
+				statement = conn.createStatement();
+				rs = statement.executeQuery(sql);
+				if (rs.next() == false) {
+					return lastId;
 				}
-				sql = "INSERT INTO Cards (id, points) VALUES(?,0)";
-				PreparedStatement pstmt = conn.prepareStatement(sql);
-				pstmt.setString(1, cardId);
-				pstmt.executeUpdate();
-				return cardId;
+				Integer id = Integer.parseInt(lastId) + 1;
+				cardId = Integer.toString(id);
+			}
+			sql = "INSERT INTO Cards (id, points) VALUES(?,0)";
+			PreparedStatement pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, cardId);
+			pstmt.executeUpdate();
+			return cardId;
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
 			return "";
@@ -1247,7 +1245,6 @@ public class EZShopDAO {
 
 			// 2. updates the transaction status (decreasing the number of units sold by the number of returned one)
 			String updateTicket = "UPDATE ticketEntry SET amount = ? WHERE ticketNumber = ? AND barCode = ? ";
-			String removeTicket = "DELETE FROM ticketEntry WHERE ticketNumber=? AND barCode = ?";
 			Iterator<TicketEntry> iter = openReturnTransaction.getSaleTransaction().getEntries().iterator();
 			while (iter.hasNext()) {
 				TicketEntry entry = iter.next();
@@ -1255,20 +1252,12 @@ public class EZShopDAO {
 					// saleTransaction
 					int previousAmount = entry.getAmount();
 					int amountToRemove = openReturnTransaction.getAmount();
-					if (amountToRemove < previousAmount) {
+					if (amountToRemove <= previousAmount) {
 
 						pstmt = conn.prepareStatement(updateTicket);
 						pstmt.setDouble(1, previousAmount - amountToRemove);
 						pstmt.setInt(2, openReturnTransaction.getSaleTransaction().getTicketNumber());
 						pstmt.setString(3, openReturnTransaction.getProductCode());
-						pstmt.executeUpdate();
-						pstmt.close();
-
-					} else if (amountToRemove == previousAmount) {
-
-						pstmt = conn.prepareStatement(removeTicket);
-						pstmt.setInt(1, openReturnTransaction.getSaleTransaction().getTicketNumber());
-						pstmt.setString(2, openReturnTransaction.getProductCode());
 						pstmt.executeUpdate();
 						pstmt.close();
 
@@ -1305,10 +1294,10 @@ public class EZShopDAO {
 
 	}
 
-	public ReturnTransaction getReturnTransaction(Integer returnId) {
+	public ReturnTransactionImpl getReturnTransaction(Integer returnId) {
 
 		String getReturn = "SELECT productId,productCode,pricePerUnit,discountRate,amount,price,ticketNumber FROM returnTransaction WHERE returnId=?";
-		ReturnTransaction result = null;
+		ReturnTransactionImpl returnTransaction = null;
 		Connection conn = this.dbAccess();
 		try {
 			// getReturn
@@ -1318,14 +1307,14 @@ public class EZShopDAO {
 			if (!rs.isBeforeFirst())
 				return null;
 			// only 1 result because returnId is primary key
-			result = new ReturnTransactionImpl(returnId);
-			result.setProductId(rs.getInt("productId"));
-			result.setProductCode(rs.getString("productCode"));
-			result.setPricePerUnit(rs.getDouble("pricePerUnit"));
-			result.setDiscountRate(rs.getDouble("discountRate"));
-			result.setAmount(rs.getInt("amount"));
-			result.setPrice(rs.getDouble("price"));
-			result.setSaleTransaction(this.getSaleTransaction(rs.getInt("ticketNumber")));
+			returnTransaction = new ReturnTransactionImpl(returnId);
+			returnTransaction.setProductId(rs.getInt("productId"));
+			returnTransaction.setProductCode(rs.getString("productCode"));
+			returnTransaction.setPricePerUnit(rs.getDouble("pricePerUnit"));
+			returnTransaction.setDiscountRate(rs.getDouble("discountRate"));
+			returnTransaction.setAmount(rs.getInt("amount"));
+			returnTransaction.setPrice(rs.getDouble("price"));
+			returnTransaction.setSaleTransaction(this.getSaleTransaction(rs.getInt("ticketNumber")));
 			// System.out.println(result.getTicketNumber() + " " + result.getDiscountRate());
 			pstmt.close();
 			rs.close();
@@ -1334,75 +1323,59 @@ public class EZShopDAO {
 		} finally {
 			this.dbClose(conn);
 		}
-		return result;
+		return returnTransaction;
 
 	}
 
-	public boolean deleteReturnTransaction(ReturnTransactionImpl openReturnTransaction) {
+	public boolean deleteReturnTransaction(ReturnTransactionImpl returnTransaction) {
 
 		Connection conn = dbAccess();
 
 		try {
+
+			// 1. decrease the product quantity available on the shelves
+			updateQuantity(returnTransaction.getProductId(), -returnTransaction.getAmount());
+
 			conn.setAutoCommit(false); // single transaction on the database
-			// 1. close the return transaction
-			String insertReturn = "INSERT INTO returnTransaction(productId,productCode,pricePerUnit,discountRate,amount,price,ticketNumber) VALUES(?,?,?,?,?,?,?)";
-			PreparedStatement pstmt = conn.prepareStatement(insertReturn);
-			pstmt.setInt(1, openReturnTransaction.getProductId());
-			pstmt.setString(2, openReturnTransaction.getProductCode());
-			pstmt.setDouble(3, openReturnTransaction.getPricePerUnit());
-			pstmt.setDouble(4, openReturnTransaction.getDiscountRate());
-			pstmt.setInt(5, openReturnTransaction.getAmount());
-			pstmt.setDouble(6, openReturnTransaction.getPrice());
-			pstmt.setInt(7, openReturnTransaction.getSaleTransaction().getTicketNumber());
+
+			// 2. updates the transaction status (increasing the final price)
+			String updateSale = "UPDATE saleTransaction SET price = ? WHERE ticketNumber = ?";
+			// updateSale
+			PreparedStatement pstmt = conn.prepareStatement(updateSale);
+			pstmt.setDouble(1, returnTransaction.getSaleTransaction().getPrice() + returnTransaction.getPrice());
+			pstmt.setInt(2, returnTransaction.getSaleTransaction().getTicketNumber());
 			pstmt.executeUpdate();
 			pstmt.close();
 
-			// 2. updates the transaction status (decreasing the number of units sold by the number of returned one)
+			// 3. updates the transaction status (decreasing the number of units sold by the number of returned one)
 			String updateTicket = "UPDATE ticketEntry SET amount = ? WHERE ticketNumber = ? AND barCode = ? ";
-			String removeTicket = "DELETE FROM ticketEntry WHERE ticketNumber=? AND barCode = ?";
-			Iterator<TicketEntry> iter = openReturnTransaction.getSaleTransaction().getEntries().iterator();
+			Iterator<TicketEntry> iter = returnTransaction.getSaleTransaction().getEntries().iterator();
 			while (iter.hasNext()) {
 				TicketEntry entry = iter.next();
-				if (entry.getBarCode().equals(openReturnTransaction.getProductCode())) { // product present in the
+				if (entry.getBarCode().equals(returnTransaction.getProductCode())) { // product present in the
 					// saleTransaction
 					int previousAmount = entry.getAmount();
-					int amountToRemove = openReturnTransaction.getAmount();
-					if (amountToRemove < previousAmount) {
+					int amountToAdd = returnTransaction.getAmount();
 
-						pstmt = conn.prepareStatement(updateTicket);
-						pstmt.setDouble(1, previousAmount - amountToRemove);
-						pstmt.setInt(2, openReturnTransaction.getSaleTransaction().getTicketNumber());
-						pstmt.setString(3, openReturnTransaction.getProductCode());
-						pstmt.executeUpdate();
-						pstmt.close();
+					pstmt = conn.prepareStatement(updateTicket);
+					pstmt.setDouble(1, previousAmount + amountToAdd);
+					pstmt.setInt(2, returnTransaction.getSaleTransaction().getTicketNumber());
+					pstmt.setString(3, returnTransaction.getProductCode());
+					pstmt.executeUpdate();
+					pstmt.close();
 
-					} else if (amountToRemove == previousAmount) {
-
-						pstmt = conn.prepareStatement(removeTicket);
-						pstmt.setInt(1, openReturnTransaction.getSaleTransaction().getTicketNumber());
-						pstmt.setString(2, openReturnTransaction.getProductCode());
-						pstmt.executeUpdate();
-						pstmt.close();
-
-					}
-					// else if (amountToRemove > previousAmount) updated=false; (can't happen by construction)
+					// else if (amountToAdd > previousAmount) updated=false; (can't happen by construction)
 					// System.out.println("Found item to remove" + entry);
 					break;
 				}
 			}
 
-			// 3. updates the transaction status (decreasing the final price)
-			String updateSale = "UPDATE saleTransaction SET price = ? WHERE ticketNumber = ?";
-			// updateSale
-			pstmt = conn.prepareStatement(updateSale);
-			pstmt.setDouble(1,
-					openReturnTransaction.getSaleTransaction().getPrice() - openReturnTransaction.getPrice());
-			pstmt.setInt(2, openReturnTransaction.getSaleTransaction().getTicketNumber());
+			// 4. close the return transaction
+			String deleteReturn = "DELETE FROM returnTransaction WHERE returnId = ?";
+			pstmt = conn.prepareStatement(deleteReturn);
+			pstmt.setInt(1, returnTransaction.getReturnId());
 			pstmt.executeUpdate();
 			pstmt.close();
-
-			// 4. increases the product quantity available on the shelves
-			updateQuantity(openReturnTransaction.getProductId(), openReturnTransaction.getAmount());
 
 			conn.commit();
 		} catch (Exception ex) {

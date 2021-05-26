@@ -8,7 +8,6 @@ import java.util.LinkedList;
 
 import org.junit.Test;
 
-import it.polito.ezshop.data.BalanceOperation;
 import it.polito.ezshop.data.ProductType;
 import it.polito.ezshop.data.TicketEntry;
 import it.polito.ezshop.data.Implementations.ProductTypeImpl;
@@ -37,9 +36,9 @@ public class SaleTransactionClassTest {
 		saleTransaction.setEntries(entries);
 		assertEquals(entries, saleTransaction.getEntries());
 
-		BalanceOperation balanceOperation = null;
-		saleTransaction.setBalanceOperation(balanceOperation);
-		assertEquals(balanceOperation, saleTransaction.getBalanceOperation());
+		// BalanceOperation balanceOperation = null;
+		// saleTransaction.setBalanceOperation(balanceOperation);
+		// assertEquals(balanceOperation, saleTransaction.getBalanceOperation());
 
 		saleTransaction.toString();
 		;
@@ -69,9 +68,9 @@ public class SaleTransactionClassTest {
 		saleTransaction.setPrice(21);
 		assertEquals(entries, saleTransaction.getEntries());
 
-		BalanceOperation balanceOperation = null;
-		saleTransaction.setBalanceOperation(balanceOperation);
-		assertEquals(balanceOperation, saleTransaction.getBalanceOperation());
+		// BalanceOperation balanceOperation = null;
+		// saleTransaction.setBalanceOperation(balanceOperation);
+		// assertEquals(balanceOperation, saleTransaction.getBalanceOperation());
 
 		saleTransaction.toString();
 
@@ -104,9 +103,9 @@ public class SaleTransactionClassTest {
 		saleTransaction.setPrice(21);
 		assertEquals(entries, saleTransaction.getEntries());
 
-		BalanceOperation balanceOperation = null;
-		saleTransaction.setBalanceOperation(balanceOperation);
-		assertEquals(balanceOperation, saleTransaction.getBalanceOperation());
+		// BalanceOperation balanceOperation = null;
+		// saleTransaction.setBalanceOperation(balanceOperation);
+		// assertEquals(balanceOperation, saleTransaction.getBalanceOperation());
 
 		saleTransaction.toString();
 
@@ -139,9 +138,9 @@ public class SaleTransactionClassTest {
 		saleTransaction.setPrice(21);
 		assertEquals(entries, saleTransaction.getEntries());
 
-		BalanceOperation balanceOperation = null;
-		saleTransaction.setBalanceOperation(balanceOperation);
-		assertEquals(balanceOperation, saleTransaction.getBalanceOperation());
+		// BalanceOperation balanceOperation = null;
+		// saleTransaction.setBalanceOperation(balanceOperation);
+		// assertEquals(balanceOperation, saleTransaction.getBalanceOperation());
 
 		saleTransaction.toString();
 
@@ -174,9 +173,9 @@ public class SaleTransactionClassTest {
 		saleTransaction.setPrice(21);
 		assertEquals(entries, saleTransaction.getEntries());
 
-		BalanceOperation balanceOperation = null;
-		saleTransaction.setBalanceOperation(balanceOperation);
-		assertEquals(balanceOperation, saleTransaction.getBalanceOperation());
+		// BalanceOperation balanceOperation = null;
+		// saleTransaction.setBalanceOperation(balanceOperation);
+		// assertEquals(balanceOperation, saleTransaction.getBalanceOperation());
 
 		saleTransaction.toString();
 
@@ -206,9 +205,9 @@ public class SaleTransactionClassTest {
 		saleTransaction.setEntries(entries);
 		assertEquals(entries, saleTransaction.getEntries());
 
-		BalanceOperation balanceOperation = null;
-		saleTransaction.setBalanceOperation(balanceOperation);
-		assertEquals(balanceOperation, saleTransaction.getBalanceOperation());
+		// BalanceOperation balanceOperation = null;
+		// saleTransaction.setBalanceOperation(balanceOperation);
+		// assertEquals(balanceOperation, saleTransaction.getBalanceOperation());
 
 		saleTransaction.toString();
 
@@ -241,9 +240,9 @@ public class SaleTransactionClassTest {
 		saleTransaction.setPrice(21);
 		assertEquals(entries, saleTransaction.getEntries());
 
-		BalanceOperation balanceOperation = null;
-		saleTransaction.setBalanceOperation(balanceOperation);
-		assertEquals(balanceOperation, saleTransaction.getBalanceOperation());
+		// BalanceOperation balanceOperation = null;
+		// saleTransaction.setBalanceOperation(balanceOperation);
+		// assertEquals(balanceOperation, saleTransaction.getBalanceOperation());
 
 		saleTransaction.toString();
 
@@ -276,9 +275,9 @@ public class SaleTransactionClassTest {
 		saleTransaction.setPrice(21);
 		assertEquals(entries, saleTransaction.getEntries());
 
-		BalanceOperation balanceOperation = null;
-		saleTransaction.setBalanceOperation(balanceOperation);
-		assertEquals(balanceOperation, saleTransaction.getBalanceOperation());
+		// BalanceOperation balanceOperation = null;
+		// saleTransaction.setBalanceOperation(balanceOperation);
+		// assertEquals(balanceOperation, saleTransaction.getBalanceOperation());
 
 		saleTransaction.toString();
 
@@ -309,9 +308,9 @@ public class SaleTransactionClassTest {
 		saleTransaction.setPrice(21);
 		assertEquals(entries, saleTransaction.getEntries());
 
-		BalanceOperation balanceOperation = null;
-		saleTransaction.setBalanceOperation(balanceOperation);
-		assertEquals(balanceOperation, saleTransaction.getBalanceOperation());
+		// BalanceOperation balanceOperation = null;
+		// saleTransaction.setBalanceOperation(balanceOperation);
+		// assertEquals(balanceOperation, saleTransaction.getBalanceOperation());
 
 		saleTransaction.toString();
 
@@ -342,9 +341,9 @@ public class SaleTransactionClassTest {
 		saleTransaction.setEntries(entries);
 		assertEquals(entries, saleTransaction.getEntries());
 
-		BalanceOperation balanceOperation = null;
-		saleTransaction.setBalanceOperation(balanceOperation);
-		assertEquals(balanceOperation, saleTransaction.getBalanceOperation());
+		// BalanceOperation balanceOperation = null;
+		// saleTransaction.setBalanceOperation(balanceOperation);
+		// assertEquals(balanceOperation, saleTransaction.getBalanceOperation());
 
 		saleTransaction.toString();
 
