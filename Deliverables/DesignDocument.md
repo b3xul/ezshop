@@ -4,8 +4,10 @@ Authors: Elia Fontana, Andrea Palomba, Leonardo Perugini, Francesco Sattolo
 
 Date: 27/04/2021
 
-Version: 1.1 (24/05/2021)  
-Changes: some classes deleted from 'Model packages' diagram (LoyaltyCard, Credit, Debit, AccountBook) and subsequential correction of the 'Verification traceability matrix'.
+Version: 1.1 (26/05/2021)  
+Changes: 
+<br>-Model packages: some classes deleted (LoyaltyCard, Credit, Debit, AccountBook) and subsequential correction of the 'Verification traceability matrix'.
+<br>-Low level design: collapsed all DAO classes in just one EZShopDAO
 
 Version: 1.0
 
@@ -82,26 +84,9 @@ model ..> exceptions
 ```plantuml
 @startuml
 
-class UsersDAO{
+class EZShopDAO{
 }
 
-class ProductTypesDAO{
-}
-
-class CustomersDAO{
-}
-
-class LoyaltyCardsDAO{
-}
-
-class SaleTransactionsDAO{
-}
-
-class ReturnTransactionsDAO{
-}
-
-class OrdersDAO{
-}
 
 @enduml
 ```
@@ -169,7 +154,6 @@ class Shop{
     recordBalanceUpdate()
     getCreditsAndDebits()
     computeBalance()
-
     getIssuedOrders()
 }
 class User{
@@ -243,11 +227,11 @@ ProductType -up- "0..1" Position
 ProductType "*" -down- "*" SaleTransaction
 
 SaleTransaction -left- "*" ReturnTransaction
-SaleTransaction -up-|> BalanceOperation
+SaleTransaction -up- BalanceOperation
 SaleTransaction "0..1" -up-  Shop
 
-ReturnTransaction -up-|> BalanceOperation
-Order -up-|> BalanceOperation
+ReturnTransaction -up- BalanceOperation
+Order -up- BalanceOperation
 Order "*" - ProductType
 ReturnTransaction "*" - ProductType
 
@@ -255,21 +239,8 @@ BalanceOperation "*" -- Shop
 
 @enduml
 ```
-### Each collection is persistant. Each database table is updated using methods from the corresponding DAO class in the data package.
+### Each collection is persistant. Each database table is updated using methods from EZShopDAO class in the data package.
 
-| Persistant Class   | Data Access Object class/classes that manages its persistance |
-| ------------------ | ------------------------------------------------------------- |
-| User               | UsersDAO                                                      |
-| ProductTypes       | ProductTypesDAO                                               |
-| Position           | ProductTypesDAO                                               |
-| Customers          | CustomersDAO                                                  |
-| LoyaltyCard        | CustomersDAO                                                  |
-| SaleTransaction    | SaleTransactionsDAO                                           |
-| ReturnTransactions | ReturnTransactionsDAO                                         |
-| Orders             | OrdersDAO                                                     |
-| BalanceOperation   | SaleTransactionsDAO, ReturnTransactionsDAO, OrdersDAO         |
-| AccountBook        | SaleTransactionsDAO, ReturnTransactionsDAO, OrdersDAO         |
-| Shop               | UsersDAO, ProductTypesDAO, CustomersDAO                       |
 
 # Verification traceability matrix
 
