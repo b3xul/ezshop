@@ -6,9 +6,21 @@ public interface ReturnTransaction {
 
 	void setReturnId(Integer ticketNumber);
 
+	Integer getProductId();
+
+	void setProductId(Integer productId);
+
 	String getProductCode();
 
 	void setProductCode(String productCode);
+
+	double getPricePerUnit();
+
+	void setPricePerUnit(double pricePerUnit);
+
+	double getDiscountRate();
+
+	void setDiscountRate(double discountRate);
 
 	int getAmount();
 
@@ -21,5 +33,7 @@ public interface ReturnTransaction {
 	SaleTransaction getSaleTransaction();
 
 	void setSaleTransaction(SaleTransaction saleTransaction);
+
+	boolean returnProduct(ProductType productType, int amount);
 
 }

@@ -1,6 +1,10 @@
 package it.polito.ezshop.data.Implementations;
 
+import java.util.List;
+
+import it.polito.ezshop.data.ProductType;
 import it.polito.ezshop.data.SaleTransaction;
+import it.polito.ezshop.data.TicketEntry;
 
 public class ReturnTransactionImpl implements it.polito.ezshop.data.ReturnTransaction {
 
@@ -27,6 +31,32 @@ public class ReturnTransactionImpl implements it.polito.ezshop.data.ReturnTransa
 
 	}
 
+	public boolean returnProduct(ProductType productType, int amount) {
+
+		List<TicketEntry> entries = this.getSaleTransaction().getEntries();
+		Boolean updated = false;
+		for (TicketEntry entry : entries) {
+			if (entry.getBarCode().equals(productCode)) {
+				if (amount > entry.getAmount()) // the amount is higher than the one in the sale transaction
+					updated = false;
+				else {
+					this.setProductId(productType.getId());
+					this.setProductCode(productCode);
+					this.setPricePerUnit(entry.getPricePerUnit());
+					this.setDiscountRate(entry.getDiscountRate());
+					this.setAmount(amount);
+					this.setPrice(this.getPrice() + entry.getPricePerUnit() * amount * (1 - entry.getDiscountRate()));
+					updated = true;
+					// System.out.println(entry);
+				}
+				break;
+			}
+		}
+		// if (updated == false) productCode was not in the transaction
+		return updated;
+
+	}
+
 	@Override
 	public Integer getReturnId() {
 
@@ -41,12 +71,14 @@ public class ReturnTransactionImpl implements it.polito.ezshop.data.ReturnTransa
 
 	}
 
+	@Override
 	public Integer getProductId() {
 
 		return productId;
 
 	}
 
+	@Override
 	public void setProductId(Integer productId) {
 
 		this.productId = productId;
@@ -67,24 +99,28 @@ public class ReturnTransactionImpl implements it.polito.ezshop.data.ReturnTransa
 
 	}
 
+	@Override
 	public double getPricePerUnit() {
 
 		return pricePerUnit;
 
 	}
 
+	@Override
 	public void setPricePerUnit(double pricePerUnit) {
 
 		this.pricePerUnit = pricePerUnit;
 
 	}
 
+	@Override
 	public double getDiscountRate() {
 
 		return discountRate;
 
 	}
 
+	@Override
 	public void setDiscountRate(double discountRate) {
 
 		this.discountRate = discountRate;

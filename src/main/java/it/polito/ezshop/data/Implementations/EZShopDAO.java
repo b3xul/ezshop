@@ -8,6 +8,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -1055,7 +1056,7 @@ public class EZShopDAO {
 		Integer id = 0; // 0=error
 		Connection conn = this.dbAccess();
 		try (Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery(getNextAutoincrement)) {
-			id = rs.getInt("seq") + 1;
+			id = rs.getInt("seq");
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
@@ -1127,7 +1128,7 @@ public class EZShopDAO {
 
 	}
 
-	public SaleTransaction getSaleTransaction(Integer transactionId, SaleTransactionImpl openSaleTransaction) {
+	public SaleTransaction getSaleTransaction(Integer transactionId) {
 
 		String getSale = "SELECT price,discountRate,creditCard,balanceId FROM saleTransaction WHERE ticketNumber=?";
 		String getBalance = "SELECT balanceId,date,money,type FROM balanceOperation WHERE balanceId=?";
@@ -1182,25 +1183,159 @@ public class EZShopDAO {
 
 	}
 
-	public Integer startReturnTransaction(Integer transactionId) {
+	public Integer startReturnTransaction() {
 
-		Integer returnId = 0; // 0=error
+		Integer returnId = -1;
 		String getNextAutoincrement = "SELECT seq FROM sqlite_sequence WHERE name=\"returnTransaction\"";
-		try (Connection conn = this.dbAccess();
-				Statement stmt = conn.createStatement();
-				ResultSet rs = stmt.executeQuery(getNextAutoincrement)) {
-			returnId = rs.getInt("seq") + 1;
+		Connection conn = this.dbAccess();
+		try (Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery(getNextAutoincrement)) {
+			returnId = rs.getInt("seq");
 		} catch (Exception e) {
-			System.err.println(e.getClass().getName() + ": " + e.getMessage());
-			System.exit(0);
+			e.printStackTrace();
+		} finally {
+			this.dbClose(conn);
 		}
 		return returnId;
 
 	}
 
-	public boolean endReturnTransaction(Integer returnId, boolean commit) {
+	public boolean endReturnTransaction(ReturnTransactionImpl openReturnTransaction) {
 
-		return false;
+		Connection conn = dbAccess();
+
+		try {
+			conn.setAutoCommit(false); // single transaction on the database
+			// 1. close the return transaction
+			String insertReturn = "INSERT INTO returnTransaction(productId,productCode,pricePerUnit,discountRate,amount,price,ticketNumber) VALUES(?,?,?,?,?,?,?)";
+			PreparedStatement pstmt = conn.prepareStatement(insertReturn);
+			pstmt.setInt(1, openReturnTransaction.getProductId());
+			pstmt.setString(2, openReturnTransaction.getProductCode());
+			pstmt.setDouble(3, openReturnTransaction.getPricePerUnit());
+			pstmt.setDouble(4, openReturnTransaction.getDiscountRate());
+			pstmt.setInt(5, openReturnTransaction.getAmount());
+			pstmt.setDouble(6, openReturnTransaction.getPrice());
+			pstmt.setInt(7, openReturnTransaction.getSaleTransaction().getTicketNumber());
+			pstmt.executeUpdate();
+			pstmt.close();
+
+			// 2. updates the transaction status (decreasing the number of units sold by the number of returned one)
+			String updateTicket = "UPDATE ticketEntry SET amount = ? WHERE ticketNumber = ? AND barCode = ? ";
+			String removeTicket = "DELETE FROM ticketEntry WHERE ticketNumber=? AND barCode = ?";
+			Iterator<TicketEntry> iter = openReturnTransaction.getSaleTransaction().getEntries().iterator();
+			while (iter.hasNext()) {
+				TicketEntry entry = iter.next();
+				if (entry.getBarCode().equals(openReturnTransaction.getProductCode())) { // product present in the
+					// saleTransaction
+					int previousAmount = entry.getAmount();
+					int amountToRemove = openReturnTransaction.getAmount();
+					if (amountToRemove < previousAmount) {
+
+						pstmt = conn.prepareStatement(updateTicket);
+						pstmt.setDouble(1, previousAmount - amountToRemove);
+						pstmt.setInt(2, openReturnTransaction.getSaleTransaction().getTicketNumber());
+						pstmt.setString(3, openReturnTransaction.getProductCode());
+						pstmt.executeUpdate();
+						pstmt.close();
+
+					} else if (amountToRemove == previousAmount) {
+
+						pstmt = conn.prepareStatement(removeTicket);
+						pstmt.setInt(1, openReturnTransaction.getSaleTransaction().getTicketNumber());
+						pstmt.setString(2, openReturnTransaction.getProductCode());
+						pstmt.executeUpdate();
+						pstmt.close();
+
+					}
+					// else if (amountToRemove > previousAmount) updated=false; (can't happen by construction)
+					// System.out.println("Found item to remove" + entry);
+					break;
+				}
+			}
+
+			// 3. updates the transaction status (decreasing the final price)
+			String updateSale = "UPDATE saleTransaction SET price = ? WHERE ticketNumber = ?";
+			// updateSale
+			pstmt = conn.prepareStatement(updateSale);
+			pstmt.setDouble(1,
+					openReturnTransaction.getSaleTransaction().getPrice() - openReturnTransaction.getPrice());
+			pstmt.setInt(2, openReturnTransaction.getSaleTransaction().getTicketNumber());
+			pstmt.executeUpdate();
+			pstmt.close();
+
+			// 4. increases the product quantity available on the shelves
+			updateQuantity(openReturnTransaction.getProductId(), openReturnTransaction.getAmount());
+
+			conn.commit();
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			return false;
+		} finally {
+			dbClose(conn);
+		}
+
+		return true;
+
+	}
+
+	public double getCreditCardCredit(String creditCard) {
+
+		Connection conn = null;
+		try {
+			String url = "jdbc:sqlite:creditCards.sqlite";
+			conn = DriverManager.getConnection(url);
+			System.out.println("Connection to SQLite has been established.");
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			return -1;
+		}
+		double credit = -1;
+		try {
+			String getCard = "SELECT balance FROM creditCards WHERE creditCardNumber = ?";
+			PreparedStatement pstmt = conn.prepareStatement(getCard);
+			pstmt.setString(1, creditCard);
+			ResultSet rs = pstmt.executeQuery();
+			if (!rs.isBeforeFirst()) // card not registered
+				return -1;
+			// only 1 result because creditCard is primary key
+			credit = rs.getDouble("balance");
+			pstmt.close();
+			rs.close();
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			return -1;
+		} finally {
+			dbClose(conn);
+		}
+
+		return credit;
+
+	}
+
+	public boolean setCreditCardCredit(double newCredit, String creditCard) {
+
+		Connection conn = null;
+		try {
+			String url = "jdbc:sqlite:creditCards.sqlite";
+			conn = DriverManager.getConnection(url);
+			System.out.println("Connection to SQLite has been established.");
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			return false;
+		}
+		try {
+			String updateCard = "UPDATE creditCards SET balance = ? WHERE creditCardNumber = ?";
+			PreparedStatement pstmt = conn.prepareStatement(updateCard);
+			pstmt.setDouble(1, newCredit);
+			pstmt.setString(2, creditCard);
+			pstmt.executeUpdate();
+			pstmt.close();
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			return false;
+		} finally {
+			dbClose(conn);
+		}
+		return true;
 
 	}
 
