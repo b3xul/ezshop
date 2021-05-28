@@ -512,7 +512,7 @@ public class EZShop implements EZShopInterface {
 		if (!userLoggedIn.getRole().equals("Administrator") && !userLoggedIn.getRole().equals("ShopManager"))
 			throw new UnauthorizedException(
 					"Either the user doesn't have the rights to perform this action or doesn't exist");
-		if (orderId <= 0 || orderId == null)
+		if (orderId == null || orderId <= 0)
 			throw new InvalidOrderIdException("The order id is not valid");
 		valid = DAO.recordOrderArrival(orderId);
 		return valid;
