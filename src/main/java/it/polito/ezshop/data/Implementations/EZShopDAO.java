@@ -328,15 +328,24 @@ public class EZShopDAO {
 		conn = dbAccess();
 		// Statement to delete a product from database
 		String sql = "DELETE FROM product WHERE id =" + id;
-		Statement statement;
+		String sql1 = "SELECT id FROM product WHERE id =" + id;
 		try {
-			statement = conn.createStatement();
-			statement.executeUpdate(sql);
-			success = true;
-			System.out.println("product deleted");
+			Statement statement = conn.createStatement();;
+			ResultSet result1 = statement.executeQuery(sql1);
+			if (!result1.next()) {
+				System.out.println("a product with this id not exists");
+				success = false;
+			}else {
+				//statement = conn.createStatement();
+				statement.executeUpdate(sql);
+				success = true;
+				System.out.println("product deleted");
+			}
+			
 		} catch (SQLException e) {
 			e.printStackTrace();
-			success = false;
+			System.out.println("dberr");
+			//success = true;
 		} finally {
 			dbClose(conn);
 		}
@@ -436,40 +445,75 @@ public class EZShopDAO {
 		List<ProductType> matchingProducts = new ArrayList<ProductType>();
 		Connection conn = null;
 		conn = dbAccess();
-		// Statement to select all the fields of a product when the description matches
-		String sql = "SELECT DISTINCT * FROM product WHERE description LIKE '%" + description + "%'";
-		Statement statement;
-		try {
-			statement = conn.createStatement();
-			ResultSet result = statement.executeQuery(sql);
-			while (result.next()) {
-				String n = result.getString("note");
-				String d = result.getString("description");
-				String b = result.getString("barcode");
-				Double p = result.getDouble("price");
-				Integer id = result.getInt("id");
-				Integer q = result.getInt("quantity");
-				String l = result.getString("location");
-				Double dr = result.getDouble("discountRate");
-				// Creation of a new ProductTypeImpl for each iteration: the object created is
-				// appended to the list that will be returned
-				ProductTypeImpl product = new ProductTypeImpl(n, d, b, p);
-				product.setId(id);
-				product.setQuantity(q);
-				if (!l.isBlank())
-					product.setLocation(l);
-				product.setDiscountRate(dr);
-				matchingProducts.add(product);
+		
+		if(description == "") {
+			String sql = "SELECT DISTINCT * FROM product";
+			Statement statement;
+			try {
+				statement = conn.createStatement();
+				ResultSet result = statement.executeQuery(sql);
+				while (result.next()) {
+					String n = result.getString("note");
+					String d = result.getString("description");
+					String b = result.getString("barcode");
+					Double p = result.getDouble("price");
+					Integer id = result.getInt("id");
+					Integer q = result.getInt("quantity");
+					String l = result.getString("location");
+					Double dr = result.getDouble("discountRate");
+					// Creation of a new ProductTypeImpl for each iteration: the object created is
+					// appended to the list that will be returned
+					ProductTypeImpl product = new ProductTypeImpl(n, d, b, p);
+					product.setId(id);
+					product.setQuantity(q);
+					if (!l.isBlank())
+						product.setLocation(l);
+					product.setDiscountRate(dr);
+					matchingProducts.add(product);
+				}
+				System.out.println("products found:");
+				// for(ProductType p: matchingProducts) p.print();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			} finally {
+				dbClose(conn);
 			}
-			System.out.println("products found:");
-			// for(ProductType p: matchingProducts) p.print();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		} finally {
-			dbClose(conn);
+		}else {
+		
+			// Statement to select all the fields of a product when the description matches
+			String sql = "SELECT DISTINCT * FROM product WHERE description LIKE '%" + description + "%'";
+			Statement statement;
+			try {
+				statement = conn.createStatement();
+				ResultSet result = statement.executeQuery(sql);
+				while (result.next()) {
+					String n = result.getString("note");
+					String d = result.getString("description");
+					String b = result.getString("barcode");
+					Double p = result.getDouble("price");
+					Integer id = result.getInt("id");
+					Integer q = result.getInt("quantity");
+					String l = result.getString("location");
+					Double dr = result.getDouble("discountRate");
+					// Creation of a new ProductTypeImpl for each iteration: the object created is
+					// appended to the list that will be returned
+					ProductTypeImpl product = new ProductTypeImpl(n, d, b, p);
+					product.setId(id);
+					product.setQuantity(q);
+					if (!l.isBlank())
+						product.setLocation(l);
+					product.setDiscountRate(dr);
+					matchingProducts.add(product);
+				}
+				System.out.println("products found:");
+				// for(ProductType p: matchingProducts) p.print();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			} finally {
+				dbClose(conn);
+			}
 		}
 		return matchingProducts;
-
 	}
 
 	public boolean updateQuantity(Integer productId, int toBeAdded) {
