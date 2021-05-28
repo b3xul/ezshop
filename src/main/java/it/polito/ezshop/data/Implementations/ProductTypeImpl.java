@@ -157,6 +157,6 @@ public class ProductTypeImpl implements ProductType {
 					+ this.barCode + ", at " + this.location.getPosition() + ", pieces: " + this.quantity + " ("
 					+ this.note + ") - [discount rate: " + this.discountRate + "%]");
 
-	};
+	}
 
 }

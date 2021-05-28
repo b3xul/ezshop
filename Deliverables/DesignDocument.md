@@ -4,6 +4,11 @@ Authors: Elia Fontana, Andrea Palomba, Leonardo Perugini, Francesco Sattolo
 
 Date: 27/04/2021
 
+Version: 1.1 (26/05/2021)  
+Changes: 
+<br>-Model packages: some classes deleted (LoyaltyCard, Credit, Debit, AccountBook) and subsequential correction of the 'Verification traceability matrix'.
+<br>-Low level design: collapsed all DAO classes in just one EZShopDAO
+
 Version: 1.0
 
 
@@ -79,26 +84,9 @@ model ..> exceptions
 ```plantuml
 @startuml
 
-class UsersDAO{
+class EZShopDAO{
 }
 
-class ProductTypesDAO{
-}
-
-class CustomersDAO{
-}
-
-class LoyaltyCardsDAO{
-}
-
-class SaleTransactionsDAO{
-}
-
-class ReturnTransactionsDAO{
-}
-
-class OrdersDAO{
-}
 
 @enduml
 ```
@@ -166,7 +154,6 @@ class Shop{
     recordBalanceUpdate()
     getCreditsAndDebits()
     computeBalance()
-
     getIssuedOrders()
 }
 class User{
@@ -199,9 +186,6 @@ class Customer {
     customerID
     name
     surname
-    loyaltyCard: LoyaltyCard
-}
-class LoyaltyCard {
     customerCard
     points
 }
@@ -243,12 +227,11 @@ ProductType -up- "0..1" Position
 ProductType "*" -down- "*" SaleTransaction
 
 SaleTransaction -left- "*" ReturnTransaction
-SaleTransaction -up-|> BalanceOperation
-SaleTransaction "*" -right- "0..1" LoyaltyCard
-LoyaltyCard "0..1" -up- Customer
+SaleTransaction -up- BalanceOperation
+SaleTransaction "0..1" -up-  Shop
 
-ReturnTransaction -up-|> BalanceOperation
-Order -up-|> BalanceOperation
+ReturnTransaction -up- BalanceOperation
+Order -up- BalanceOperation
 Order "*" - ProductType
 ReturnTransaction "*" - ProductType
 
@@ -256,34 +239,22 @@ BalanceOperation "*" -- Shop
 
 @enduml
 ```
-### Each collection is persistant. Each database table is updated using methods from the corresponding DAO class in the data package.
+### Each collection is persistant. Each database table is updated using methods from EZShopDAO class in the data package.
 
-| Persistant Class   | Data Access Object class/classes that manages its persistance |
-| ------------------ | ------------------------------------------------------------- |
-| User               | UsersDAO                                                      |
-| ProductTypes       | ProductTypesDAO                                               |
-| Position           | ProductTypesDAO                                               |
-| Customers          | CustomersDAO                                                  |
-| LoyaltyCard        | CustomersDAO                                                  |
-| SaleTransaction    | SaleTransactionsDAO                                           |
-| ReturnTransactions | ReturnTransactionsDAO                                         |
-| Orders             | OrdersDAO                                                     |
-| BalanceOperation   | SaleTransactionsDAO, ReturnTransactionsDAO, OrdersDAO         |
-| AccountBook        | SaleTransactionsDAO, ReturnTransactionsDAO, OrdersDAO         |
-| Shop               | UsersDAO, ProductTypesDAO, CustomersDAO                       |
 
 # Verification traceability matrix
 
 
-|     | Shop | User | ProductType | Customer | AccountBook | LoyaltyCard | SaleTransaction | Position | Quantity | ReturnTransaction | Order | Debit | Credit | BalanceOperation |
-| --- | ---- | ---- | ----------- | -------- | ----------- | ----------- | --------------- | -------- | -------- | ----------------- | ----- | ----- | ------ | ---------------- |
-| FR1 | X    | X    |             |          |             |             |                 |          |          |                   |       |       |        |                  |
-| FR3 | X    |      | X           |          |             |             |                 | X        |          |                   |       |       |        |                  |
-| FR4 | X    |      | X           |          |             |             |                 | X        |          |                   | X     |       |        |                  |
-| FR5 | X    |      |             | X        |             | X           |                 |          |          |                   |       |       |        |                  |
-| FR6 | X    |      | X           |          | X           |             | X               |          |          | X                 |       |       |        |                  |
-| FR7 | X    |      |             |          |             |             | X               |          |          | X                 |       |       |        |                  |
-| FR8 | X    |      |             |          | X           |             |                 |          |          |                   |       | X     | X      | X                |
+|     | Shop | User | ProductType | Customer | SaleTransaction | Position | ReturnTransaction | Order | BalanceOperation |
+| --- | ---- | ---- | ----------- | -------- | --------------- | -------- | ----------------- | ----- | ---------------- |
+| FR1 | X    | X    |             |          |                 |          |                   |       |                  |
+| FR3 | X    |      | X           |          |                 | X        |                   |       |                  |
+| FR4 | X    |      | X           |          |                 | X        |                   | X     |                  |
+| FR5 | X    |      |             | X        |                 |          |                   |       |                  |
+| FR6 | X    |      | X           |          | X               |          | X                 |       |                  |
+| FR7 | X    |      |             |          | X               |          | X                 |       |                  |
+| FR8 | X    |      |             |          |                 |          |                   |       | X                |
+
 
 
 # Verification sequence diagrams 

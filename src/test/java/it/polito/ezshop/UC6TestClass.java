@@ -1,0 +1,783 @@
+package it.polito.ezshop;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThrows;
+import static org.junit.Assert.assertTrue;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
+import it.polito.ezshop.data.EZShopInterface;
+import it.polito.ezshop.exceptions.InvalidCreditCardException;
+import it.polito.ezshop.exceptions.InvalidDiscountRateException;
+import it.polito.ezshop.exceptions.InvalidPaymentException;
+import it.polito.ezshop.exceptions.InvalidQuantityException;
+import it.polito.ezshop.exceptions.InvalidTransactionIdException;
+import it.polito.ezshop.exceptions.UnauthorizedException;
+
+public class UC6TestClass {
+
+	static EZShopInterface ezShop;
+
+	String barcode = "12637482635892";
+	String barcode2 = "6253478956438";
+	String customerCard;
+	String creditCard = "4485370086510891";
+	String creditCard2 = "5100293991053009";
+
+	@Before
+	public void init() {
+
+		ezShop = new it.polito.ezshop.data.EZShop();
+		ezShop.reset();
+		try {
+			ezShop.createUser("admin", "admin", "Administrator");
+			ezShop.login("admin", "admin");
+
+			// Product type X exists and has enough units to complete the sale
+			Integer productId = ezShop.createProductType("biscotti", "12637482635892", 1.5, "piccoli");
+			ezShop.updatePosition(productId, "2-aisle-2");
+			ezShop.updateQuantity(productId, 250);
+
+			Integer productId2 = ezShop.createProductType("insalata", "6253478956438", 1.99, "in busta");
+			ezShop.updatePosition(productId2, "3-aisle-3");
+			ezShop.updateQuantity(productId2, 300);
+
+			Integer idCustomer = ezShop.defineCustomer("Andrea");
+			assertEquals(Integer.valueOf(1), idCustomer);
+
+			customerCard = ezShop.createCard();
+			assertTrue(customerCard != null && !customerCard.isEmpty());
+			assertTrue(ezShop.attachCardToCustomer(customerCard, idCustomer));
+
+			ezShop.createUser("Casper", "casper101", "Cashier");
+			ezShop.logout();
+
+			// Cashier C exists and is logged in
+			ezShop.login("Casper", "casper101");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		try (Connection conn = DriverManager.getConnection("jdbc:sqlite:creditCards.sqlite");) {
+			String updateCard = "UPDATE creditCards SET balance = 150 WHERE creditCardNumber = 4485370086510891";
+			PreparedStatement pstmt = conn.prepareStatement(updateCard);
+			pstmt.executeUpdate();
+			pstmt.close();
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+
+	}
+
+	@After
+	public void teardown() {
+
+		ezShop.reset();
+
+	}
+
+	@Test
+	public void testCaseScenario6_Scenario6_1() {
+		// Scenario 6-1 Sale of product type X completed (credit card)
+
+		try {
+			Integer transactionId = ezShop.startSaleTransaction();
+			assertEquals(Integer.valueOf(1), transactionId);
+
+			assertTrue(ezShop.addProductToSale(transactionId, barcode, 5));
+			assertTrue(ezShop.addProductToSale(transactionId, barcode, 13));
+
+			assertTrue(ezShop.receiveCreditCardPayment(transactionId, "4485370086510891"));
+
+			assertTrue(ezShop.endSaleTransaction(transactionId));
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+	}
+
+	@Test
+	public void testCaseScenario6_Scenario6_2() {
+		// Scenario 6-2 Sale of product type X with product discount
+
+		try {
+			Integer transactionId = ezShop.startSaleTransaction();
+			assertEquals(Integer.valueOf(1), transactionId);
+
+			assertTrue(ezShop.addProductToSale(transactionId, barcode, 4)); // 6 euro
+
+			assertTrue(ezShop.applyDiscountRateToProduct(transactionId, barcode, 0.5)); // 3 euro
+
+			assertTrue(ezShop.receiveCreditCardPayment(transactionId, "4485370086510891"));
+
+			assertTrue(ezShop.endSaleTransaction(transactionId));
+
+			assertEquals(3.00, ezShop.getSaleTransaction(transactionId).getPrice(), 0.001);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+	}
+
+	@Test
+	public void testCaseScenario6_3() {
+		// Scenario 6-3 Sale of product type X with sale discount
+
+		try {
+			Integer transactionId = ezShop.startSaleTransaction();
+			assertEquals(Integer.valueOf(1), transactionId);
+
+			assertTrue(ezShop.addProductToSale(transactionId, barcode, 4)); // 6 euro
+
+			assertTrue(ezShop.applyDiscountRateToSale(transactionId, 0.1)); // 5.40
+
+			assertTrue(ezShop.receiveCreditCardPayment(transactionId, "4485370086510891"));
+
+			assertTrue(ezShop.endSaleTransaction(transactionId));
+
+			assertEquals(5.40, ezShop.getSaleTransaction(transactionId).getPrice(), 0.001);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+	}
+
+	@Test
+	public void testCaseScenario6_4() {
+		// Scenario 6-4 Sale of product type X with Loyalty Card update
+
+		try {
+			Integer transactionId = ezShop.startSaleTransaction();
+			assertEquals(Integer.valueOf(1), transactionId);
+
+			assertTrue(ezShop.addProductToSale(transactionId, barcode, 32)); // 48 euro
+
+			assertTrue(ezShop.applyDiscountRateToProduct(transactionId, barcode, 0.5)); // 24 euro
+
+			assertTrue(ezShop.applyDiscountRateToSale(transactionId, 0.25)); // 18 euro
+
+			assertTrue(ezShop.receiveCreditCardPayment(transactionId, "4485370086510891"));
+
+			int points = ezShop.computePointsForSale(transactionId);
+			assertEquals(1, points);
+
+			assertTrue(ezShop.modifyPointsOnCard(customerCard, points));
+
+			assertTrue(ezShop.endSaleTransaction(transactionId));
+
+			assertEquals(18, ezShop.getSaleTransaction(transactionId).getPrice(), 0.001);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+	}
+
+	@Test
+	public void testCaseScenario6_5() {
+		// Scenario 6-5 Sale of product type X cancelled
+
+		try {
+			Integer transactionId = ezShop.startSaleTransaction();
+			assertEquals(Integer.valueOf(1), transactionId);
+
+			assertTrue(ezShop.addProductToSale(transactionId, barcode, 16)); // 24 euro
+
+			assertTrue(ezShop.deleteProductFromSale(transactionId, barcode, 4)); // 18 euro
+
+			// assertTrue(ezShop.applyDiscountRateToProduct(transactionId, barcode, 0.5)); // 3 euro
+
+			// assertTrue(ezShop.applyDiscountRateToSale(transactionId, 0.1));
+
+			assertTrue(ezShop.receiveCreditCardPayment(transactionId, "4485370086510891"));
+
+			assertTrue(ezShop.endSaleTransaction(transactionId));
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+	}
+
+	@Test
+	public void testCaseScenario6_6() {
+		// Scenario 6-6 Sale of product type X completed (Cash)
+
+		try {
+			Integer transactionId = ezShop.startSaleTransaction();
+			assertEquals(Integer.valueOf(1), transactionId);
+
+			assertTrue(ezShop.addProductToSale(transactionId, barcode, 16)); // 24 euro
+
+			assertTrue(ezShop.deleteProductFromSale(transactionId, barcode, 4)); // 18 euro
+
+			// assertTrue(ezShop.applyDiscountRateToProduct(transactionId, barcode, 0.5));
+
+			// assertTrue(ezShop.applyDiscountRateToSale(transactionId, 0.1));
+
+			assertEquals(2, ezShop.receiveCashPayment(transactionId, 20), 0.01); // 2 euro back
+
+			int points = ezShop.computePointsForSale(transactionId);
+			assertEquals(1, points);
+
+			// assertTrue(ezShop.modifyPointsOnCard("1000000000", points));
+
+			assertTrue(ezShop.endSaleTransaction(transactionId));
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+	}
+
+	@Test
+	public void testCaseScenario6_7() {
+		// Scenario 6-7 Delete of an open SaleTransaction
+
+		try {
+			Integer transactionId = ezShop.startSaleTransaction();
+			assertEquals(Integer.valueOf(1), transactionId);
+
+			assertTrue(ezShop.addProductToSale(transactionId, barcode, 16)); // 24 euro
+
+			assertTrue(ezShop.deleteProductFromSale(transactionId, barcode, 4)); // 18 euro
+
+			assertTrue(ezShop.deleteSaleTransaction(transactionId));
+
+			// assertFalse(ezShop.endSaleTransaction(transactionId));
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+	}
+
+	@Test
+	public void testCaseScenario6_8() {
+		// startSaleTransaction exceptions
+
+		try {
+			ezShop.logout();
+			assertThrows(UnauthorizedException.class, () -> {
+				ezShop.startSaleTransaction();
+			});
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				ezShop.login("Casper", "casper101");
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+
+	}
+
+	@Test
+	public void testCaseScenario6_9() {
+		// addProductToSale exceptions
+
+		try {
+
+			Integer transactionId = ezShop.startSaleTransaction();
+			assertEquals(Integer.valueOf(1), transactionId);
+
+			ezShop.logout();
+			assertThrows(UnauthorizedException.class, () -> {
+				ezShop.addProductToSale(transactionId, barcode, 16);
+			});
+			ezShop.login("Casper", "casper101");
+
+			assertThrows(InvalidTransactionIdException.class, () -> {
+				ezShop.addProductToSale(null, barcode, 16);
+			});
+			assertThrows(InvalidTransactionIdException.class, () -> {
+				ezShop.addProductToSale(0, barcode, 16);
+			});
+			assertThrows(InvalidTransactionIdException.class, () -> {
+				ezShop.addProductToSale(-1, barcode, 16);
+			});
+
+			assertThrows(InvalidQuantityException.class, () -> {
+				ezShop.addProductToSale(transactionId, barcode, 0);
+			});
+			assertThrows(InvalidQuantityException.class, () -> {
+				ezShop.addProductToSale(transactionId, barcode, -1);
+			});
+
+			ezShop.addProductToSale(transactionId, barcode2, 16);
+			assertFalse(ezShop.addProductToSale(transactionId, "22637482635892", 16)); // !productType.getBarCode().equals(productCode)
+			assertTrue(ezShop.addProductToSale(transactionId, "12637482635892", 16)); // productType.getBarCode().equals(productCode),
+																						// amount <=
+																						// productType.getQuantity()
+
+			assertFalse(ezShop.addProductToSale(transactionId, barcode, 260)); // amount > productType.getQuantity()
+
+			assertFalse(ezShop.addProductToSale(2, barcode, 16)); // transactionId !=
+																	// openSaleTransaction.getTicketNumber()
+
+			ezShop.deleteSaleTransaction(transactionId);
+			assertFalse(ezShop.addProductToSale(transactionId, barcode, 16)); // openSaleTransaction.getTicketNumber()
+																				// == -1
+
+			// assertTrue(ezShop.deleteProductFromSale(transactionId, barcode, 4)); // 18 euro
+
+			// assertTrue(ezShop.applyDiscountRateToProduct(transactionId, barcode, 0.5));
+
+			// assertTrue(ezShop.applyDiscountRateToSale(transactionId, 0.1));
+
+			// assertTrue(ezShop.deleteSaleTransaction(transactionId));
+
+			// assertEquals(2, ezShop.receiveCashPayment(transactionId, 20), 0.01); // 2 euro back
+			//
+			// int points = ezShop.computePointsForSale(transactionId);
+			// assertEquals(1, points);
+			//
+			// assertTrue(ezShop.modifyPointsOnCard("1000000000", points));
+			//
+			// assertTrue(ezShop.endSaleTransaction(transactionId));
+			//
+			//
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+	}
+
+	@Test
+	public void testCaseScenario6_10() {
+		// deleteProductFromSale exceptions
+
+		try {
+
+			Integer transactionId = ezShop.startSaleTransaction();
+			assertEquals(Integer.valueOf(1), transactionId);
+
+			ezShop.addProductToSale(transactionId, barcode, 16);
+
+			ezShop.logout();
+			assertThrows(UnauthorizedException.class, () -> {
+				ezShop.deleteProductFromSale(transactionId, barcode, 16);
+			});
+			ezShop.login("Casper", "casper101");
+
+			assertThrows(InvalidTransactionIdException.class, () -> {
+				ezShop.deleteProductFromSale(null, barcode, 16);
+			});
+			assertThrows(InvalidTransactionIdException.class, () -> {
+				ezShop.deleteProductFromSale(0, barcode, 16);
+			});
+			assertThrows(InvalidTransactionIdException.class, () -> {
+				ezShop.deleteProductFromSale(-1, barcode, 16);
+			});
+
+			assertThrows(InvalidQuantityException.class, () -> {
+				ezShop.deleteProductFromSale(transactionId, barcode, 0);
+			});
+			assertThrows(InvalidQuantityException.class, () -> {
+				ezShop.deleteProductFromSale(transactionId, barcode, -1);
+			});
+
+			assertFalse(ezShop.deleteProductFromSale(transactionId, "22637482635892", 16)); // !productType.getBarCode().equals(productCode)
+			assertFalse(ezShop.deleteProductFromSale(transactionId, barcode, 20)); // amount > previousAmount
+
+			assertTrue(ezShop.deleteProductFromSale(transactionId, barcode, 10)); // productType.getBarCode().equals(productCode),
+																					// amount < previousAmount
+			assertTrue(ezShop.deleteProductFromSale(transactionId, barcode, 6)); // productType.getBarCode().equals(productCode),
+			// amount == previousAmount
+			assertFalse(ezShop.deleteProductFromSale(2, barcode, 16)); // transactionId !=
+																		// openSaleTransaction.getTicketNumber()
+
+			ezShop.deleteSaleTransaction(transactionId);
+			assertFalse(ezShop.deleteProductFromSale(transactionId, barcode, 16)); // openSaleTransaction.getTicketNumber()
+																					// == -1
+
+			// assertTrue(ezShop.deleteProductFromSale(transactionId, barcode, 4)); // 18 euro
+
+			// assertTrue(ezShop.applyDiscountRateToProduct(transactionId, barcode, 0.5));
+
+			// assertTrue(ezShop.applyDiscountRateToSale(transactionId, 0.1));
+
+			// assertTrue(ezShop.deleteSaleTransaction(transactionId));
+
+			// assertEquals(2, ezShop.receiveCashPayment(transactionId, 20), 0.01); // 2 euro back
+			//
+			// int points = ezShop.computePointsForSale(transactionId);
+			// assertEquals(1, points);
+			//
+			// assertTrue(ezShop.modifyPointsOnCard("1000000000", points));
+			//
+			// assertTrue(ezShop.endSaleTransaction(transactionId));
+			//
+			//
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+	}
+
+	@Test
+	public void testCaseScenario6_11() {
+		// applyDiscountRateToProduct exceptions
+
+		try {
+
+			Integer transactionId = ezShop.startSaleTransaction();
+			assertEquals(Integer.valueOf(1), transactionId);
+
+			ezShop.addProductToSale(transactionId, barcode, 16);
+
+			ezShop.logout();
+			assertThrows(UnauthorizedException.class, () -> {
+				ezShop.applyDiscountRateToProduct(transactionId, barcode, 0.5);
+			});
+			ezShop.login("Casper", "casper101");
+
+			assertThrows(InvalidTransactionIdException.class, () -> {
+				ezShop.applyDiscountRateToProduct(null, barcode, 0.5);
+			});
+			assertThrows(InvalidTransactionIdException.class, () -> {
+				ezShop.applyDiscountRateToProduct(0, barcode, 0.5);
+			});
+			assertThrows(InvalidTransactionIdException.class, () -> {
+				ezShop.applyDiscountRateToProduct(-1, barcode, 0.5);
+			});
+
+			assertThrows(InvalidDiscountRateException.class, () -> {
+				ezShop.applyDiscountRateToProduct(transactionId, barcode, -0.1);
+			});
+			assertThrows(InvalidDiscountRateException.class, () -> {
+				ezShop.applyDiscountRateToProduct(transactionId, barcode, 1);
+			});
+
+			assertFalse(ezShop.applyDiscountRateToProduct(transactionId, "22637482635892", 0.5)); // !productType.getBarCode().equals(productCode)
+
+			assertFalse(ezShop.applyDiscountRateToProduct(2, barcode, 0.5)); // transactionId !=
+			// openSaleTransaction.getTicketNumber()
+
+			ezShop.deleteSaleTransaction(transactionId);
+			assertFalse(ezShop.applyDiscountRateToProduct(transactionId, barcode, 0.5)); // openSaleTransaction.getTicketNumber()
+			// == -1
+
+			// assertTrue(ezShop.deleteProductFromSale(transactionId, barcode, 4)); // 18 euro
+
+			// assertTrue(ezShop.applyDiscountRateToProduct(transactionId, barcode, 0.5));
+
+			// assertTrue(ezShop.applyDiscountRateToSale(transactionId, 0.1));
+
+			// assertTrue(ezShop.deleteSaleTransaction(transactionId));
+
+			// assertEquals(2, ezShop.receiveCashPayment(transactionId, 20), 0.01); // 2 euro back
+			//
+			// int points = ezShop.computePointsForSale(transactionId);
+			// assertEquals(1, points);
+			//
+			// assertTrue(ezShop.modifyPointsOnCard("1000000000", points));
+			//
+			// assertTrue(ezShop.endSaleTransaction(transactionId));
+			//
+			//
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+	}
+
+	@Test
+	public void testCaseScenario6_12() {
+		// applyDiscountRateToSale exceptions
+
+		try {
+
+			Integer transactionId = ezShop.startSaleTransaction();
+			assertEquals(Integer.valueOf(1), transactionId);
+
+			ezShop.addProductToSale(transactionId, barcode, 16);
+
+			ezShop.logout();
+			assertThrows(UnauthorizedException.class, () -> {
+				ezShop.applyDiscountRateToSale(transactionId, 0.5);
+			});
+			ezShop.login("Casper", "casper101");
+
+			assertThrows(InvalidTransactionIdException.class, () -> {
+				ezShop.applyDiscountRateToSale(null, 0.5);
+			});
+			assertThrows(InvalidTransactionIdException.class, () -> {
+				ezShop.applyDiscountRateToSale(0, 0.5);
+			});
+			assertThrows(InvalidTransactionIdException.class, () -> {
+				ezShop.applyDiscountRateToSale(-1, 0.5);
+			});
+
+			assertThrows(InvalidDiscountRateException.class, () -> {
+				ezShop.applyDiscountRateToSale(transactionId, -0.1);
+			});
+			assertThrows(InvalidDiscountRateException.class, () -> {
+				ezShop.applyDiscountRateToSale(transactionId, 1);
+			});
+
+			assertFalse(ezShop.applyDiscountRateToSale(2, 0.5)); // transactionId !=
+			// openSaleTransaction.getTicketNumber()
+
+			ezShop.deleteSaleTransaction(transactionId);
+			assertFalse(ezShop.applyDiscountRateToSale(transactionId, 0.5)); // openSaleTransaction.getTicketNumber()==
+																				// -1
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+	}
+
+	@Test
+	public void testCaseScenario6_13() {
+		// computePointsForSale exceptions
+
+		try {
+
+			Integer transactionId = ezShop.startSaleTransaction();
+			assertEquals(Integer.valueOf(1), transactionId);
+
+			ezShop.addProductToSale(transactionId, barcode, 16);
+
+			ezShop.logout();
+			assertThrows(UnauthorizedException.class, () -> {
+				ezShop.computePointsForSale(transactionId);
+			});
+			ezShop.login("Casper", "casper101");
+
+			assertThrows(InvalidTransactionIdException.class, () -> {
+				ezShop.computePointsForSale(null);
+			});
+			assertThrows(InvalidTransactionIdException.class, () -> {
+				ezShop.computePointsForSale(0);
+			});
+			assertThrows(InvalidTransactionIdException.class, () -> {
+				ezShop.computePointsForSale(-1);
+			});
+
+			assertEquals(-1, ezShop.computePointsForSale(2)); // transactionId !=
+			// openSaleTransaction.getTicketNumber()
+
+			ezShop.deleteSaleTransaction(transactionId);
+			assertEquals(-1, ezShop.computePointsForSale(transactionId)); // openSaleTransaction.getTicketNumber()==
+																			// -1
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+	}
+
+	@Test
+	public void testCaseScenario6_14() {
+		// endSaleTransaction exceptions
+
+		try {
+
+			Integer transactionId = ezShop.startSaleTransaction();
+			assertEquals(Integer.valueOf(1), transactionId);
+
+			ezShop.addProductToSale(transactionId, barcode, 16);
+
+			ezShop.logout();
+			assertThrows(UnauthorizedException.class, () -> {
+				ezShop.endSaleTransaction(transactionId);
+			});
+			ezShop.login("Casper", "casper101");
+
+			assertThrows(InvalidTransactionIdException.class, () -> {
+				ezShop.endSaleTransaction(null);
+			});
+			assertThrows(InvalidTransactionIdException.class, () -> {
+				ezShop.endSaleTransaction(0);
+			});
+			assertThrows(InvalidTransactionIdException.class, () -> {
+				ezShop.endSaleTransaction(-1);
+			});
+
+			assertFalse(ezShop.endSaleTransaction(2)); // transactionId !=
+			// openSaleTransaction.getTicketNumber()
+			assertTrue(ezShop.endSaleTransaction(transactionId));
+			assertFalse(ezShop.endSaleTransaction(transactionId));
+
+			ezShop.deleteSaleTransaction(transactionId);
+			assertFalse(ezShop.endSaleTransaction(transactionId)); // openSaleTransaction.getTicketNumber()==
+																	// -1
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+	}
+
+	@Test
+	public void testCaseScenario6_15() {
+		// deleteSaleTransaction exceptions
+
+		try {
+
+			Integer transactionId = ezShop.startSaleTransaction();
+			assertEquals(Integer.valueOf(1), transactionId);
+
+			ezShop.addProductToSale(transactionId, barcode, 16);
+
+			ezShop.logout();
+			assertThrows(UnauthorizedException.class, () -> {
+				ezShop.deleteSaleTransaction(transactionId);
+			});
+			ezShop.login("Casper", "casper101");
+
+			assertThrows(InvalidTransactionIdException.class, () -> {
+				ezShop.deleteSaleTransaction(null);
+			});
+			assertThrows(InvalidTransactionIdException.class, () -> {
+				ezShop.deleteSaleTransaction(0);
+			});
+			assertThrows(InvalidTransactionIdException.class, () -> {
+				ezShop.deleteSaleTransaction(-1);
+			});
+
+			assertFalse(ezShop.deleteSaleTransaction(2)); // transactionId !=
+			// openSaleTransaction.getTicketNumber()
+
+			ezShop.deleteSaleTransaction(transactionId);
+			assertFalse(ezShop.endSaleTransaction(transactionId)); // openSaleTransaction.getTicketNumber()==
+																	// -1
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+	}
+
+	@Test
+	public void testCaseScenario6_16() {
+		// getSaleTransaction exceptions
+
+		try {
+
+			Integer transactionId = ezShop.startSaleTransaction();
+			assertEquals(Integer.valueOf(1), transactionId);
+
+			ezShop.addProductToSale(transactionId, barcode, 16);
+
+			ezShop.logout();
+			assertThrows(UnauthorizedException.class, () -> {
+				ezShop.getSaleTransaction(transactionId);
+			});
+			ezShop.login("Casper", "casper101");
+
+			assertThrows(InvalidTransactionIdException.class, () -> {
+				ezShop.getSaleTransaction(null);
+			});
+			assertThrows(InvalidTransactionIdException.class, () -> {
+				ezShop.getSaleTransaction(0);
+			});
+			assertThrows(InvalidTransactionIdException.class, () -> {
+				ezShop.getSaleTransaction(-1);
+			});
+
+			assertEquals(null, ezShop.getSaleTransaction(transactionId)); // transactionId has not been ended yet
+
+			// TODO: assertTrue(ezShop.recordBalanceUpdate(price));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+	}
+
+	@Test
+	public void testCaseScenario6_17() {
+		// receive cash payment exceptions
+
+		try {
+			ezShop.logout();
+			assertThrows(UnauthorizedException.class, () -> {
+				ezShop.receiveCashPayment(-1, 10.0);
+			});
+			ezShop.login("Casper", "casper101");
+
+			Integer transactionId = ezShop.startSaleTransaction();
+			assertEquals(Integer.valueOf(1), transactionId);
+
+			ezShop.addProductToSale(transactionId, barcode, 16);
+
+			assertThrows(InvalidTransactionIdException.class, () -> {
+				ezShop.receiveCashPayment(null, 10.0);
+			});
+			assertThrows(InvalidTransactionIdException.class, () -> {
+				ezShop.receiveCashPayment(0, 10.0);
+			});
+			assertThrows(InvalidTransactionIdException.class, () -> {
+				ezShop.receiveCashPayment(-1, 10.0);
+			});
+
+			assertThrows(InvalidPaymentException.class, () -> {
+				ezShop.receiveCashPayment(transactionId, -1);
+			});
+
+			assertEquals(-1, ezShop.receiveCashPayment(2, 1.0), 0.001); // cash <
+
+			assertEquals(-1, ezShop.receiveCashPayment(2, 10.0), 0.001);
+
+			ezShop.endSaleTransaction(transactionId);
+			assertEquals(-1, ezShop.receiveCashPayment(1, 10.0), 0.001);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+	}
+
+	@Test
+	public void testCaseScenario6_18() {
+
+		// receive credit card payment
+		try {
+			ezShop.logout();
+			assertThrows(UnauthorizedException.class, () -> {
+				ezShop.receiveCreditCardPayment(-1, creditCard);
+			});
+			ezShop.login("Casper", "casper101");
+
+			Integer transactionId = ezShop.startSaleTransaction();
+			assertEquals(Integer.valueOf(1), transactionId);
+
+			ezShop.addProductToSale(transactionId, barcode, 100);
+
+			assertThrows(InvalidTransactionIdException.class, () -> {
+				ezShop.receiveCreditCardPayment(null, creditCard);
+			});
+			assertThrows(InvalidTransactionIdException.class, () -> {
+				ezShop.receiveCreditCardPayment(0, creditCard);
+			});
+			assertThrows(InvalidTransactionIdException.class, () -> {
+				ezShop.receiveCreditCardPayment(-1, creditCard);
+			});
+
+			assertThrows(InvalidCreditCardException.class, () -> {
+				ezShop.receiveCreditCardPayment(transactionId, null);
+			});
+
+			assertThrows(InvalidCreditCardException.class, () -> {
+				ezShop.receiveCreditCardPayment(transactionId, "abc");
+			});
+
+			assertFalse(ezShop.receiveCreditCardPayment(transactionId, creditCard2)); // cash <
+
+			assertFalse(ezShop.receiveCreditCardPayment(2, creditCard));
+
+			ezShop.endSaleTransaction(transactionId);
+			assertFalse(ezShop.receiveCreditCardPayment(1, creditCard));
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+	}
+
+}
