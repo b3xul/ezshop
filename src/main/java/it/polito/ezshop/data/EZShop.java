@@ -315,7 +315,7 @@ public class EZShop implements EZShopInterface {
 	public boolean deleteProductType(Integer id) throws InvalidProductIdException, UnauthorizedException {
 
 		Boolean success = false;
-		if (id <= 0 || id == null)
+		if (id == null || id <= 0  )
 			throw new InvalidProductIdException("invalid ID");
 		else if ((!userLoggedIn.getRole().equals("Administrator") && !userLoggedIn.getRole().equals("ShopManager")))
 			throw new UnauthorizedException("user error");
@@ -368,8 +368,8 @@ public class EZShop implements EZShopInterface {
 	@Override
 	public List<ProductType> getProductTypesByDescription(String description) throws UnauthorizedException {
 
-		if (description == "")
-			description = null;
+		if (description == null)
+			description = "";
 		List<ProductType> matchingProducts = new ArrayList<ProductType>();
 		if ((!userLoggedIn.getRole().equals("Administrator") && !userLoggedIn.getRole().equals("ShopManager")))
 			throw new UnauthorizedException("user error");
@@ -386,7 +386,7 @@ public class EZShop implements EZShopInterface {
 			throws InvalidProductIdException, UnauthorizedException {
 
 		boolean success = false;
-		if (productId <= 0 || productId == null)
+		if (productId == null || productId <= 0  )
 			throw new InvalidProductIdException("ID incorrect");
 		else if ((!userLoggedIn.getRole().equals("Administrator") && !userLoggedIn.getRole().equals("ShopManager")))
 			throw new UnauthorizedException("user error");
@@ -403,7 +403,7 @@ public class EZShop implements EZShopInterface {
 			throws InvalidProductIdException, InvalidLocationException, UnauthorizedException {
 
 		boolean success = false;
-		if (productId <= 0 || productId == null)
+		if (productId == null || productId <= 0  )
 			throw new InvalidProductIdException("ID incorrect");
 		else if ((!userLoggedIn.getRole().equals("Administrator") && !userLoggedIn.getRole().equals("ShopManager")))
 			throw new UnauthorizedException("user error");
