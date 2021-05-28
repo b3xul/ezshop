@@ -240,7 +240,7 @@ public class EZShop implements EZShopInterface {
 	@Override
 	public boolean logout() {
 
-		if (userLoggedIn.getId() != -1) { // no users already logged in
+		if (userLoggedIn != null && userLoggedIn.getId() != -1) { // no users already logged in
 			userLoggedIn.setId(-1);
 			userLoggedIn.setUsername("");
 			userLoggedIn.setPassword("");
