@@ -315,7 +315,7 @@ public class EZShop implements EZShopInterface {
 	public boolean deleteProductType(Integer id) throws InvalidProductIdException, UnauthorizedException {
 
 		Boolean success = false;
-		if (id == null || id <= 0  )
+		if (id == null || id <= 0)
 			throw new InvalidProductIdException("invalid ID");
 		else if ((!userLoggedIn.getRole().equals("Administrator") && !userLoggedIn.getRole().equals("ShopManager")))
 			throw new UnauthorizedException("user error");
@@ -386,7 +386,7 @@ public class EZShop implements EZShopInterface {
 			throws InvalidProductIdException, UnauthorizedException {
 
 		boolean success = false;
-		if (productId == null || productId <= 0  )
+		if (productId == null || productId <= 0)
 			throw new InvalidProductIdException("ID incorrect");
 		else if ((!userLoggedIn.getRole().equals("Administrator") && !userLoggedIn.getRole().equals("ShopManager")))
 			throw new UnauthorizedException("user error");
@@ -403,7 +403,7 @@ public class EZShop implements EZShopInterface {
 			throws InvalidProductIdException, InvalidLocationException, UnauthorizedException {
 
 		boolean success = false;
-		if (productId == null || productId <= 0  )
+		if (productId == null || productId <= 0)
 			throw new InvalidProductIdException("ID incorrect");
 		else if ((!userLoggedIn.getRole().equals("Administrator") && !userLoggedIn.getRole().equals("ShopManager")))
 			throw new UnauthorizedException("user error");
@@ -666,7 +666,7 @@ public class EZShop implements EZShopInterface {
 			throw new UnauthorizedException("User not logged in");
 
 		Integer transactionId = DAO.startSaleTransaction();
-		if (transactionId != -1)
+		if (transactionId != 0)
 			openSaleTransaction.setTicketNumber(transactionId);
 		// transaction will be added to the db only when it ends
 
@@ -686,6 +686,15 @@ public class EZShop implements EZShopInterface {
 			throw new InvalidTransactionIdException("Transaction id cannot be null or <=0");
 		if (amount <= 0)
 			throw new InvalidQuantityException("Amount to add cannot be <=0");
+
+		if (productCode == null || productCode == "")
+			throw new InvalidProductCodeException("invalid barcode: barcode not inserted");
+		else if (productCode.length() < 12 || productCode.length() > 14)
+			throw new InvalidProductCodeException("invalid barcode: wrong length");
+		else if (!isStringOnlyNumbers(productCode))
+			throw new InvalidProductCodeException("invalid barcode: in barcode must not be letters");
+		else if (!isBarcodeValid(productCode))
+			throw new InvalidProductCodeException("invalid barcode: barcode does not respect GTIN specifications");
 
 		if (openSaleTransaction.getTicketNumber() == -1 || transactionId != openSaleTransaction.getTicketNumber())
 			return false;
@@ -714,6 +723,15 @@ public class EZShop implements EZShopInterface {
 		if (amount <= 0)
 			throw new InvalidQuantityException("Amount to remove cannot be <=0");
 
+		if (productCode == null || productCode == "")
+			throw new InvalidProductCodeException("invalid barcode: barcode not inserted");
+		else if (productCode.length() < 12 || productCode.length() > 14)
+			throw new InvalidProductCodeException("invalid barcode: wrong length");
+		else if (!isStringOnlyNumbers(productCode))
+			throw new InvalidProductCodeException("invalid barcode: in barcode must not be letters");
+		else if (!isBarcodeValid(productCode))
+			throw new InvalidProductCodeException("invalid barcode: barcode does not respect GTIN specifications");
+
 		if (openSaleTransaction.getTicketNumber() == -1 || transactionId != openSaleTransaction.getTicketNumber())
 			return false;
 
@@ -725,7 +743,6 @@ public class EZShop implements EZShopInterface {
 		if (deleted == true)
 			updated = DAO.updateQuantity(productType.getId(), amount);
 
-		// TODO: ok?
 		if (deleted && !updated)
 			this.addProductToSale(transactionId, productCode, amount);
 
@@ -746,10 +763,17 @@ public class EZShop implements EZShopInterface {
 		if (discountRate < 0 || discountRate >= 1)
 			throw new InvalidDiscountRateException("Discount Rate must be >=0 and <1");
 
+		if (productCode == null || productCode == "")
+			throw new InvalidProductCodeException("invalid barcode: barcode not inserted");
+		else if (productCode.length() < 12 || productCode.length() > 14)
+			throw new InvalidProductCodeException("invalid barcode: wrong length");
+		else if (!isStringOnlyNumbers(productCode))
+			throw new InvalidProductCodeException("invalid barcode: in barcode must not be letters");
+		else if (!isBarcodeValid(productCode))
+			throw new InvalidProductCodeException("invalid barcode: barcode does not respect GTIN specifications");
+
 		if (openSaleTransaction.getTicketNumber() == -1 || transactionId != openSaleTransaction.getTicketNumber())
 			return false;
-
-		ProductType productType = DAO.getProductTypeByBarCode(productCode); // could throw InvalidProductCodeException
 
 		boolean result = openSaleTransaction.applyDiscountRateToProduct(productCode, discountRate); // false if product
 																									// not present
@@ -785,9 +809,15 @@ public class EZShop implements EZShopInterface {
 		if (transactionId == null || transactionId <= 0)
 			throw new InvalidTransactionIdException("Transaction id cannot be null or <=0");
 		int points = -1;
-		if (openSaleTransaction.getTicketNumber() != -1 && transactionId == openSaleTransaction.getTicketNumber()) {
-			points = (int) (openSaleTransaction.getPrice() / 10);
-		}
+		if (transactionId == openSaleTransaction.getTicketNumber())
+			return -1; // can't delete open sale transaction
+
+		SaleTransactionImpl saleTransactionImpl = DAO.getSaleTransaction(transactionId);
+		if (saleTransactionImpl == null) // transaction does not exist
+			return -1;
+
+		points = (int) (saleTransactionImpl.getPrice() / 10);
+
 		// else points==-1
 		return points;
 
@@ -803,10 +833,10 @@ public class EZShop implements EZShopInterface {
 		if (transactionId == null || transactionId <= 0)
 			throw new InvalidTransactionIdException("Transaction id cannot be null or <=0");
 		if (openSaleTransaction.getTicketNumber() == -1 || transactionId != openSaleTransaction.getTicketNumber())
-			// || getSaleTransaction(transactionId) != null can't happen
 			return false;
 
-		boolean result = DAO.endSaleTransaction(openSaleTransaction);
+		boolean result = DAO.endSaleTransaction(openSaleTransaction); // ended sale transaction has balanceId==-1 until
+																		// it is payed
 		openSaleTransaction = new SaleTransactionImpl(-1);
 		return result;
 
@@ -821,11 +851,17 @@ public class EZShop implements EZShopInterface {
 			throw new UnauthorizedException("User not logged in");
 		if (transactionId == null || transactionId <= 0)
 			throw new InvalidTransactionIdException("Transaction id cannot be null or <=0");
-		if (openSaleTransaction.getTicketNumber() == -1 || transactionId != openSaleTransaction.getTicketNumber())
-			// || getSaleTransaction(transactionId) != null can't happen
+		if (transactionId == openSaleTransaction.getTicketNumber())
+			return false; // can't delete open sale transaction
+
+		// Only deletes closed but unpayed transactions
+		SaleTransactionImpl saleTransactionImpl = DAO.getSaleTransaction(transactionId);
+		if (saleTransactionImpl == null || saleTransactionImpl.getBalanceId() != -1) // not exist/ already payed, can't
+																						// delete
 			return false;
-		if (DAO.addProductsFromSaleTransaction(openSaleTransaction)) {
-			openSaleTransaction = new SaleTransactionImpl(-1);
+
+		if (DAO.deleteSaleTransaction(saleTransactionImpl)) {
+			// openSaleTransaction = new SaleTransactionImpl(-1);
 			return true;
 		}
 		return false;
@@ -842,6 +878,7 @@ public class EZShop implements EZShopInterface {
 		if (transactionId == null || transactionId <= 0)
 			throw new InvalidTransactionIdException("Transaction id cannot be null or <=0");
 
+		// can only get already closed transaction
 		SaleTransaction result = (SaleTransaction) DAO.getSaleTransaction(transactionId);
 
 		return result;
@@ -882,11 +919,22 @@ public class EZShop implements EZShopInterface {
 			throw new InvalidTransactionIdException("Return id cannot be null or <=0");
 		if (amount <= 0)
 			throw new InvalidQuantityException("Amount to add cannot be <=0");
+
+		if (productCode == null || productCode == "")
+			throw new InvalidProductCodeException("invalid barcode: barcode not inserted");
+		else if (productCode.length() < 12 || productCode.length() > 14)
+			throw new InvalidProductCodeException("invalid barcode: wrong length");
+		else if (!isStringOnlyNumbers(productCode))
+			throw new InvalidProductCodeException("invalid barcode: in barcode must not be letters");
+		else if (!isBarcodeValid(productCode))
+			throw new InvalidProductCodeException("invalid barcode: barcode does not respect GTIN specifications");
+
 		if (openReturnTransaction.getReturnId() == -1 || returnId != openReturnTransaction.getReturnId()) // the
 																											// transaction
 																											// does
 			// not exist
 			return false;
+
 		ProductType productType = DAO.getProductTypeByBarCode(productCode); // could throw InvalidProductCodeException
 		// System.out.println(productType);
 		if (productType == null) // the product to be returned does not exists
@@ -953,14 +1001,19 @@ public class EZShop implements EZShopInterface {
 			throw new InvalidTransactionIdException("Transaction id cannot be null or <=0");
 		if (cash <= 0)
 			throw new InvalidPaymentException("cash cannot be <=0");
-		if (openSaleTransaction.getTicketNumber() == -1 || transactionId != openSaleTransaction.getTicketNumber())
+		if (transactionId == openSaleTransaction.getTicketNumber())
+			return -1; // can't pay open sale transaction
+
+		SaleTransactionImpl saleTransactionImpl = DAO.getSaleTransaction(transactionId);
+		if (saleTransactionImpl == null) // already payed, can't delete
 			return -1;
 
-		double price = openSaleTransaction.getPrice();
+		double price = saleTransactionImpl.getPrice();
 		if (cash < price)
 			return -1;
 
 		DAO.recordBalanceUpdate(price);
+		DAO.setTransactionBalanceId(transactionId);
 
 		return (cash - price);
 
@@ -978,10 +1031,14 @@ public class EZShop implements EZShopInterface {
 			throw new InvalidTransactionIdException();
 		if (creditCard == null || !checkLuhn(creditCard))
 			throw new InvalidCreditCardException();
-		if (openSaleTransaction.getTicketNumber() == -1 || transactionId != openSaleTransaction.getTicketNumber())
+		if (transactionId == openSaleTransaction.getTicketNumber())
+			return false; // can't pay open sale transaction
+
+		SaleTransactionImpl saleTransactionImpl = DAO.getSaleTransaction(transactionId);
+		if (saleTransactionImpl == null)
 			return false;
 
-		double price = openSaleTransaction.getPrice();
+		double price = saleTransactionImpl.getPrice();
 		double credit = DAO.getCreditCardCredit(creditCard);
 
 		if (credit < price) // card has not enough money
@@ -992,8 +1049,9 @@ public class EZShop implements EZShopInterface {
 		boolean result = DAO.setCreditCardCredit(newCredit, creditCard);
 
 		if (result == true) {
-			openSaleTransaction.setCreditCard(creditCard);
 			DAO.recordBalanceUpdate(price);
+			DAO.setTransactionBalanceId(transactionId);
+			DAO.setTransactionCreditCard(transactionId, creditCard);
 		}
 		return result;
 

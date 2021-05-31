@@ -15,7 +15,7 @@ public class SaleTransactionImpl implements SaleTransaction {
 	private LinkedList<TicketEntry> entries;
 	private double discountRate;
 	private String creditCard;
-	// private BalanceOperation balanceOperation;
+	private Integer balanceId;
 
 	public SaleTransactionImpl(Integer ticketNumber) {
 
@@ -24,7 +24,7 @@ public class SaleTransactionImpl implements SaleTransaction {
 		this.entries = new LinkedList<TicketEntry>();
 		this.discountRate = 0;
 		this.creditCard = "";
-		// this.balanceOperation = null;
+		this.balanceId = -1;
 
 	}
 
@@ -176,27 +176,23 @@ public class SaleTransactionImpl implements SaleTransaction {
 
 	}
 
-	// public BalanceOperation getBalanceOperation() {
-	//
-	// return balanceOperation;
-	//
-	// }
-	//
-	// public void setBalanceOperation(BalanceOperation balanceOperation) {
-	//
-	// this.balanceOperation = balanceOperation;
-	//
-	// }
+	public Integer getBalanceId() {
+
+		return balanceId;
+
+	}
+
+	public void setBalanceId(Integer balanceId) {
+
+		this.balanceId = balanceId;
+
+	}
 
 	@Override
 	public String toString() {
 
 		return "SaleTransactionImpl [ticketNumber=" + ticketNumber + ", price=" + price + ", entries=" + entries
-				+ ", discountRate=" + discountRate + ", creditCard=" + creditCard + "]";
-
-		// return "SaleTransactionImpl [ticketNumber=" + ticketNumber + ", price=" + price + ", entries=" + entries
-		// + ", discountRate=" + discountRate + ", creditCard=" + creditCard + ", balanceOperation="
-		// + balanceOperation + "]";
+				+ ", discountRate=" + discountRate + ", creditCard=" + creditCard + ", balanceId=" + balanceId + "]";
 
 	}
 

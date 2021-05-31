@@ -42,12 +42,12 @@ public class DAOSaleTransactionClassTest {
 
 	}
 
-	@Test
-	public void testCase3() {
-
-		assertTrue(DAO.addProductsFromSaleTransaction(openSaleTransaction));
-
-	}
+	// @Test
+	// public void testCase3() {
+	//
+	// assertTrue(DAO.addProductsFromSaleTransaction(openSaleTransaction));
+	//
+	// }
 
 	@Test
 	public void testCase4() throws InvalidTransactionIdException, InvalidCreditCardException, UnauthorizedException,
@@ -56,8 +56,8 @@ public class DAOSaleTransactionClassTest {
 		ezShop.login("admin", "admin");
 		transactionId = ezShop.startSaleTransaction();
 		System.out.println(transactionId);
-		assertTrue(ezShop.receiveCreditCardPayment(transactionId, "4485370086510891"));
 		ezShop.endSaleTransaction(transactionId);
+		assertTrue(ezShop.receiveCreditCardPayment(transactionId, "4485370086510891"));
 		assertTrue(DAO.getSaleTransaction(transactionId) != null);
 		assertTrue(DAO.getSaleTransaction(6) == null);
 

@@ -330,22 +330,23 @@ public class EZShopDAO {
 		String sql = "DELETE FROM product WHERE id =" + id;
 		String sql1 = "SELECT id FROM product WHERE id =" + id;
 		try {
-			Statement statement = conn.createStatement();;
+			Statement statement = conn.createStatement();
+			;
 			ResultSet result1 = statement.executeQuery(sql1);
 			if (!result1.next()) {
 				System.out.println("a product with this id not exists");
 				success = false;
-			}else {
-				//statement = conn.createStatement();
+			} else {
+				// statement = conn.createStatement();
 				statement.executeUpdate(sql);
 				success = true;
 				System.out.println("product deleted");
 			}
-			
+
 		} catch (SQLException e) {
 			e.printStackTrace();
 			System.out.println("dberr");
-			//success = true;
+			// success = true;
 		} finally {
 			dbClose(conn);
 		}
@@ -445,8 +446,8 @@ public class EZShopDAO {
 		List<ProductType> matchingProducts = new ArrayList<ProductType>();
 		Connection conn = null;
 		conn = dbAccess();
-		
-		if(description == "") {
+
+		if (description == "") {
 			String sql = "SELECT DISTINCT * FROM product";
 			Statement statement;
 			try {
@@ -478,8 +479,8 @@ public class EZShopDAO {
 			} finally {
 				dbClose(conn);
 			}
-		}else {
-		
+		} else {
+
 			// Statement to select all the fields of a product when the description matches
 			String sql = "SELECT DISTINCT * FROM product WHERE description LIKE '%" + description + "%'";
 			Statement statement;
@@ -514,6 +515,7 @@ public class EZShopDAO {
 			}
 		}
 		return matchingProducts;
+
 	}
 
 	public boolean updateQuantity(Integer productId, int toBeAdded) {
@@ -1108,7 +1110,7 @@ public class EZShopDAO {
 	public boolean endSaleTransaction(SaleTransactionImpl openSaleTransaction) {
 
 		// String getNextAutoincrement = "SELECT seq FROM sqlite_sequence WHERE name=\"saleTransaction\"";
-		String insertSale = "INSERT INTO saleTransaction(price,discountRate,creditCard) VALUES(?,?,?)";
+		String insertSale = "INSERT INTO saleTransaction(price,discountRate,creditCard,balanceId) VALUES(?,?,?,?)";
 		String insertTicketEntry = "INSERT INTO ticketEntry(ticketNumber,barCode,productDescription,pricePerUnit,discountRate,amount) VALUES(?,?,?,?,?,?)";
 		Connection conn = this.dbAccess();
 		try {
@@ -1124,6 +1126,7 @@ public class EZShopDAO {
 			pstmt.setDouble(1, openSaleTransaction.getPrice());
 			pstmt.setDouble(2, openSaleTransaction.getDiscountRate());
 			pstmt.setString(3, openSaleTransaction.getCreditCard());
+			pstmt.setInt(4, openSaleTransaction.getBalanceId());
 			pstmt.executeUpdate();
 			pstmt.close();
 			for (TicketEntry entry : openSaleTransaction.getEntries()) {
@@ -1148,29 +1151,9 @@ public class EZShopDAO {
 
 	}
 
-	public boolean addProductsFromSaleTransaction(SaleTransactionImpl openSaleTransaction) {
-
-		for (TicketEntry entry : openSaleTransaction.getEntries()) {
-			// increaseProductQuantity
-			String increaseProductQuantity = "UPDATE product SET quantity=quantity + ? WHERE barcode=?";
-			try (Connection conn = DriverManager.getConnection("jdbc:sqlite:EZShopDB.sqlite");) {
-				PreparedStatement pstmt = conn.prepareStatement(increaseProductQuantity);
-				pstmt.setInt(1, entry.getAmount()); // amount to remove from sale, amount to add to store
-				pstmt.setString(2, entry.getBarCode());
-				pstmt.executeUpdate();
-				pstmt.close();
-			} catch (SQLException e) {
-				e.printStackTrace();
-				return false;
-			}
-		}
-		return true;
-
-	}
-
 	public SaleTransactionImpl getSaleTransaction(Integer transactionId) {
 
-		String getSale = "SELECT price,discountRate,creditCard FROM saleTransaction WHERE ticketNumber=?";
+		String getSale = "SELECT price,discountRate,creditCard,balanceId FROM saleTransaction WHERE ticketNumber=?";
 		// String getBalance = "SELECT balanceId,date,money,type FROM balanceOperation WHERE balanceId=?";
 		String getTicketEntries = "SELECT barCode,productDescription,pricePerUnit,discountRate,amount FROM ticketEntry WHERE ticketNumber=?";
 		SaleTransactionImpl result = null;
@@ -1187,7 +1170,7 @@ public class EZShopDAO {
 			result.setPrice(rs.getDouble("price"));
 			result.setDiscountRate(rs.getDouble("discountRate"));
 			result.setCreditCard(rs.getString("creditCard"));
-			// Integer balanceId = rs.getInt("balanceId");
+			result.setBalanceId(rs.getInt("balanceId"));
 			// System.out.println(result.getTicketNumber() + " " + result.getDiscountRate());
 			pstmt.close();
 			rs.close();
@@ -1220,6 +1203,86 @@ public class EZShopDAO {
 			this.dbClose(conn);
 		}
 		return result;
+
+	}
+
+	public boolean deleteSaleTransaction(SaleTransactionImpl saleTransaction) {
+
+		Connection conn = dbAccess();
+		try {
+			// 1. increase the product quantity available on the shelves for each product in the productEntries
+			Iterator<TicketEntry> iter = saleTransaction.getEntries().iterator();
+			while (iter.hasNext()) {
+				TicketEntry entry = iter.next();
+				this.updateQuantity((this.getProductTypeByBarCode(entry.getBarCode())).getId(), entry.getAmount());
+			}
+
+			// 2. delete all ticketEntries related to that saleTransaction
+			String deleteTickets = "DELETE from ticketEntry WHERE ticketNumber = ?";
+			PreparedStatement pstmt = conn.prepareStatement(deleteTickets);
+			pstmt.setInt(1, saleTransaction.getTicketNumber());
+			pstmt.executeUpdate();
+			pstmt.close();
+
+			// 3. delete the saleTransaction
+			String deleteSake = "DELETE FROM saleTransaction WHERE ticketNumber = ?";
+			pstmt = conn.prepareStatement(deleteSake);
+			pstmt.setInt(1, saleTransaction.getTicketNumber());
+			pstmt.executeUpdate();
+			pstmt.close();
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			return false;
+		} finally {
+			dbClose(conn);
+		}
+		return true;
+
+	}
+
+	public boolean setTransactionBalanceId(Integer transactionId) {
+
+		int balanceId = -1;
+		Connection conn = dbAccess();
+		try {
+			String getLastbalanceId = "SELECT MAX(balanceId) AS MaxBId FROM balanceOperation";
+			Statement statement = conn.createStatement();
+			ResultSet rs = statement.executeQuery(getLastbalanceId);
+			balanceId = rs.getInt("MaxBId");
+
+			String setTransactionBalanceId = "UPDATE saleTransaction SET balanceId= ? WHERE ticketNumber=?";
+			PreparedStatement pstmt = conn.prepareStatement(setTransactionBalanceId);
+			pstmt.setInt(1, balanceId);
+			pstmt.setInt(2, transactionId);
+			pstmt.executeUpdate();
+			pstmt.close();
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			return false;
+		} finally {
+			dbClose(conn);
+		}
+		return true;
+
+	}
+
+	public boolean setTransactionCreditCard(Integer transactionId, String creditCard) {
+
+		Connection conn = dbAccess();
+		try {
+			String setTransactionBalanceId = "UPDATE saleTransaction SET creditCard= ? WHERE ticketNumber=?";
+			PreparedStatement pstmt = conn.prepareStatement(setTransactionBalanceId);
+			pstmt.setString(1, creditCard);
+			pstmt.setInt(2, transactionId);
+			pstmt.executeUpdate();
+			pstmt.close();
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			return false;
+		} finally {
+			dbClose(conn);
+		}
+		return true;
 
 	}
 
