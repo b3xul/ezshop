@@ -71,4 +71,4 @@ To represent ticket entries, we had initially thought about using a Pair<Product
   
 
 The current structure presents only one tangle, which originates from the fact that we put all the classes that implement an interface in it.polito.ezshop.data.Implementations, together with the DAO class. Since the EZShop class uses the Implementations package, which implements the interfaces in the data package, this causes a design tangle, the one that has been reported in the table above.
-This is a decision that we took in order to make more readable the package structure, it can be resolved simply by placing all the classes that are in it.polito.ezshop.data.Implementations inside the it.polito.ezshop.data package.  
+This is a decision that we took in order to make more readable the package structure, but we could simply solve the tangle by putting the EZShop class into the Implementations package, since it implements EZShopInterface, or by keeping all interfaces and implementations in a single package.
