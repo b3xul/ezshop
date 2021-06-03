@@ -65,9 +65,10 @@ with all elements explosed, all dependencies, NO tangles; and report it here as 
 <Discuss here main differences of the current structure of your project vs the design delivered on April 30>
 <Discuss if the current structure shows weaknesses that should be fixed>
 ```
-The principal difference between the first design document delivered on April 30 and the real design that we applied while coding consists in the DAO classes: in the first design, we decided to implement a DAO class for each other class that we decided to have in the model package; instead, due to structural complications with this design, we decided to implement only one DAO class, EZShopDAO.  
-Other changes were related to the elimination of some classes in the model package, since they were no more necessary with the coding that we did; the classes eliminated have been: LoyaltyCard, Credit, Debit, AccountBook.
+The main difference between the first design document delivered on April 30 and the real design that we applied while coding consists in the DAO classes: in the first design, we decided to implement a DAO class for each persistant class in the model package; for simplicity we decided to implement only one DAO class, EZShopDAO.
+Other changes were related to the elimination of some classes (LoyaltyCard, Credit, Debit, AccountBook) in the model package, since they were no longer necessary with the coding that we did.
+To represent ticket entries, we had initially thought about using a Pair<ProductType pt, Integer amount> but we changed that to comply with the API.
   
 
-The current structure presents one tangle, that, in our opinion, has not to be considered as a real tangle: in fact, we decided to put all the classes that implement an interface in a different sub-package of it.polito.ezshop.data, together with the DAO class. They all are in the package it.polito.ezshop.data.Implementations, and this causes a design tangle, the one that has been reported in the table below.   
-This is a decision that we took in order to make more readable the package structure, it can be resolved by simply put all the classes that are in it.polito.ezshop.data.Implementations inside the upper package, it.polito.ezshop.data.    
+The current structure presents only one tangle, which originates from the fact that we put all the classes that implement an interface in it.polito.ezshop.data.Implementations, together with the DAO class. Since the EZShop class uses the Implementations package, which implements the interfaces in the data package, this causes a design tangle, the one that has been reported in the table above.
+This is a decision that we took in order to make more readable the package structure, it can be resolved simply by placing all the classes that are in it.polito.ezshop.data.Implementations inside the it.polito.ezshop.data package.  
