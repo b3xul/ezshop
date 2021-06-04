@@ -15,6 +15,7 @@ import org.junit.Test;
 
 import it.polito.ezshop.data.EZShopInterface;
 import it.polito.ezshop.exceptions.InvalidCreditCardException;
+import it.polito.ezshop.exceptions.InvalidProductCodeException;
 import it.polito.ezshop.exceptions.InvalidQuantityException;
 import it.polito.ezshop.exceptions.InvalidTransactionIdException;
 import it.polito.ezshop.exceptions.UnauthorizedException;
@@ -60,18 +61,18 @@ public class UC8TestClass {
 			assertTrue(ezShop.addProductToSale(transactionId, barcode, 5));
 			assertTrue(ezShop.addProductToSale(transactionId, barcode2, 10));
 
-			assertTrue(ezShop.receiveCreditCardPayment(transactionId, creditCard));
-
 			assertTrue(ezShop.endSaleTransaction(transactionId));
+
+			assertTrue(ezShop.receiveCreditCardPayment(transactionId, creditCard));
 
 			transactionId2 = ezShop.startSaleTransaction();
 			assertEquals(Integer.valueOf(2), transactionId2);
 
 			assertTrue(ezShop.addProductToSale(transactionId2, barcode, 8));
 
-			assertEquals(3, ezShop.receiveCashPayment(transactionId2, 15), 0.001);
-
 			assertTrue(ezShop.endSaleTransaction(transactionId2));
+
+			assertEquals(3, ezShop.receiveCashPayment(transactionId2, 15), 0.001);
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -207,10 +208,25 @@ public class UC8TestClass {
 			assertThrows(InvalidQuantityException.class, () -> {
 				ezShop.returnProduct(returnId, barcode, -1);
 			});
-			// -1
-			// assertFalse(ezShop.returnProduct(returnId, "22637482635892", 2)); // the product to be returned does not
+
+			assertThrows(InvalidProductCodeException.class, () -> {
+				ezShop.returnProduct(returnId, "", 2);
+			});
+			assertThrows(InvalidProductCodeException.class, () -> {
+				ezShop.returnProduct(returnId, null, 2);
+			});
+			assertThrows(InvalidProductCodeException.class, () -> {
+				ezShop.returnProduct(returnId, "123", 2);
+			});
+			assertThrows(InvalidProductCodeException.class, () -> {
+				ezShop.returnProduct(returnId, "12345678909aa", 2);
+			});
+			assertThrows(InvalidProductCodeException.class, () -> {
+				ezShop.returnProduct(returnId, "123456889098", 2);
+			});
+
+			assertFalse(ezShop.returnProduct(returnId, "45637289084174", 2)); // the product to be returned does not
 			// exists
-			// TODO: add false returns
 
 			assertFalse(ezShop.returnProduct(2, barcode, 2)); // returnId != openReturnTransaction.getReturnId()
 
@@ -249,13 +265,14 @@ public class UC8TestClass {
 
 			// assertFalse(ezShop.returnProduct(returnId, "22637482635892", 2)); // the product to be returned does not
 			// exists
-			// TODO: add false returns
 
 			assertFalse(ezShop.endReturnTransaction(2, true)); // returnId != openReturnTransaction.getReturnId()
+			assertTrue(ezShop.endReturnTransaction(returnId, false));
 
-			ezShop.endReturnTransaction(returnId, true);
-			ezShop.deleteReturnTransaction(returnId);
-			assertFalse(ezShop.endReturnTransaction(returnId, true)); // openSaleTransaction.getTicketNumber()==
+			Integer returnId2 = ezShop.startReturnTransaction(transactionId);
+			assertTrue(ezShop.endReturnTransaction(returnId2, true));
+			assertTrue(ezShop.deleteReturnTransaction(returnId2));
+			assertFalse(ezShop.endReturnTransaction(returnId2, true)); // openSaleTransaction.getTicketNumber()==
 
 		} catch (Exception ex) {
 			ex.printStackTrace();
@@ -288,7 +305,6 @@ public class UC8TestClass {
 
 			// assertFalse(ezShop.returnProduct(returnId, "22637482635892", 2)); // the product to be returned does not
 			// exists
-			// TODO: add false returns
 
 			ezShop.endReturnTransaction(returnId, true);
 			assertFalse(ezShop.deleteReturnTransaction(2)); // returnId != openReturnTransaction.getReturnId()
@@ -345,7 +361,7 @@ public class UC8TestClass {
 		try {
 			ezShop.logout();
 			assertThrows(UnauthorizedException.class, () -> {
-				ezShop.returnCashPayment(-1);
+				ezShop.returnCreditCardPayment(transactionId, creditCard);
 			});
 			ezShop.login("Casper", "casper101");
 

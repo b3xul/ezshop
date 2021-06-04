@@ -154,14 +154,12 @@ public class ReturnTransactionImpl implements it.polito.ezshop.data.ReturnTransa
 
 	}
 
-	@Override
 	public SaleTransactionImpl getSaleTransaction() {
 
 		return saleTransaction;
 
 	}
 
-	@Override
 	public void setSaleTransaction(SaleTransactionImpl saleTransaction) {
 
 		this.saleTransaction = saleTransaction;

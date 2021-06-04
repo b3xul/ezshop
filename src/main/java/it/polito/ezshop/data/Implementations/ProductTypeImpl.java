@@ -93,9 +93,23 @@ public class ProductTypeImpl implements ProductType {
 
 	// setter barcode
 	public String getBarCode() {
-
+		switch (barCode.length()) {
+        	case 8:
+        		barCode = "0000" + barCode;
+            	break;
+        	case 12:
+        		barCode = "00" + barCode;
+            	break;
+			case 13:
+				barCode = "0" + barCode;
+				break;
+			case 14:
+				break;
+			default:
+				//invalid
+            	return "";
+    	}
 		return barCode;
-
 	};
 
 	// setter barcode
