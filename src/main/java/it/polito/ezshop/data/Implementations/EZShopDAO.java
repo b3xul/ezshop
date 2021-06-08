@@ -1596,4 +1596,61 @@ public class EZShopDAO {
 
 	}
 
+	public void insertRfid(String barcode, String rfid) {
+		Connection conn = null;
+		try {
+			conn = dbAccess();
+			String sql = "INSERT INTO rfid (barcode, rfid) VALUES ('" + barcode + "', '" + rfid + "')";
+			Statement statement = conn.createStatement();
+			statement.executeUpdate(sql);
+		}catch(Exception e){
+			System.out.println(e.getMessage());
+		}finally {
+			dbClose(conn);
+		}
+	}
+	
+	public boolean checkRfidUnicity(String rfid) {
+		boolean valid;
+		Connection conn = null;
+		try {
+			conn = dbAccess();
+			String sql = "SELECT * FROM rfid WHERE rfid = '" + rfid + "'";
+			Statement statement;
+			statement = conn.createStatement();
+			ResultSet result = statement.executeQuery(sql);
+			if (!result.next()) {
+				valid = false;
+			} else {
+				valid = true;
+			}
+		}catch(Exception e) {
+			System.out.println(e.getMessage());
+			valid = false;
+		}finally {
+			dbClose(conn);
+		}
+		return valid;
+	}
+
+	public Order getOrder(Integer orderID) {
+
+		Order order = new OrderImpl();
+		Connection conn = null;
+		try {
+			conn = dbAccess();
+			String sql = "SELECT * FROM order_ WHERE orderId='" + orderID + "'";
+			Statement statement = conn.createStatement();
+			ResultSet rs = statement.executeQuery(sql);
+			
+			order.setQuantity(rs.getInt("quantity"));
+			order.setProductCode(rs.getString("productCode"));
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		} finally {
+			dbClose(conn);
+		}
+		return order;
+
+	}
 }
