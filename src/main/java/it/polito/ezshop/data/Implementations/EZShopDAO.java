@@ -1633,6 +1633,25 @@ public class EZShopDAO {
 		return valid;
 	}
 
+	public String getBarcodeFromRfid(String rfid) {
+		String barcode = "";
+		Connection conn = null;
+		try {
+			conn = dbAccess();
+			String sql = "SELECT barcode FROM rfid WHERE rfid = '" + rfid + "'";
+			Statement statement;
+			statement = conn.createStatement();
+			ResultSet result = statement.executeQuery(sql);
+			barcode = result.getString("barcode");
+		}catch(Exception e) {
+			System.out.println(e.getMessage());
+			
+		}finally {
+			dbClose(conn);
+		}
+		return barcode;
+	}
+
 	public Order getOrder(Integer orderID) {
 
 		Order order = new OrderImpl();
