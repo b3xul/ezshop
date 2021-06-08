@@ -18,6 +18,7 @@ import it.polito.ezshop.data.ProductType;
 import it.polito.ezshop.data.TicketEntry;
 import it.polito.ezshop.data.User;
 import it.polito.ezshop.exceptions.InvalidLocationException;
+import it.polito.ezshop.exceptions.InvalidRFIDException;
 
 public class EZShopDAO {
 
@@ -47,6 +48,18 @@ public class EZShopDAO {
 			System.out.println(ex.getMessage());
 		}
 
+	}
+	
+	public String rfidConversion(int rfid) {
+		
+		String s = String.valueOf(rfid);
+		int l = s.length();
+		
+		for(;l < 10; l++) {
+			s = "0"+ s;
+		}
+		return s;
+		
 	}
 
 	public void reset() {
@@ -804,6 +817,84 @@ public class EZShopDAO {
 		}
 		return valid;
 
+	}
+	
+	public boolean recordOrderArrivalRFID(Integer orderId, String RFIDfrom) throws InvalidLocationException, InvalidRFIDException {
+		
+		boolean valid = false;
+		Connection conn = null;
+		String barcode = null;
+		int qty = 0;
+		String location = null;
+		String rfid = null;
+		
+		try {
+			conn = dbAccess();
+			String sql = "SELECT productCode, quantity, status FROM order_ WHERE orderId = ? AND status = ?";
+			PreparedStatement statement = conn.prepareStatement(sql);
+			statement.setInt(1, orderId);
+			statement.setString(2, "PAYED");
+			ResultSet rs = statement.executeQuery();
+			if (rs.next()) {
+				barcode = rs.getString("productCode");
+				qty = rs.getInt("quantity");
+			} else {
+				System.out.println("There is no PAYED order with this id");
+				return valid;
+			}
+			String sql2 = "SELECT location FROM product WHERE barcode = ?";
+			PreparedStatement statement2 = conn.prepareStatement(sql2);
+			statement2.setString(1, barcode);
+			ResultSet rs2 = statement2.executeQuery();
+			location = rs2.getString("location");
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		} finally {
+			dbClose(conn);
+		}
+		if (location.equals("") || location.equals(" "))
+			throw new InvalidLocationException("The product type has no location assigned");
+		for(int i = 0; i < qty; i++) {
+			try {
+				String.valueOf(Integer.parseInt(RFIDfrom) + i);
+				String sql3 = "SELECT rfid FROM RFID where rfid = ?";
+				PreparedStatement statement3 = conn.prepareStatement(sql3);
+				statement3.setString(1, rfidConversion(Integer.parseInt(RFIDfrom) + i));
+				ResultSet rs3 = statement3.executeQuery();
+				rfid = rs3.getString("rfid");
+			}catch (Exception e) {
+				System.out.println(e.getMessage());
+			} finally {
+				dbClose(conn);
+			}
+			if (rfid != null)
+				throw new InvalidRFIDException("Invalid RFID: it is not unique");
+		}
+		try {
+			for(int i = 0; i < qty; i++) {
+				String sql4 = "INSERT INTO RFID(barcode, rfid) VALUES(?,?)";
+				PreparedStatement statement4 = conn.prepareStatement(sql4);
+				statement4.setString(1, barcode);
+				statement4.setString(2, rfidConversion(Integer.parseInt(RFIDfrom) + i));
+			}
+			String sql5 = "UPDATE order_ SET status = ? WHERE orderId = ?";
+			PreparedStatement statement5 = conn.prepareStatement(sql5);
+			statement5.setString(1, "COMPLETED");
+			statement5.setInt(2, orderId);
+			statement5.executeUpdate();
+			String sql6 = "UPDATE product SET quantity = quantity + ? WHERE barcode = ?";
+			PreparedStatement statement6 = conn.prepareStatement(sql6);
+			statement6.setInt(1, qty);
+			statement6.setString(2, barcode);
+			statement6.executeUpdate();
+			valid = true;
+		}catch (Exception e) {
+			System.out.println(e.getMessage());
+		} finally {
+			dbClose(conn);
+		}
+		
+		return valid;
 	}
 
 	public List<Order> getAllOrders() {

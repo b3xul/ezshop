@@ -28,6 +28,7 @@ import it.polito.ezshop.exceptions.InvalidProductCodeException;
 import it.polito.ezshop.exceptions.InvalidProductDescriptionException;
 import it.polito.ezshop.exceptions.InvalidProductIdException;
 import it.polito.ezshop.exceptions.InvalidQuantityException;
+import it.polito.ezshop.exceptions.InvalidRFIDException;
 import it.polito.ezshop.exceptions.InvalidRoleException;
 import it.polito.ezshop.exceptions.InvalidTransactionIdException;
 import it.polito.ezshop.exceptions.InvalidUserIdException;
@@ -518,6 +519,25 @@ public class EZShop implements EZShopInterface {
 		return valid;
 
 	}
+	
+	@Override
+    public boolean recordOrderArrivalRFID(Integer orderId, String RFIDfrom) throws InvalidOrderIdException, UnauthorizedException, InvalidLocationException, InvalidRFIDException {
+        
+		boolean valid = false;
+		if (!userLoggedIn.getRole().equals("Administrator") && !userLoggedIn.getRole().equals("ShopManager"))
+			throw new UnauthorizedException(
+					"Either the user doesn't have the rights to perform this action or doesn't exist");
+		if (orderId == null || orderId <= 0)
+			throw new InvalidOrderIdException("The order id is not valid");
+		if (RFIDfrom == null || RFIDfrom == "")
+			throw new InvalidRFIDException("Invalid RFID: empty field");
+		if (RFIDfrom.length() != 10)
+			throw new InvalidRFIDException("Invalid RFID: wrong number of characters");
+		if (!isStringOnlyNumbers(RFIDfrom))
+			throw new InvalidRFIDException("Invalid RFID: can not contain any letters");
+		
+		return valid;
+    }
 
 	@Override
 	public List<Order> getAllOrders() throws UnauthorizedException {
@@ -1151,12 +1171,6 @@ public class EZShop implements EZShopInterface {
 		return balance;
 
 	}
-    
-    @Override
-    public boolean recordOrderArrivalRFID(Integer orderId, String RFIDfrom) throws InvalidOrderIdException, UnauthorizedException, 
-InvalidLocationException, InvalidRFIDException {
-        return false;
-    }
     
 
     @Override
