@@ -1189,7 +1189,26 @@ public class EZShop implements EZShopInterface {
 
     @Override
     public boolean addProductToSaleRFID(Integer transactionId, String RFID) throws InvalidTransactionIdException, InvalidRFIDException, InvalidQuantityException, UnauthorizedException{
-        return false;
+        if (userLoggedIn.getRole() == "")
+			throw new UnauthorizedException("User not logged in");
+		if (transactionId == null || transactionId <= 0)
+			throw new InvalidTransactionIdException("Transaction id cannot be null or <=0");
+		if (!isRfidValid(RFID))
+			throw new InvalidRFIDException("RFID not valid");
+		
+		if (openSaleTransaction.getTicketNumber() == -1 || transactionId != openSaleTransaction.getTicketNumber())
+			return false;
+		else {
+			String productCode = DAO.getBarcodeFromRfid(RFID);
+			ProductType productType = DAO.getProductTypeByBarCode(productCode);
+			if (productType.getQuantity() <= 0)
+				return false;
+
+			openSaleTransaction.addProductToSale(productType, 1);
+			boolean result = DAO.updateQuantity(productType.getId(), -1);
+			DAO.deleteRfid(RFID);
+			return result;
+		}
     }
     
     
