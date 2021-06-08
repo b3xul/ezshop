@@ -139,6 +139,20 @@ public class EZShop implements EZShopInterface {
 
 	}
 
+	public boolean isRfidValid(String rfid) {
+		boolean valid;
+		if(!isStringOnlyNumbers(rfid))
+			valid = false;
+		else if(rfid.length() != 10)
+			valid = false;
+		else if(!DAO.checkRfidUnicity(rfid))
+			valid = false;
+		else {
+			valid = true;
+		}
+		return valid;
+	}
+
 	@Override
 	public void reset() {
 
