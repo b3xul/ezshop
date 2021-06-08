@@ -539,8 +539,7 @@ public class EZShop implements EZShopInterface {
         
 		boolean valid = false;
 		if (!userLoggedIn.getRole().equals("Administrator") && !userLoggedIn.getRole().equals("ShopManager"))
-			throw new UnauthorizedException(
-					"Either the user doesn't have the rights to perform this action or doesn't exist");
+			throw new UnauthorizedException("Either the user doesn't have the rights to perform this action or doesn't exist");
 		if (orderId == null || orderId <= 0)
 			throw new InvalidOrderIdException("The order id is not valid");
 		if (RFIDfrom == null || RFIDfrom == "")
@@ -549,6 +548,7 @@ public class EZShop implements EZShopInterface {
 			throw new InvalidRFIDException("Invalid RFID: wrong number of characters");
 		if (!isStringOnlyNumbers(RFIDfrom))
 			throw new InvalidRFIDException("Invalid RFID: can not contain any letters");
+		valid = DAO.recordOrderArrivalRFID(orderId, RFIDfrom);
 		
 		return valid;
     }

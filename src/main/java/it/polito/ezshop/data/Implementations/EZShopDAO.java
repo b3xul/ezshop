@@ -93,6 +93,9 @@ public class EZShopDAO {
 			sql = "DELETE FROM Users";
 			pstmt = conn.prepareStatement(sql);
 			pstmt.executeUpdate();
+			sql = "DELETE FROM RFID";
+			pstmt = conn.prepareStatement(sql);
+			pstmt.executeUpdate();
 			sql = "UPDATE sqlite_sequence SET seq=0";
 			pstmt = conn.prepareStatement(sql);
 			pstmt.executeUpdate();
@@ -856,7 +859,8 @@ public class EZShopDAO {
 			throw new InvalidLocationException("The product type has no location assigned");
 		for(int i = 0; i < qty; i++) {
 			try {
-				String.valueOf(Integer.parseInt(RFIDfrom) + i);
+				conn = dbAccess();
+				rfidConversion(Integer.parseInt(RFIDfrom) + i);
 				String sql3 = "SELECT rfid FROM RFID where rfid = ?";
 				PreparedStatement statement3 = conn.prepareStatement(sql3);
 				statement3.setString(1, rfidConversion(Integer.parseInt(RFIDfrom) + i));
@@ -871,11 +875,13 @@ public class EZShopDAO {
 				throw new InvalidRFIDException("Invalid RFID: it is not unique");
 		}
 		try {
+			conn = dbAccess();
 			for(int i = 0; i < qty; i++) {
 				String sql4 = "INSERT INTO RFID(barcode, rfid) VALUES(?,?)";
 				PreparedStatement statement4 = conn.prepareStatement(sql4);
 				statement4.setString(1, barcode);
 				statement4.setString(2, rfidConversion(Integer.parseInt(RFIDfrom) + i));
+				statement4.executeUpdate();
 			}
 			String sql5 = "UPDATE order_ SET status = ? WHERE orderId = ?";
 			PreparedStatement statement5 = conn.prepareStatement(sql5);
