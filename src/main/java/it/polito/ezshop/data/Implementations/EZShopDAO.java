@@ -1706,6 +1706,20 @@ public class EZShopDAO {
 			dbClose(conn);
 		}
 	}
+
+	public void deleteRfid(String rfid) {
+		Connection conn = null;
+		try {
+			conn = dbAccess();
+			String sql = "DELETE FROM rfid WHERE rfid = '" + rfid + "'";
+			Statement statement = conn.createStatement();
+			statement.executeQuery(sql);
+		}catch(Exception e){
+			System.out.println(e.getMessage());
+		}finally {
+			dbClose(conn);
+		}
+	}
 	
 	public boolean checkRfidUnicity(String rfid) {
 		boolean valid;
