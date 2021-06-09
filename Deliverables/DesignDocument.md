@@ -173,6 +173,10 @@ class ProductType{
     position: Position
 }
 
+class Product{
+    RFID
+}
+
 class SaleTransaction {
     transactionID 
     price
@@ -220,11 +224,12 @@ class BalanceOperation{
 }
 
 Shop -up- EZShopInterface
-Customer "*" -right- Shop
+Customer "*" -left- Shop
 Shop -up- "*" User 
 Shop -down- "*" ProductType
 ProductType -up- "0..1" Position
 ProductType "*" -down- "*" SaleTransaction
+ProductType -right- "*" Product
 
 SaleTransaction -left- "*" ReturnTransaction
 SaleTransaction -up- BalanceOperation
