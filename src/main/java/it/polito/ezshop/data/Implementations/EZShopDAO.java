@@ -49,17 +49,17 @@ public class EZShopDAO {
 		}
 
 	}
-	
+
 	public String rfidConversion(int rfid) {
-		
+
 		String s = String.valueOf(rfid);
 		int l = s.length();
-		
-		for(;l < 10; l++) {
-			s = "0"+ s;
+
+		for (; l < 10; l++) {
+			s = "0" + s;
 		}
 		return s;
-		
+
 	}
 
 	public void reset() {
@@ -821,16 +821,17 @@ public class EZShopDAO {
 		return valid;
 
 	}
-	
-	public boolean recordOrderArrivalRFID(Integer orderId, String RFIDfrom) throws InvalidLocationException, InvalidRFIDException {
-		
+
+	public boolean recordOrderArrivalRFID(Integer orderId, String RFIDfrom)
+			throws InvalidLocationException, InvalidRFIDException {
+
 		boolean valid = false;
 		Connection conn = null;
 		String barcode = null;
 		int qty = 0;
 		String location = null;
 		String rfid = null;
-		
+
 		try {
 			conn = dbAccess();
 			String sql = "SELECT productCode, quantity, status FROM order_ WHERE orderId = ? AND status = ?";
@@ -857,7 +858,7 @@ public class EZShopDAO {
 		}
 		if (location.equals("") || location.equals(" "))
 			throw new InvalidLocationException("The product type has no location assigned");
-		for(int i = 0; i < qty; i++) {
+		for (int i = 0; i < qty; i++) {
 			try {
 				conn = dbAccess();
 				rfidConversion(Integer.parseInt(RFIDfrom) + i);
@@ -866,7 +867,7 @@ public class EZShopDAO {
 				statement3.setString(1, rfidConversion(Integer.parseInt(RFIDfrom) + i));
 				ResultSet rs3 = statement3.executeQuery();
 				rfid = rs3.getString("rfid");
-			}catch (Exception e) {
+			} catch (Exception e) {
 				System.out.println(e.getMessage());
 			} finally {
 				dbClose(conn);
@@ -876,7 +877,7 @@ public class EZShopDAO {
 		}
 		try {
 			conn = dbAccess();
-			for(int i = 0; i < qty; i++) {
+			for (int i = 0; i < qty; i++) {
 				String sql4 = "INSERT INTO RFID(barcode, rfid) VALUES(?,?)";
 				PreparedStatement statement4 = conn.prepareStatement(sql4);
 				statement4.setString(1, barcode);
@@ -894,13 +895,14 @@ public class EZShopDAO {
 			statement6.setString(2, barcode);
 			statement6.executeUpdate();
 			valid = true;
-		}catch (Exception e) {
+		} catch (Exception e) {
 			System.out.println(e.getMessage());
 		} finally {
 			dbClose(conn);
 		}
-		
+
 		return valid;
+
 	}
 
 	public List<Order> getAllOrders() {
@@ -1693,40 +1695,52 @@ public class EZShopDAO {
 
 	}
 
-	public void insertRfid(String barcode, String rfid) {
+	public boolean insertRfid(String barcode, String rfid) {
+
+		boolean result = false;
 		Connection conn = null;
 		try {
 			conn = dbAccess();
-			String sql = "INSERT INTO rfid (barcode, rfid) VALUES ('" + barcode + "', '" + rfid + "')";
+			String sql = "INSERT INTO RFID (barcode, rfid) VALUES ('" + barcode + "', '" + rfid + "')";
 			Statement statement = conn.createStatement();
 			statement.executeUpdate(sql);
-		}catch(Exception e){
+			result = true;
+		} catch (Exception e) {
 			System.out.println(e.getMessage());
-		}finally {
+		} finally {
 			dbClose(conn);
 		}
+		return result;
+
 	}
 
-	public void deleteRfid(String rfid) {
+	public boolean deleteRfid(String rfid) {
+
+		boolean result = false;
 		Connection conn = null;
 		try {
 			conn = dbAccess();
-			String sql = "DELETE FROM rfid WHERE rfid = '" + rfid + "'";
+			String sql = "DELETE FROM RFID WHERE rfid = '" + rfid + "'";
 			Statement statement = conn.createStatement();
-			statement.executeQuery(sql);
-		}catch(Exception e){
+			statement.executeUpdate(sql);
+			result = true;
+		} catch (Exception e) {
 			System.out.println(e.getMessage());
-		}finally {
+		} finally {
 			dbClose(conn);
 		}
+
+		return result;
+
 	}
-	
+
 	public boolean checkRfidUnicity(String rfid) {
+
 		boolean valid;
 		Connection conn = null;
 		try {
 			conn = dbAccess();
-			String sql = "SELECT * FROM rfid WHERE rfid = '" + rfid + "'";
+			String sql = "SELECT * FROM RFID WHERE rfid = '" + rfid + "'";
 			Statement statement;
 			statement = conn.createStatement();
 			ResultSet result = statement.executeQuery(sql);
@@ -1735,32 +1749,34 @@ public class EZShopDAO {
 			} else {
 				valid = true;
 			}
-		}catch(Exception e) {
+		} catch (Exception e) {
 			System.out.println(e.getMessage());
 			valid = false;
-		}finally {
+		} finally {
 			dbClose(conn);
 		}
 		return valid;
+
 	}
 
 	public String getBarcodeFromRfid(String rfid) {
+
 		String barcode = "";
 		Connection conn = null;
 		try {
 			conn = dbAccess();
-			String sql = "SELECT barcode FROM rfid WHERE rfid = '" + rfid + "'";
+			String sql = "SELECT barcode FROM RFID WHERE rfid = '" + rfid + "'";
 			Statement statement;
 			statement = conn.createStatement();
 			ResultSet result = statement.executeQuery(sql);
 			barcode = result.getString("barcode");
-		}catch(Exception e) {
+		} catch (Exception e) {
 			System.out.println(e.getMessage());
-			
-		}finally {
+		} finally {
 			dbClose(conn);
 		}
 		return barcode;
+
 	}
 
 	public Order getOrder(Integer orderID) {
@@ -1772,7 +1788,7 @@ public class EZShopDAO {
 			String sql = "SELECT * FROM order_ WHERE orderId='" + orderID + "'";
 			Statement statement = conn.createStatement();
 			ResultSet rs = statement.executeQuery(sql);
-			
+
 			order.setQuantity(rs.getInt("quantity"));
 			order.setProductCode(rs.getString("productCode"));
 		} catch (Exception e) {
@@ -1783,4 +1799,5 @@ public class EZShopDAO {
 		return order;
 
 	}
+
 }
