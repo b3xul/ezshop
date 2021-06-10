@@ -40,7 +40,14 @@ public class UC6TestClass {
 
 		ezShop = new it.polito.ezshop.data.EZShop();
 		ezShop.reset();
-
+		try (Connection conn = DriverManager.getConnection("jdbc:sqlite:creditCards.sqlite");) {
+			String updateCard = "UPDATE creditCards SET balance = 150 WHERE creditCardNumber = 4485370086510891";
+			PreparedStatement pstmt = conn.prepareStatement(updateCard);
+			pstmt.executeUpdate();
+			pstmt.close();
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
 		try {
 			ezShop.createUser("admin", "admin", "Administrator");
 			ezShop.login("admin", "admin");
@@ -72,14 +79,6 @@ public class UC6TestClass {
 			ezShop.login("Casper", "casper101");
 		} catch (Exception e) {
 			e.printStackTrace();
-		}
-		try (Connection conn = DriverManager.getConnection("jdbc:sqlite:creditCards.sqlite");) {
-			String updateCard = "UPDATE creditCards SET balance = 150 WHERE creditCardNumber = 4485370086510891";
-			PreparedStatement pstmt = conn.prepareStatement(updateCard);
-			pstmt.executeUpdate();
-			pstmt.close();
-		} catch (Exception ex) {
-			ex.printStackTrace();
 		}
 
 	}

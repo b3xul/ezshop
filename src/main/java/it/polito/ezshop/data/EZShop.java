@@ -770,7 +770,7 @@ public class EZShop implements EZShopInterface {
 			return false; // shouldn't happen
 
 		openSaleTransaction.addProductToSaleRFID(productType, RFID);
-		boolean result = (DAO.updateQuantity(productType.getId(), -1) && DAO.deleteRfid(RFID));
+		boolean result = (DAO.updateQuantity(productType.getId(), -1) && DAO.sellRfid(transactionId, RFID));
 
 		return result;
 
@@ -845,7 +845,7 @@ public class EZShop implements EZShopInterface {
 
 		boolean updated = false;
 		if (deleted == true)
-			updated = (DAO.updateQuantity(productType.getId(), 1) && DAO.insertRfid(productCode, RFID));
+			updated = (DAO.updateQuantity(productType.getId(), 1) && DAO.returnRfid(RFID));
 
 		if (deleted && !updated)
 			this.addProductToSaleRFID(transactionId, RFID);
@@ -1033,11 +1033,8 @@ public class EZShop implements EZShopInterface {
 		else if (!isBarcodeValid(productCode))
 			throw new InvalidProductCodeException("invalid barcode: barcode does not respect GTIN specifications");
 
-		if (openReturnTransaction.getReturnId() == -1 || returnId != openReturnTransaction.getReturnId()) // the
-																											// transaction
-																											// does
-			// not exist
-			return false;
+		if (openReturnTransaction.getReturnId() == -1 || returnId != openReturnTransaction.getReturnId())
+			return false; // the transaction does not exist
 
 		ProductType productType = DAO.getProductTypeByBarCode(productCode); // could throw InvalidProductCodeException
 		// System.out.println(productType);
@@ -1045,6 +1042,38 @@ public class EZShop implements EZShopInterface {
 			return false;
 
 		boolean result = openReturnTransaction.returnProduct(productType, amount);
+
+		return result;
+
+	}
+
+	@Override
+	public boolean returnProductRFID(Integer returnId, String RFID)
+			throws InvalidTransactionIdException, InvalidRFIDException, UnauthorizedException {
+
+		System.out.println("Executing returnProductRFID...");
+		if (userLoggedIn.getRole() == "")
+			throw new UnauthorizedException("User not logged in");
+		if (returnId == null || returnId <= 0)
+			throw new InvalidTransactionIdException("Transaction id cannot be null or <=0");
+		if (!isRfidValid(RFID))
+			throw new InvalidRFIDException("RFID not valid");
+
+		if (openReturnTransaction.getReturnId() == -1 || returnId != openReturnTransaction.getReturnId())
+			return false;
+
+		String productCode = DAO.getBarcodeFromRfid(RFID);
+		if (productCode == "")
+			return false;
+		ProductType productType = DAO.getProductTypeByBarCode(productCode);
+		if ((productType == null) || productType.getQuantity() < 1)
+			return false; // shouldn't happen
+
+		Integer ticketNumber = DAO.getTicketNumberFromRfid(RFID);
+		if (ticketNumber == null || ticketNumber != openReturnTransaction.getSaleTransaction().getTicketNumber())
+			return false; // product not in the transaction
+
+		boolean result = openReturnTransaction.returnProductRFID(productType, RFID);
 
 		return result;
 
@@ -1253,14 +1282,6 @@ public class EZShop implements EZShopInterface {
 					"Either the user doesn't have the rights to perform this action or doesn't exist");
 		balance = DAO.computeBalance();
 		return balance;
-
-	}
-
-	@Override
-	public boolean returnProductRFID(Integer returnId, String RFID)
-			throws InvalidTransactionIdException, InvalidRFIDException, UnauthorizedException {
-
-		return false;
 
 	}
 

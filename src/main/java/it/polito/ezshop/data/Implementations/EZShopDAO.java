@@ -10,6 +10,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import it.polito.ezshop.data.BalanceOperation;
 import it.polito.ezshop.data.Customer;
@@ -1211,6 +1212,8 @@ public class EZShopDAO {
 		// String getNextAutoincrement = "SELECT seq FROM sqlite_sequence WHERE name=\"saleTransaction\"";
 		String insertSale = "INSERT INTO saleTransaction(price,discountRate,creditCard,balanceId) VALUES(?,?,?,?)";
 		String insertTicketEntry = "INSERT INTO ticketEntry(ticketNumber,barCode,productDescription,pricePerUnit,discountRate,amount) VALUES(?,?,?,?,?,?)";
+		String insertSoldRFIDs = "UPDATE RFID SET ticketNumber=? WHERE rfid=?";
+
 		Connection conn = this.dbAccess();
 		try {
 			// Statement stmt = conn.createStatement();
@@ -1240,6 +1243,14 @@ public class EZShopDAO {
 				pstmt.executeUpdate();
 				pstmt.close();
 			}
+			for (Map.Entry<String, String> entry : openSaleTransaction.getRFIDs().entrySet()) {
+				// InsertTicketEntry
+				pstmt = conn.prepareStatement(insertSoldRFIDs);
+				pstmt.setInt(1, openSaleTransaction.getTicketNumber());
+				pstmt.setString(2, entry.getKey());
+				pstmt.executeUpdate();
+				pstmt.close();
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			return false;
@@ -1255,6 +1266,7 @@ public class EZShopDAO {
 		String getSale = "SELECT price,discountRate,creditCard,balanceId FROM saleTransaction WHERE ticketNumber=?";
 		// String getBalance = "SELECT balanceId,date,money,type FROM balanceOperation WHERE balanceId=?";
 		String getTicketEntries = "SELECT barCode,productDescription,pricePerUnit,discountRate,amount FROM ticketEntry WHERE ticketNumber=?";
+		String getRFIDs = "SELECT rfid, barcode FROM RFID WHERE ticketNumber=?";
 		SaleTransactionImpl result = null;
 		Connection conn = this.dbAccess();
 		try {
@@ -1294,6 +1306,13 @@ public class EZShopDAO {
 						rs.getDouble("pricePerUnit"), rs.getDouble("discountRate"), rs.getInt("amount")));
 			}
 			// System.out.println(result);
+			// getRFIDs
+			pstmt = conn.prepareStatement(getRFIDs);
+			pstmt.setInt(1, transactionId);
+			rs = pstmt.executeQuery();
+			while (rs.next()) {
+				result.getRFIDs().put(rs.getString("rfid"), rs.getString("barcode"));
+			}
 			pstmt.close();
 			rs.close();
 		} catch (SQLException e) {
@@ -1316,14 +1335,21 @@ public class EZShopDAO {
 				this.updateQuantity((this.getProductTypeByBarCode(entry.getBarCode())).getId(), entry.getAmount());
 			}
 
-			// 2. delete all ticketEntries related to that saleTransaction
-			String deleteTickets = "DELETE from ticketEntry WHERE ticketNumber = ?";
-			PreparedStatement pstmt = conn.prepareStatement(deleteTickets);
+			// 2. delete all rfids sold in that saleTransaction
+			String deleteRFIDs = "UPDATE RFID SET ticketNumber = null WHERE ticketNumber=?";
+			PreparedStatement pstmt = conn.prepareStatement(deleteRFIDs);
 			pstmt.setInt(1, saleTransaction.getTicketNumber());
 			pstmt.executeUpdate();
 			pstmt.close();
 
-			// 3. delete the saleTransaction
+			// 3. delete all ticketEntries related to that saleTransaction
+			String deleteTickets = "DELETE from ticketEntry WHERE ticketNumber = ?";
+			pstmt = conn.prepareStatement(deleteTickets);
+			pstmt.setInt(1, saleTransaction.getTicketNumber());
+			pstmt.executeUpdate();
+			pstmt.close();
+
+			// 4. delete the saleTransaction
 			String deleteSake = "DELETE FROM saleTransaction WHERE ticketNumber = ?";
 			pstmt = conn.prepareStatement(deleteSake);
 			pstmt.setInt(1, saleTransaction.getTicketNumber());
@@ -1405,7 +1431,6 @@ public class EZShopDAO {
 
 		Connection conn = dbAccess();
 		try {
-			conn.setAutoCommit(false); // single transaction on the database
 			// 1. close the return transaction
 			String insertReturn = "INSERT INTO returnTransaction(productId,productCode,pricePerUnit,discountRate,amount,price,ticketNumber) VALUES(?,?,?,?,?,?,?)";
 			PreparedStatement pstmt = conn.prepareStatement(insertReturn);
@@ -1449,9 +1474,19 @@ public class EZShopDAO {
 			pstmt.setInt(2, openReturnTransaction.getSaleTransaction().getTicketNumber());
 			pstmt.executeUpdate();
 			pstmt.close();
-			conn.commit();
 			// 4. increases the product quantity available on the shelves
-			updateQuantity(openReturnTransaction.getProductId(), openReturnTransaction.getAmount());
+			this.updateQuantity(openReturnTransaction.getProductId(), openReturnTransaction.getAmount());
+			// 5. return the rfids present inside the return transaction
+			String insertReturnedRFIDs = "UPDATE RFID SET ticketNumber=null, returnId=? WHERE rfid=?";
+			for (Map.Entry<String, String> entry : openReturnTransaction.getRFIDs().entrySet()) {
+				// InsertTicketEntry
+				pstmt = conn.prepareStatement(insertReturnedRFIDs);
+				pstmt.setInt(1, openReturnTransaction.getReturnId());
+				pstmt.setString(2, entry.getKey());
+				pstmt.executeUpdate();
+				pstmt.close();
+			}
+
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			return false;
@@ -1465,6 +1500,7 @@ public class EZShopDAO {
 	public ReturnTransactionImpl getReturnTransaction(Integer returnId) {
 
 		String getReturn = "SELECT productId,productCode,pricePerUnit,discountRate,amount,price,ticketNumber FROM returnTransaction WHERE returnId=?";
+		String getRFIDs = "SELECT rfid, barcode FROM RFID WHERE returnId=?";
 		ReturnTransactionImpl returnTransaction = null;
 		Connection conn = this.dbAccess();
 		try {
@@ -1484,6 +1520,12 @@ public class EZShopDAO {
 			returnTransaction.setPrice(rs.getDouble("price"));
 			returnTransaction.setSaleTransaction(this.getSaleTransaction(rs.getInt("ticketNumber")));
 			// System.out.println(result.getTicketNumber() + " " + result.getDiscountRate());
+			pstmt = conn.prepareStatement(getRFIDs);
+			pstmt.setInt(1, returnId);
+			rs = pstmt.executeQuery();
+			while (rs.next()) {
+				returnTransaction.getRFIDs().put(rs.getString("rfid"), rs.getString("barcode"));
+			}
 			pstmt.close();
 			rs.close();
 		} catch (SQLException e) {
@@ -1532,7 +1574,14 @@ public class EZShopDAO {
 					break;
 				}
 			}
-			// 5. close the return transaction
+			// 5. resell rfids
+			String resellRFIDs = "UPDATE RFID SET ticketNumber=?, returnId=null WHERE returnId=?";
+			pstmt = conn.prepareStatement(resellRFIDs);
+			pstmt.setInt(1, returnTransaction.getSaleTransaction().getTicketNumber());
+			pstmt.setInt(2, returnTransaction.getReturnId());
+			pstmt.executeUpdate();
+			pstmt.close();
+			// 6. close the return transaction
 			String deleteReturn = "DELETE FROM returnTransaction WHERE returnId = ?";
 			pstmt = conn.prepareStatement(deleteReturn);
 			pstmt.setInt(1, returnTransaction.getReturnId());
@@ -1695,15 +1744,17 @@ public class EZShopDAO {
 
 	}
 
-	public boolean insertRfid(String barcode, String rfid) {
+	public boolean sellRfid(Integer ticketNumber, String rfid) {
 
 		boolean result = false;
 		Connection conn = null;
 		try {
 			conn = dbAccess();
-			String sql = "INSERT INTO RFID (barcode, rfid) VALUES ('" + barcode + "', '" + rfid + "')";
-			Statement statement = conn.createStatement();
-			statement.executeUpdate(sql);
+			String sql = "UPDATE RFID SET ticketNumber=? WHERE rfid=?";
+			PreparedStatement pstmt = conn.prepareStatement(sql);
+			pstmt.setInt(1, ticketNumber);
+			pstmt.setString(2, rfid);
+			pstmt.executeUpdate();
 			result = true;
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
@@ -1714,48 +1765,23 @@ public class EZShopDAO {
 
 	}
 
-	public boolean deleteRfid(String rfid) {
+	public boolean returnRfid(String rfid) {
 
 		boolean result = false;
 		Connection conn = null;
 		try {
 			conn = dbAccess();
-			String sql = "DELETE FROM RFID WHERE rfid = '" + rfid + "'";
-			Statement statement = conn.createStatement();
-			statement.executeUpdate(sql);
+			String sql = "UPDATE RFID SET ticketNumber=null WHERE rfid=?";
+			PreparedStatement pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, rfid);
+			pstmt.executeUpdate();
 			result = true;
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
 		} finally {
 			dbClose(conn);
 		}
-
 		return result;
-
-	}
-
-	public boolean checkRfidUnicity(String rfid) {
-
-		boolean valid;
-		Connection conn = null;
-		try {
-			conn = dbAccess();
-			String sql = "SELECT * FROM RFID WHERE rfid = '" + rfid + "'";
-			Statement statement;
-			statement = conn.createStatement();
-			ResultSet result = statement.executeQuery(sql);
-			if (!result.next()) {
-				valid = false;
-			} else {
-				valid = true;
-			}
-		} catch (Exception e) {
-			System.out.println(e.getMessage());
-			valid = false;
-		} finally {
-			dbClose(conn);
-		}
-		return valid;
 
 	}
 
@@ -1779,24 +1805,23 @@ public class EZShopDAO {
 
 	}
 
-	public Order getOrder(Integer orderID) {
+	public Integer getTicketNumberFromRfid(String rfid) {
 
-		Order order = new OrderImpl();
+		Integer ticketNumber = null;
 		Connection conn = null;
 		try {
 			conn = dbAccess();
-			String sql = "SELECT * FROM order_ WHERE orderId='" + orderID + "'";
-			Statement statement = conn.createStatement();
-			ResultSet rs = statement.executeQuery(sql);
-
-			order.setQuantity(rs.getInt("quantity"));
-			order.setProductCode(rs.getString("productCode"));
+			String sql = "SELECT ticketNumber FROM RFID WHERE rfid = '" + rfid + "'";
+			Statement statement;
+			statement = conn.createStatement();
+			ResultSet result = statement.executeQuery(sql);
+			ticketNumber = result.getInt("ticketNumber");
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
 		} finally {
 			dbClose(conn);
 		}
-		return order;
+		return ticketNumber;
 
 	}
 
