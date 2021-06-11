@@ -145,7 +145,7 @@ public class EZShop implements EZShopInterface {
 		boolean valid;
 		if (!isStringOnlyNumbers(rfid))
 			valid = false;
-		else if (rfid.length() != 10)
+		else if (rfid.length() != 12)
 			valid = false;
 		else {
 			valid = true;
