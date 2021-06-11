@@ -32,7 +32,7 @@ public class UC8TestClass {
 	static String creditCard = "4485370086510891";
 	static String creditCard2 = "5100293991053009";
 	int orderId;
-	String RFID = "0000100000";
+	String RFID = "000000100000";
 
 	@Before
 	public void init() {
@@ -92,8 +92,8 @@ public class UC8TestClass {
 
 			transactionId3 = ezShop.startSaleTransaction();
 			assertEquals(Integer.valueOf(3), transactionId3);
-			assertTrue(ezShop.addProductToSaleRFID(transactionId3, "0000100000"));
-			assertTrue(ezShop.addProductToSaleRFID(transactionId3, "0000100001"));
+			assertTrue(ezShop.addProductToSaleRFID(transactionId3, "000000100000"));
+			assertTrue(ezShop.addProductToSaleRFID(transactionId3, "000000100001"));
 			assertTrue(ezShop.endSaleTransaction(transactionId3));
 
 			assertEquals(3, ezShop.receiveCashPayment(transactionId2, 15), 0.001);
@@ -275,7 +275,7 @@ public class UC8TestClass {
 				ezShop.returnProduct(returnId, "12345678909aa", 2);
 			});
 			assertThrows(InvalidProductCodeException.class, () -> {
-				ezShop.returnProduct(returnId, "123456889098", 2);
+				ezShop.returnProduct(returnId, "1234568890983", 2);
 			});
 
 			assertFalse(ezShop.returnProduct(returnId, "45637289084174", 2)); // the product to be returned does not
@@ -493,13 +493,13 @@ public class UC8TestClass {
 				ezShop.returnProductRFID(returnId, "12345678909aa");
 			});
 			assertThrows(InvalidRFIDException.class, () -> {
-				ezShop.returnProductRFID(returnId, "123456889098");
+				ezShop.returnProductRFID(returnId, "1234568890983");
 			});
 
-			assertFalse(ezShop.returnProductRFID(returnId, "0000000009")); // the product does not exist
+			assertFalse(ezShop.returnProductRFID(returnId, "000000000009")); // the product does not exist
 
-			assertFalse(ezShop.returnProductRFID(returnId, "0000100004")); // the product to be returned is not in the
-																			// saleTransaction
+			assertFalse(ezShop.returnProductRFID(returnId, "000000100004")); // the product to be returned is not in the
+																				// saleTransaction
 
 			assertFalse(ezShop.returnProductRFID(2, RFID)); // returnId != openReturnTransaction.getReturnId()
 

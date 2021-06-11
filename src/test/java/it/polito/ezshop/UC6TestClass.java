@@ -33,7 +33,7 @@ public class UC6TestClass {
 	String creditCard = "4485370086510891";
 	String creditCard2 = "5100293991053009";
 	int orderId;
-	String RFID = "0000100000";
+	String RFID = "000000100000";
 
 	@Before
 	public void init() {
@@ -119,8 +119,8 @@ public class UC6TestClass {
 			Integer transactionId = ezShop.startSaleTransaction();
 			assertEquals(Integer.valueOf(1), transactionId);
 
-			assertTrue(ezShop.addProductToSaleRFID(transactionId, "0000100000"));
-			assertTrue(ezShop.addProductToSaleRFID(transactionId, "0000100001"));
+			assertTrue(ezShop.addProductToSaleRFID(transactionId, "000000100000"));
+			assertTrue(ezShop.addProductToSaleRFID(transactionId, "000000100001"));
 
 			assertTrue(ezShop.endSaleTransaction(transactionId));
 
@@ -243,7 +243,7 @@ public class UC6TestClass {
 			assertEquals(Integer.valueOf(1), transactionId);
 
 			assertTrue(ezShop.addProductToSaleRFID(transactionId, RFID));
-			assertTrue(ezShop.addProductToSaleRFID(transactionId, "0000100001"));
+			assertTrue(ezShop.addProductToSaleRFID(transactionId, "000000100001"));
 
 			assertTrue(ezShop.deleteProductFromSaleRFID(transactionId, RFID));
 
@@ -376,7 +376,7 @@ public class UC6TestClass {
 				ezShop.addProductToSale(transactionId, "12345678909aa", 16);
 			});
 			assertThrows(InvalidProductCodeException.class, () -> {
-				ezShop.addProductToSale(transactionId, "123456889098", 16);
+				ezShop.addProductToSale(transactionId, "1234568890983", 16);
 			});
 
 			ezShop.addProductToSale(transactionId, barcode2, 16);
@@ -463,7 +463,7 @@ public class UC6TestClass {
 				ezShop.deleteProductFromSale(transactionId, "12345678909aa", 16);
 			});
 			assertThrows(InvalidProductCodeException.class, () -> {
-				ezShop.deleteProductFromSale(transactionId, "123456889098", 16);
+				ezShop.deleteProductFromSale(transactionId, "1234568890983", 16);
 			});
 
 			assertFalse(ezShop.deleteProductFromSale(transactionId, "45637289084174", 16)); // !productType.getBarCode().equals(productCode)
@@ -551,7 +551,7 @@ public class UC6TestClass {
 				ezShop.applyDiscountRateToProduct(transactionId, "12345678909aa", 0.5);
 			});
 			assertThrows(InvalidProductCodeException.class, () -> {
-				ezShop.applyDiscountRateToProduct(transactionId, "123456889098", 0.5);
+				ezShop.applyDiscountRateToProduct(transactionId, "1234568890983", 0.5);
 			});
 
 			assertFalse(ezShop.applyDiscountRateToProduct(transactionId, "45637289084174", 0.5)); // !productType.getBarCode().equals(productCode)
@@ -917,12 +917,12 @@ public class UC6TestClass {
 				ezShop.addProductToSaleRFID(transactionId, "12345678901");
 			});
 
-			assertTrue(ezShop.addProductToSaleRFID(transactionId, "0000100000"));
-			assertTrue(ezShop.addProductToSaleRFID(transactionId, "0000100001"));
-			assertTrue(ezShop.addProductToSaleRFID(transactionId, "0000100002"));
-			assertTrue(ezShop.addProductToSaleRFID(transactionId, "0000100003"));
-			assertTrue(ezShop.addProductToSaleRFID(transactionId, "0000100004"));
-			assertFalse(ezShop.addProductToSaleRFID(transactionId, "0000100005"));
+			assertTrue(ezShop.addProductToSaleRFID(transactionId, "000000100000"));
+			assertTrue(ezShop.addProductToSaleRFID(transactionId, "000000100001"));
+			assertTrue(ezShop.addProductToSaleRFID(transactionId, "000000100002"));
+			assertTrue(ezShop.addProductToSaleRFID(transactionId, "000000100003"));
+			assertTrue(ezShop.addProductToSaleRFID(transactionId, "000000100004"));
+			assertFalse(ezShop.addProductToSaleRFID(transactionId, "000000100005"));
 
 			assertFalse(ezShop.addProductToSaleRFID(2, RFID)); // transactionId !=
 																// openSaleTransaction.getTicketNumber()
@@ -996,10 +996,10 @@ public class UC6TestClass {
 				ezShop.deleteProductFromSaleRFID(transactionId, "12345678909aa");
 			});
 			assertThrows(InvalidRFIDException.class, () -> {
-				ezShop.deleteProductFromSaleRFID(transactionId, "123456889098");
+				ezShop.deleteProductFromSaleRFID(transactionId, "1234568890983");
 			});
 
-			assertFalse(ezShop.deleteProductFromSaleRFID(transactionId, "0000100001"));
+			assertFalse(ezShop.deleteProductFromSaleRFID(transactionId, "000000100001"));
 
 			// assertFalse(ezShop.deleteProductFromSaleRFID(transactionId, barcode, 20)); // amount > previousAmount
 			//
