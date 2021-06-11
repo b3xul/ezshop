@@ -546,7 +546,7 @@ public class EZShop implements EZShopInterface {
 			throw new InvalidOrderIdException("The order id is not valid");
 		if (RFIDfrom == null || RFIDfrom == "")
 			throw new InvalidRFIDException("Invalid RFID: empty field");
-		if (RFIDfrom.length() != 10)
+		if (RFIDfrom.length() != 12)
 			throw new InvalidRFIDException("Invalid RFID: wrong number of characters");
 		if (!isStringOnlyNumbers(RFIDfrom))
 			throw new InvalidRFIDException("Invalid RFID: can not contain any letters");

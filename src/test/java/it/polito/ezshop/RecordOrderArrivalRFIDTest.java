@@ -46,37 +46,27 @@ public class RecordOrderArrivalRFIDTest {
 	@Test
 	public void testCase1() throws InvalidProductIdException, InvalidLocationException, UnauthorizedException, InvalidOrderIdException, InvalidRFIDException {
 		ezShop.updatePosition(productId, "3-aisle-2");
-		assertTrue(ezShop.recordOrderArrivalRFID(orderId, "0000100000"));
+		assertTrue(ezShop.recordOrderArrivalRFID(orderId, "000000100000"));
 	}
 	
 	@Test
 	public void testCase2() {
 		//This test verifies that an arrival can be recorded it the user does not have the rights to perform it
 		ezShop.logout();
-		assertThrows(UnauthorizedException.class, () -> {ezShop.recordOrderArrivalRFID(orderId, "0000100000");});
+		assertThrows(UnauthorizedException.class, () -> {ezShop.recordOrderArrivalRFID(orderId, "000000100000");});
 	}
 	
 	@Test
 	public void testCase3() {
 		//This test verifies that an arrival can't be recorded if the order doesn't have a valid id
-		assertThrows(InvalidOrderIdException.class, () -> {ezShop.recordOrderArrivalRFID(0, "0000100000");});
+		assertThrows(InvalidOrderIdException.class, () -> {ezShop.recordOrderArrivalRFID(0, "000000100000");});
 	}
 	
 	@Test
 	public void testCase4() {
 		assertThrows(InvalidRFIDException.class, () -> {ezShop.recordOrderArrivalRFID(orderId, null);});
 		assertThrows(InvalidRFIDException.class, () -> {ezShop.recordOrderArrivalRFID(orderId, "0001");});
-		assertThrows(InvalidRFIDException.class, () -> {ezShop.recordOrderArrivalRFID(orderId, "00000A1234");});
+		assertThrows(InvalidRFIDException.class, () -> {ezShop.recordOrderArrivalRFID(orderId, "0000000ABC34");});
 	}
-	
-//	@Test
-//	public void testCase5() {
-//		assertThrows(InvalidRFIDException.class, () -> {ezShop.recordOrderArrivalRFID(orderId, "0001");});
-//	}
-//	
-//	@Test
-//	public void testCase6() {
-//		assertThrows(InvalidRFIDException.class, () -> {ezShop.recordOrderArrivalRFID(orderId, "00000A1234");});
-//	}
 	
 }

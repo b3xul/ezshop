@@ -56,7 +56,7 @@ public class EZShopDAO {
 		String s = String.valueOf(rfid);
 		int l = s.length();
 
-		for (; l < 10; l++) {
+		for (; l < 12; l++) {
 			s = "0" + s;
 		}
 		return s;

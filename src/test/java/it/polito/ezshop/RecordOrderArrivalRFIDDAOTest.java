@@ -1,5 +1,6 @@
 package it.polito.ezshop;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
@@ -40,26 +41,26 @@ public class RecordOrderArrivalRFIDDAOTest {
 	public void testCase1() throws InvalidLocationException, InvalidRFIDException {
 		ezShop.updatePosition(productId, "3-aisle-2");
 		//record order arrival performed
-		assertTrue(ezShop.recordOrderArrivalRFID(orderId, "0000100000") == true);
+		assertTrue(ezShop.recordOrderArrivalRFID(orderId, "000000100000"));
 	}
 	
 	@Test
 	public void testCase2() {
-		assertThrows(InvalidLocationException.class, () -> {ezShop.recordOrderArrivalRFID(orderId, "0000100000");});
+		assertThrows(InvalidLocationException.class, () -> {ezShop.recordOrderArrivalRFID(orderId, "000000100000");});
 	}
 	
 	@Test
 	public void testCase3() throws InvalidLocationException, InvalidRFIDException {
 		ezShop.updatePosition(productId, "3-aisle-2");
-		ezShop.recordOrderArrivalRFID(orderId, "0000100000");
+		ezShop.recordOrderArrivalRFID(orderId, "000000100000");
 		orderId = ezShop.payOrderFor("12637482635892", 10, 10);
-		assertThrows(InvalidRFIDException.class, () -> {ezShop.recordOrderArrivalRFID(orderId, "0000100000");});
+		assertThrows(InvalidRFIDException.class, () -> {ezShop.recordOrderArrivalRFID(orderId, "000000100000");});
 	}
 	
 	@Test
 	public void testCase4() throws InvalidLocationException, InvalidRFIDException {
 		//This test verifies that there is not a PAYED order with this id
-		assertTrue(ezShop.recordOrderArrivalRFID(10, "0000100000") == false);
+		assertFalse(ezShop.recordOrderArrivalRFID(10, "000000100000"));
 	}
 	
 	
