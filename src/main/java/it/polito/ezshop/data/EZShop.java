@@ -28,6 +28,7 @@ import it.polito.ezshop.exceptions.InvalidProductCodeException;
 import it.polito.ezshop.exceptions.InvalidProductDescriptionException;
 import it.polito.ezshop.exceptions.InvalidProductIdException;
 import it.polito.ezshop.exceptions.InvalidQuantityException;
+import it.polito.ezshop.exceptions.InvalidRFIDException;
 import it.polito.ezshop.exceptions.InvalidRoleException;
 import it.polito.ezshop.exceptions.InvalidTransactionIdException;
 import it.polito.ezshop.exceptions.InvalidUserIdException;
@@ -136,6 +137,20 @@ public class EZShop implements EZShopInterface {
 			isSecond = !isSecond;
 		}
 		return (nSum % 10 == 0);
+
+	}
+
+	public boolean isRfidValid(String rfid) {
+
+		boolean valid;
+		if (!isStringOnlyNumbers(rfid))
+			valid = false;
+		else if (rfid.length() != 12)
+			valid = false;
+		else {
+			valid = true;
+		}
+		return valid;
 
 	}
 
@@ -520,6 +535,28 @@ public class EZShop implements EZShopInterface {
 	}
 
 	@Override
+	public boolean recordOrderArrivalRFID(Integer orderId, String RFIDfrom)
+			throws InvalidOrderIdException, UnauthorizedException, InvalidLocationException, InvalidRFIDException {
+
+		boolean valid = false;
+		if (!userLoggedIn.getRole().equals("Administrator") && !userLoggedIn.getRole().equals("ShopManager"))
+			throw new UnauthorizedException(
+					"Either the user doesn't have the rights to perform this action or doesn't exist");
+		if (orderId == null || orderId <= 0)
+			throw new InvalidOrderIdException("The order id is not valid");
+		if (RFIDfrom == null || RFIDfrom == "")
+			throw new InvalidRFIDException("Invalid RFID: empty field");
+		if (RFIDfrom.length() != 12)
+			throw new InvalidRFIDException("Invalid RFID: wrong number of characters");
+		if (!isStringOnlyNumbers(RFIDfrom))
+			throw new InvalidRFIDException("Invalid RFID: can not contain any letters");
+		valid = DAO.recordOrderArrivalRFID(orderId, RFIDfrom);
+
+		return valid;
+
+	}
+
+	@Override
 	public List<Order> getAllOrders() throws UnauthorizedException {
 
 		List<Order> orders = new ArrayList<Order>();
@@ -711,6 +748,35 @@ public class EZShop implements EZShopInterface {
 	}
 
 	@Override
+	public boolean addProductToSaleRFID(Integer transactionId, String RFID) throws InvalidTransactionIdException,
+			InvalidRFIDException, InvalidQuantityException, UnauthorizedException {
+
+		System.out.println("Executing addProductToSaleRFID...");
+		if (userLoggedIn.getRole() == "")
+			throw new UnauthorizedException("User not logged in");
+		if (transactionId == null || transactionId <= 0)
+			throw new InvalidTransactionIdException("Transaction id cannot be null or <=0");
+		if (!isRfidValid(RFID))
+			throw new InvalidRFIDException("RFID not valid");
+
+		if (openSaleTransaction.getTicketNumber() == -1 || transactionId != openSaleTransaction.getTicketNumber())
+			return false;
+
+		String productCode = DAO.getBarcodeFromRfid(RFID);
+		if (productCode == "")
+			return false;
+		ProductType productType = DAO.getProductTypeByBarCode(productCode);
+		if ((productType == null) || productType.getQuantity() < 1)
+			return false; // shouldn't happen
+
+		openSaleTransaction.addProductToSaleRFID(productType, RFID);
+		boolean result = (DAO.updateQuantity(productType.getId(), -1) && DAO.sellRfid(transactionId, RFID));
+
+		return result;
+
+	}
+
+	@Override
 	public boolean deleteProductFromSale(Integer transactionId, String productCode, int amount)
 			throws InvalidTransactionIdException, InvalidProductCodeException, InvalidQuantityException,
 			UnauthorizedException {
@@ -745,6 +811,44 @@ public class EZShop implements EZShopInterface {
 
 		if (deleted && !updated)
 			this.addProductToSale(transactionId, productCode, amount);
+
+		return (deleted && updated);
+
+	}
+
+	@Override
+	public boolean deleteProductFromSaleRFID(Integer transactionId, String RFID) throws InvalidTransactionIdException,
+			InvalidRFIDException, InvalidQuantityException, UnauthorizedException {
+
+		System.out.println("Executing deleteProductFromSaleRFID...");
+		if (userLoggedIn.getRole() == "")
+			throw new UnauthorizedException("User not logged in");
+		if (transactionId == null || transactionId <= 0)
+			throw new InvalidTransactionIdException("Transaction id cannot be null or <=0");
+		if (!isRfidValid(RFID))
+			throw new InvalidRFIDException("RFID not valid");
+
+		if (openSaleTransaction.getTicketNumber() == -1 || transactionId != openSaleTransaction.getTicketNumber())
+			return false;
+
+		String productCode = openSaleTransaction.getRFIDs().get(RFID);
+		if (productCode == null)
+			return false;
+		ProductType productType = DAO.getProductTypeByBarCode(productCode);
+		if ((productType == null) || productType.getQuantity() < 1)
+			return false; // shouldn't happen
+
+		boolean deleted = openSaleTransaction.deleteProductFromSaleRFID(productCode, RFID); // false if
+																							// product
+																							// not
+		// present
+
+		boolean updated = false;
+		if (deleted == true)
+			updated = (DAO.updateQuantity(productType.getId(), 1) && DAO.returnRfid(RFID));
+
+		if (deleted && !updated)
+			this.addProductToSaleRFID(transactionId, RFID);
 
 		return (deleted && updated);
 
@@ -929,11 +1033,8 @@ public class EZShop implements EZShopInterface {
 		else if (!isBarcodeValid(productCode))
 			throw new InvalidProductCodeException("invalid barcode: barcode does not respect GTIN specifications");
 
-		if (openReturnTransaction.getReturnId() == -1 || returnId != openReturnTransaction.getReturnId()) // the
-																											// transaction
-																											// does
-			// not exist
-			return false;
+		if (openReturnTransaction.getReturnId() == -1 || returnId != openReturnTransaction.getReturnId())
+			return false; // the transaction does not exist
 
 		ProductType productType = DAO.getProductTypeByBarCode(productCode); // could throw InvalidProductCodeException
 		// System.out.println(productType);
@@ -941,6 +1042,38 @@ public class EZShop implements EZShopInterface {
 			return false;
 
 		boolean result = openReturnTransaction.returnProduct(productType, amount);
+
+		return result;
+
+	}
+
+	@Override
+	public boolean returnProductRFID(Integer returnId, String RFID)
+			throws InvalidTransactionIdException, InvalidRFIDException, UnauthorizedException {
+
+		System.out.println("Executing returnProductRFID...");
+		if (userLoggedIn.getRole() == "")
+			throw new UnauthorizedException("User not logged in");
+		if (returnId == null || returnId <= 0)
+			throw new InvalidTransactionIdException("Transaction id cannot be null or <=0");
+		if (!isRfidValid(RFID))
+			throw new InvalidRFIDException("RFID not valid");
+
+		if (openReturnTransaction.getReturnId() == -1 || returnId != openReturnTransaction.getReturnId())
+			return false;
+
+		String productCode = DAO.getBarcodeFromRfid(RFID);
+		if (productCode == "")
+			return false;
+		ProductType productType = DAO.getProductTypeByBarCode(productCode);
+		if ((productType == null) || productType.getQuantity() < 1)
+			return false; // shouldn't happen
+
+		Integer ticketNumber = DAO.getTicketNumberFromRfid(RFID);
+		if (ticketNumber == null || ticketNumber != openReturnTransaction.getSaleTransaction().getTicketNumber())
+			return false; // product not in the transaction
+
+		boolean result = openReturnTransaction.returnProductRFID(productType, RFID);
 
 		return result;
 
@@ -1151,34 +1284,5 @@ public class EZShop implements EZShopInterface {
 		return balance;
 
 	}
-    
-    @Override
-    public boolean recordOrderArrivalRFID(Integer orderId, String RFIDfrom) throws InvalidOrderIdException, UnauthorizedException, 
-InvalidLocationException, InvalidRFIDException {
-        return false;
-    }
-    
 
-    @Override
-    public boolean addProductToSaleRFID(Integer transactionId, String RFID) throws InvalidTransactionIdException, InvalidRFIDException, InvalidQuantityException, UnauthorizedException{
-        return false;
-    }
-    
-    
-
-    @Override
-    public boolean deleteProductFromSaleRFID(Integer transactionId, String RFID) throws InvalidTransactionIdException, InvalidRFIDException, InvalidQuantityException, UnauthorizedException{
-        return false;
-    }
-
-    
-
-    @Override
-    public boolean returnProductRFID(Integer returnId, String RFID) throws InvalidTransactionIdException, InvalidRFIDException, UnauthorizedException 
-    {
-        return false;
-    }
-
-
-    
 }

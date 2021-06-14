@@ -1,5 +1,6 @@
 package it.polito.ezshop.data.Implementations;
 
+import java.util.HashMap;
 import java.util.List;
 
 import it.polito.ezshop.data.ProductType;
@@ -15,6 +16,7 @@ public class ReturnTransactionImpl implements it.polito.ezshop.data.ReturnTransa
 	private int amount;
 	private double price;
 	private SaleTransactionImpl saleTransaction;
+	private HashMap<String, String> RFIDs;
 	// BalanceOperation balanceOperation; isn't necessary because no getReturnTransaction exists
 
 	public ReturnTransactionImpl(Integer returnId) {
@@ -27,6 +29,7 @@ public class ReturnTransactionImpl implements it.polito.ezshop.data.ReturnTransa
 		this.amount = 0;
 		this.price = 0;
 		this.saleTransaction = null;
+		this.RFIDs = new HashMap<String, String>();
 
 	}
 
@@ -45,6 +48,33 @@ public class ReturnTransactionImpl implements it.polito.ezshop.data.ReturnTransa
 					this.setDiscountRate(entry.getDiscountRate());
 					this.setAmount(amount);
 					this.setPrice(this.getPrice() + entry.getPricePerUnit() * amount * (1 - entry.getDiscountRate()));
+					updated = true;
+					// System.out.println(entry);
+				}
+				break;
+			}
+		}
+		// if (updated == false) productCode was not in the transaction
+		return updated;
+
+	}
+
+	public boolean returnProductRFID(ProductType productType, String RFID) {
+
+		List<TicketEntry> entries = this.getSaleTransaction().getEntries();
+		Boolean updated = false;
+		for (TicketEntry entry : entries) {
+			if (entry.getBarCode().equals(productType.getBarCode())) {
+				if (1 > entry.getAmount()) // the amount is higher than the one in the sale transaction
+					updated = false;
+				else {
+					this.setProductId(productType.getId());
+					this.setProductCode(entry.getBarCode());
+					this.setPricePerUnit(entry.getPricePerUnit());
+					this.setDiscountRate(entry.getDiscountRate());
+					this.setAmount(1);
+					this.setPrice(this.getPrice() + entry.getPricePerUnit() * 1 * (1 - entry.getDiscountRate()));
+					this.getRFIDs().put(RFID, productType.getBarCode());
 					updated = true;
 					// System.out.println(entry);
 				}
@@ -166,12 +196,24 @@ public class ReturnTransactionImpl implements it.polito.ezshop.data.ReturnTransa
 
 	}
 
+	public HashMap<String, String> getRFIDs() {
+
+		return RFIDs;
+
+	}
+
+	public void setRFIDs(HashMap<String, String> rFIDs) {
+
+		RFIDs = rFIDs;
+
+	}
+
 	@Override
 	public String toString() {
 
 		return "ReturnTransactionImpl [returnId=" + returnId + ", productId=" + productId + ", productCode="
-				+ productCode + ", pricePerUnit=" + pricePerUnit + ", amount=" + amount + ", price=" + price
-				+ ", saleTransaction=" + saleTransaction + "]";
+				+ productCode + ", pricePerUnit=" + pricePerUnit + ", discountRate=" + discountRate + ", amount="
+				+ amount + ", price=" + price + ", saleTransaction=" + saleTransaction + ", RFIDs=" + RFIDs + "]";
 
 	}
 

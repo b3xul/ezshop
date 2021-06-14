@@ -17,6 +17,7 @@ import it.polito.ezshop.data.EZShopInterface;
 import it.polito.ezshop.exceptions.InvalidCreditCardException;
 import it.polito.ezshop.exceptions.InvalidProductCodeException;
 import it.polito.ezshop.exceptions.InvalidQuantityException;
+import it.polito.ezshop.exceptions.InvalidRFIDException;
 import it.polito.ezshop.exceptions.InvalidTransactionIdException;
 import it.polito.ezshop.exceptions.UnauthorizedException;
 
@@ -25,16 +26,27 @@ public class UC8TestClass {
 	static EZShopInterface ezShop;
 	static Integer transactionId;
 	static Integer transactionId2;
+	static Integer transactionId3;
 	static String barcode = "12637482635892";
 	static String barcode2 = "6253478956438";
 	static String creditCard = "4485370086510891";
 	static String creditCard2 = "5100293991053009";
+	int orderId;
+	String RFID = "000000100000";
 
 	@Before
 	public void init() {
 
 		ezShop = new it.polito.ezshop.data.EZShop();
 		ezShop.reset();
+		try (Connection conn = DriverManager.getConnection("jdbc:sqlite:creditCards.sqlite");) {
+			String updateCard = "UPDATE creditCards SET balance = 150 WHERE creditCardNumber = 4485370086510891";
+			PreparedStatement pstmt = conn.prepareStatement(updateCard);
+			pstmt.executeUpdate();
+			pstmt.close();
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
 		try {
 			ezShop.createUser("admin", "admin", "Administrator");
 			ezShop.login("admin", "admin");
@@ -43,6 +55,10 @@ public class UC8TestClass {
 			Integer productId = ezShop.createProductType("biscotti", "12637482635892", 1.5, "piccoli");
 			ezShop.updatePosition(productId, "2-aisle-2");
 			ezShop.updateQuantity(productId, 250);
+
+			ezShop.recordBalanceUpdate(1000);
+			orderId = ezShop.payOrderFor("12637482635892", 5, 3.0);
+			assertTrue(ezShop.recordOrderArrivalRFID(orderId, RFID));
 
 			Integer productId2 = ezShop.createProductType("insalata", "6253478956438", 2, "in busta");
 			ezShop.updatePosition(productId2, "3-aisle-3");
@@ -74,16 +90,16 @@ public class UC8TestClass {
 
 			assertEquals(3, ezShop.receiveCashPayment(transactionId2, 15), 0.001);
 
+			transactionId3 = ezShop.startSaleTransaction();
+			assertEquals(Integer.valueOf(3), transactionId3);
+			assertTrue(ezShop.addProductToSaleRFID(transactionId3, "000000100000"));
+			assertTrue(ezShop.addProductToSaleRFID(transactionId3, "000000100001"));
+			assertTrue(ezShop.endSaleTransaction(transactionId3));
+
+			assertEquals(3, ezShop.receiveCashPayment(transactionId2, 15), 0.001);
+
 		} catch (Exception e) {
 			e.printStackTrace();
-		}
-		try (Connection conn = DriverManager.getConnection("jdbc:sqlite:creditCards.sqlite");) {
-			String updateCard = "UPDATE creditCards SET balance = 150 WHERE creditCardNumber = 4485370086510891";
-			PreparedStatement pstmt = conn.prepareStatement(updateCard);
-			pstmt.executeUpdate();
-			pstmt.close();
-		} catch (Exception ex) {
-			ex.printStackTrace();
 		}
 
 	}
@@ -132,6 +148,24 @@ public class UC8TestClass {
 	}
 
 	@Test
+	public void testCaseScenario8_2b() {
+
+		// Scenario 8-2 Return transaction of product type X completed, cash
+		try {
+
+			Integer returnId = ezShop.startReturnTransaction(transactionId3);
+			assertEquals(Integer.valueOf(1), returnId);
+			assertTrue(ezShop.returnProductRFID(returnId, RFID));
+			assertEquals(1.5, ezShop.returnCashPayment(returnId), 0.001);
+			assertTrue(ezShop.endReturnTransaction(returnId, true));
+
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+
+	}
+
+	@Test
 	public void testCaseScenario8_3() {
 
 		// Scenario 8-3 Delete return transaction
@@ -141,6 +175,25 @@ public class UC8TestClass {
 			assertEquals(Integer.valueOf(1), returnId);
 			assertTrue(ezShop.returnProduct(returnId, barcode, 2));
 			assertEquals(3, ezShop.returnCashPayment(returnId), 0.001);
+			assertTrue(ezShop.endReturnTransaction(returnId, true));
+			assertTrue(ezShop.deleteReturnTransaction(returnId));
+
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+
+	}
+
+	@Test
+	public void testCaseScenario8_3b() {
+
+		// Scenario 8-3 Delete return transaction (RFID)
+		try {
+
+			Integer returnId = ezShop.startReturnTransaction(transactionId3);
+			assertEquals(Integer.valueOf(1), returnId);
+			assertTrue(ezShop.returnProductRFID(returnId, RFID));
+			assertEquals(1.5, ezShop.returnCashPayment(returnId), 0.001);
 			assertTrue(ezShop.endReturnTransaction(returnId, true));
 			assertTrue(ezShop.deleteReturnTransaction(returnId));
 
@@ -171,7 +224,7 @@ public class UC8TestClass {
 			assertThrows(InvalidTransactionIdException.class, () -> {
 				ezShop.startReturnTransaction(-1);
 			});
-			assertEquals(Integer.valueOf(-1), ezShop.startReturnTransaction(3));
+			assertEquals(Integer.valueOf(-1), ezShop.startReturnTransaction(4));
 
 		} catch (Exception ex) {
 			ex.printStackTrace();
@@ -222,7 +275,7 @@ public class UC8TestClass {
 				ezShop.returnProduct(returnId, "12345678909aa", 2);
 			});
 			assertThrows(InvalidProductCodeException.class, () -> {
-				ezShop.returnProduct(returnId, "123456889098", 2);
+				ezShop.returnProduct(returnId, "1234568890983", 2);
 			});
 
 			assertFalse(ezShop.returnProduct(returnId, "45637289084174", 2)); // the product to be returned does not
@@ -400,6 +453,62 @@ public class UC8TestClass {
 
 		} catch (Exception e) {
 			e.printStackTrace();
+		}
+
+	}
+
+	@Test
+	public void testCaseScenario8_10() {
+
+		// Scenario 8-10 returnProductRFID exceptions
+		try {
+			Integer returnId = ezShop.startReturnTransaction(transactionId3);
+
+			ezShop.logout();
+			assertThrows(UnauthorizedException.class, () -> {
+				ezShop.returnProductRFID(returnId, RFID);
+			});
+
+			ezShop.login("admin", "admin");
+			assertThrows(InvalidTransactionIdException.class, () -> {
+				ezShop.returnProductRFID(null, RFID);
+			});
+			assertThrows(InvalidTransactionIdException.class, () -> {
+				ezShop.returnProductRFID(0, RFID);
+			});
+			assertThrows(InvalidTransactionIdException.class, () -> {
+				ezShop.returnProductRFID(-1, RFID);
+			});
+
+			assertThrows(InvalidRFIDException.class, () -> {
+				ezShop.returnProductRFID(returnId, "");
+			});
+			assertThrows(InvalidRFIDException.class, () -> {
+				ezShop.returnProductRFID(returnId, null);
+			});
+			assertThrows(InvalidRFIDException.class, () -> {
+				ezShop.returnProductRFID(returnId, "123");
+			});
+			assertThrows(InvalidRFIDException.class, () -> {
+				ezShop.returnProductRFID(returnId, "12345678909aa");
+			});
+			assertThrows(InvalidRFIDException.class, () -> {
+				ezShop.returnProductRFID(returnId, "1234568890983");
+			});
+
+			assertFalse(ezShop.returnProductRFID(returnId, "000000000009")); // the product does not exist
+
+			assertFalse(ezShop.returnProductRFID(returnId, "000000100004")); // the product to be returned is not in the
+																				// saleTransaction
+
+			assertFalse(ezShop.returnProductRFID(2, RFID)); // returnId != openReturnTransaction.getReturnId()
+
+			ezShop.endReturnTransaction(returnId, true);
+			ezShop.deleteReturnTransaction(returnId);
+			assertFalse(ezShop.returnProductRFID(returnId, RFID)); // openSaleTransaction.getTicketNumber()==
+
+		} catch (Exception ex) {
+			ex.printStackTrace();
 		}
 
 	}

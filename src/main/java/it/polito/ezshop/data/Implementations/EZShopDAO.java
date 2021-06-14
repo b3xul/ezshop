@@ -10,6 +10,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import it.polito.ezshop.data.BalanceOperation;
 import it.polito.ezshop.data.Customer;
@@ -18,6 +19,7 @@ import it.polito.ezshop.data.ProductType;
 import it.polito.ezshop.data.TicketEntry;
 import it.polito.ezshop.data.User;
 import it.polito.ezshop.exceptions.InvalidLocationException;
+import it.polito.ezshop.exceptions.InvalidRFIDException;
 
 public class EZShopDAO {
 
@@ -46,6 +48,18 @@ public class EZShopDAO {
 		} catch (SQLException ex) {
 			System.out.println(ex.getMessage());
 		}
+
+	}
+
+	public String rfidConversion(int rfid) {
+
+		String s = String.valueOf(rfid);
+		int l = s.length();
+
+		for (; l < 12; l++) {
+			s = "0" + s;
+		}
+		return s;
 
 	}
 
@@ -78,6 +92,9 @@ public class EZShopDAO {
 			pstmt = conn.prepareStatement(sql);
 			pstmt.executeUpdate();
 			sql = "DELETE FROM Users";
+			pstmt = conn.prepareStatement(sql);
+			pstmt.executeUpdate();
+			sql = "DELETE FROM RFID";
 			pstmt = conn.prepareStatement(sql);
 			pstmt.executeUpdate();
 			sql = "UPDATE sqlite_sequence SET seq=0";
@@ -806,6 +823,89 @@ public class EZShopDAO {
 
 	}
 
+	public boolean recordOrderArrivalRFID(Integer orderId, String RFIDfrom)
+			throws InvalidLocationException, InvalidRFIDException {
+
+		boolean valid = false;
+		Connection conn = null;
+		String barcode = null;
+		int qty = 0;
+		String location = null;
+		String rfid = null;
+
+		try {
+			conn = dbAccess();
+			String sql = "SELECT productCode, quantity, status FROM order_ WHERE orderId = ? AND status = ?";
+			PreparedStatement statement = conn.prepareStatement(sql);
+			statement.setInt(1, orderId);
+			statement.setString(2, "PAYED");
+			ResultSet rs = statement.executeQuery();
+			if (rs.next()) {
+				barcode = rs.getString("productCode");
+				qty = rs.getInt("quantity");
+			} else {
+				System.out.println("There is no PAYED order with this id");
+				return valid;
+			}
+			String sql2 = "SELECT location FROM product WHERE barcode = ?";
+			PreparedStatement statement2 = conn.prepareStatement(sql2);
+			statement2.setString(1, barcode);
+			ResultSet rs2 = statement2.executeQuery();
+			location = rs2.getString("location");
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		} finally {
+			dbClose(conn);
+		}
+		if (location.equals("") || location.equals(" "))
+			throw new InvalidLocationException("The product type has no location assigned");
+		for (int i = 0; i < qty; i++) {
+			try {
+				conn = dbAccess();
+				rfidConversion(Integer.parseInt(RFIDfrom) + i);
+				String sql3 = "SELECT rfid FROM RFID where rfid = ?";
+				PreparedStatement statement3 = conn.prepareStatement(sql3);
+				statement3.setString(1, rfidConversion(Integer.parseInt(RFIDfrom) + i));
+				ResultSet rs3 = statement3.executeQuery();
+				rfid = rs3.getString("rfid");
+			} catch (Exception e) {
+				System.out.println(e.getMessage());
+			} finally {
+				dbClose(conn);
+			}
+			if (rfid != null)
+				throw new InvalidRFIDException("Invalid RFID: it is not unique");
+		}
+		try {
+			conn = dbAccess();
+			for (int i = 0; i < qty; i++) {
+				String sql4 = "INSERT INTO RFID(barcode, rfid) VALUES(?,?)";
+				PreparedStatement statement4 = conn.prepareStatement(sql4);
+				statement4.setString(1, barcode);
+				statement4.setString(2, rfidConversion(Integer.parseInt(RFIDfrom) + i));
+				statement4.executeUpdate();
+			}
+			String sql5 = "UPDATE order_ SET status = ? WHERE orderId = ?";
+			PreparedStatement statement5 = conn.prepareStatement(sql5);
+			statement5.setString(1, "COMPLETED");
+			statement5.setInt(2, orderId);
+			statement5.executeUpdate();
+			String sql6 = "UPDATE product SET quantity = quantity + ? WHERE barcode = ?";
+			PreparedStatement statement6 = conn.prepareStatement(sql6);
+			statement6.setInt(1, qty);
+			statement6.setString(2, barcode);
+			statement6.executeUpdate();
+			valid = true;
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		} finally {
+			dbClose(conn);
+		}
+
+		return valid;
+
+	}
+
 	public List<Order> getAllOrders() {
 
 		List<Order> orders = new ArrayList<Order>();
@@ -1112,6 +1212,8 @@ public class EZShopDAO {
 		// String getNextAutoincrement = "SELECT seq FROM sqlite_sequence WHERE name=\"saleTransaction\"";
 		String insertSale = "INSERT INTO saleTransaction(price,discountRate,creditCard,balanceId) VALUES(?,?,?,?)";
 		String insertTicketEntry = "INSERT INTO ticketEntry(ticketNumber,barCode,productDescription,pricePerUnit,discountRate,amount) VALUES(?,?,?,?,?,?)";
+		String insertSoldRFIDs = "UPDATE RFID SET ticketNumber=? WHERE rfid=?";
+
 		Connection conn = this.dbAccess();
 		try {
 			// Statement stmt = conn.createStatement();
@@ -1141,6 +1243,14 @@ public class EZShopDAO {
 				pstmt.executeUpdate();
 				pstmt.close();
 			}
+			for (Map.Entry<String, String> entry : openSaleTransaction.getRFIDs().entrySet()) {
+				// InsertTicketEntry
+				pstmt = conn.prepareStatement(insertSoldRFIDs);
+				pstmt.setInt(1, openSaleTransaction.getTicketNumber());
+				pstmt.setString(2, entry.getKey());
+				pstmt.executeUpdate();
+				pstmt.close();
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			return false;
@@ -1156,6 +1266,7 @@ public class EZShopDAO {
 		String getSale = "SELECT price,discountRate,creditCard,balanceId FROM saleTransaction WHERE ticketNumber=?";
 		// String getBalance = "SELECT balanceId,date,money,type FROM balanceOperation WHERE balanceId=?";
 		String getTicketEntries = "SELECT barCode,productDescription,pricePerUnit,discountRate,amount FROM ticketEntry WHERE ticketNumber=?";
+		String getRFIDs = "SELECT rfid, barcode FROM RFID WHERE ticketNumber=?";
 		SaleTransactionImpl result = null;
 		Connection conn = this.dbAccess();
 		try {
@@ -1195,6 +1306,13 @@ public class EZShopDAO {
 						rs.getDouble("pricePerUnit"), rs.getDouble("discountRate"), rs.getInt("amount")));
 			}
 			// System.out.println(result);
+			// getRFIDs
+			pstmt = conn.prepareStatement(getRFIDs);
+			pstmt.setInt(1, transactionId);
+			rs = pstmt.executeQuery();
+			while (rs.next()) {
+				result.getRFIDs().put(rs.getString("rfid"), rs.getString("barcode"));
+			}
 			pstmt.close();
 			rs.close();
 		} catch (SQLException e) {
@@ -1217,14 +1335,21 @@ public class EZShopDAO {
 				this.updateQuantity((this.getProductTypeByBarCode(entry.getBarCode())).getId(), entry.getAmount());
 			}
 
-			// 2. delete all ticketEntries related to that saleTransaction
-			String deleteTickets = "DELETE from ticketEntry WHERE ticketNumber = ?";
-			PreparedStatement pstmt = conn.prepareStatement(deleteTickets);
+			// 2. delete all rfids sold in that saleTransaction
+			String deleteRFIDs = "UPDATE RFID SET ticketNumber = null WHERE ticketNumber=?";
+			PreparedStatement pstmt = conn.prepareStatement(deleteRFIDs);
 			pstmt.setInt(1, saleTransaction.getTicketNumber());
 			pstmt.executeUpdate();
 			pstmt.close();
 
-			// 3. delete the saleTransaction
+			// 3. delete all ticketEntries related to that saleTransaction
+			String deleteTickets = "DELETE from ticketEntry WHERE ticketNumber = ?";
+			pstmt = conn.prepareStatement(deleteTickets);
+			pstmt.setInt(1, saleTransaction.getTicketNumber());
+			pstmt.executeUpdate();
+			pstmt.close();
+
+			// 4. delete the saleTransaction
 			String deleteSake = "DELETE FROM saleTransaction WHERE ticketNumber = ?";
 			pstmt = conn.prepareStatement(deleteSake);
 			pstmt.setInt(1, saleTransaction.getTicketNumber());
@@ -1306,7 +1431,6 @@ public class EZShopDAO {
 
 		Connection conn = dbAccess();
 		try {
-			conn.setAutoCommit(false); // single transaction on the database
 			// 1. close the return transaction
 			String insertReturn = "INSERT INTO returnTransaction(productId,productCode,pricePerUnit,discountRate,amount,price,ticketNumber) VALUES(?,?,?,?,?,?,?)";
 			PreparedStatement pstmt = conn.prepareStatement(insertReturn);
@@ -1350,9 +1474,19 @@ public class EZShopDAO {
 			pstmt.setInt(2, openReturnTransaction.getSaleTransaction().getTicketNumber());
 			pstmt.executeUpdate();
 			pstmt.close();
-			conn.commit();
 			// 4. increases the product quantity available on the shelves
-			updateQuantity(openReturnTransaction.getProductId(), openReturnTransaction.getAmount());
+			this.updateQuantity(openReturnTransaction.getProductId(), openReturnTransaction.getAmount());
+			// 5. return the rfids present inside the return transaction
+			String insertReturnedRFIDs = "UPDATE RFID SET ticketNumber=null, returnId=? WHERE rfid=?";
+			for (Map.Entry<String, String> entry : openReturnTransaction.getRFIDs().entrySet()) {
+				// InsertTicketEntry
+				pstmt = conn.prepareStatement(insertReturnedRFIDs);
+				pstmt.setInt(1, openReturnTransaction.getReturnId());
+				pstmt.setString(2, entry.getKey());
+				pstmt.executeUpdate();
+				pstmt.close();
+			}
+
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			return false;
@@ -1366,6 +1500,7 @@ public class EZShopDAO {
 	public ReturnTransactionImpl getReturnTransaction(Integer returnId) {
 
 		String getReturn = "SELECT productId,productCode,pricePerUnit,discountRate,amount,price,ticketNumber FROM returnTransaction WHERE returnId=?";
+		String getRFIDs = "SELECT rfid, barcode FROM RFID WHERE returnId=?";
 		ReturnTransactionImpl returnTransaction = null;
 		Connection conn = this.dbAccess();
 		try {
@@ -1385,6 +1520,12 @@ public class EZShopDAO {
 			returnTransaction.setPrice(rs.getDouble("price"));
 			returnTransaction.setSaleTransaction(this.getSaleTransaction(rs.getInt("ticketNumber")));
 			// System.out.println(result.getTicketNumber() + " " + result.getDiscountRate());
+			pstmt = conn.prepareStatement(getRFIDs);
+			pstmt.setInt(1, returnId);
+			rs = pstmt.executeQuery();
+			while (rs.next()) {
+				returnTransaction.getRFIDs().put(rs.getString("rfid"), rs.getString("barcode"));
+			}
 			pstmt.close();
 			rs.close();
 		} catch (SQLException e) {
@@ -1433,7 +1574,14 @@ public class EZShopDAO {
 					break;
 				}
 			}
-			// 5. close the return transaction
+			// 5. resell rfids
+			String resellRFIDs = "UPDATE RFID SET ticketNumber=?, returnId=null WHERE returnId=?";
+			pstmt = conn.prepareStatement(resellRFIDs);
+			pstmt.setInt(1, returnTransaction.getSaleTransaction().getTicketNumber());
+			pstmt.setInt(2, returnTransaction.getReturnId());
+			pstmt.executeUpdate();
+			pstmt.close();
+			// 6. close the return transaction
 			String deleteReturn = "DELETE FROM returnTransaction WHERE returnId = ?";
 			pstmt = conn.prepareStatement(deleteReturn);
 			pstmt.setInt(1, returnTransaction.getReturnId());
@@ -1593,6 +1741,87 @@ public class EZShopDAO {
 			dbClose(conn);
 		}
 		return balance;
+
+	}
+
+	public boolean sellRfid(Integer ticketNumber, String rfid) {
+
+		boolean result = false;
+		Connection conn = null;
+		try {
+			conn = dbAccess();
+			String sql = "UPDATE RFID SET ticketNumber=? WHERE rfid=?";
+			PreparedStatement pstmt = conn.prepareStatement(sql);
+			pstmt.setInt(1, ticketNumber);
+			pstmt.setString(2, rfid);
+			pstmt.executeUpdate();
+			result = true;
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		} finally {
+			dbClose(conn);
+		}
+		return result;
+
+	}
+
+	public boolean returnRfid(String rfid) {
+
+		boolean result = false;
+		Connection conn = null;
+		try {
+			conn = dbAccess();
+			String sql = "UPDATE RFID SET ticketNumber=null WHERE rfid=?";
+			PreparedStatement pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, rfid);
+			pstmt.executeUpdate();
+			result = true;
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		} finally {
+			dbClose(conn);
+		}
+		return result;
+
+	}
+
+	public String getBarcodeFromRfid(String rfid) {
+
+		String barcode = "";
+		Connection conn = null;
+		try {
+			conn = dbAccess();
+			String sql = "SELECT barcode FROM RFID WHERE rfid = '" + rfid + "'";
+			Statement statement;
+			statement = conn.createStatement();
+			ResultSet result = statement.executeQuery(sql);
+			barcode = result.getString("barcode");
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		} finally {
+			dbClose(conn);
+		}
+		return barcode;
+
+	}
+
+	public Integer getTicketNumberFromRfid(String rfid) {
+
+		Integer ticketNumber = null;
+		Connection conn = null;
+		try {
+			conn = dbAccess();
+			String sql = "SELECT ticketNumber FROM RFID WHERE rfid = '" + rfid + "'";
+			Statement statement;
+			statement = conn.createStatement();
+			ResultSet result = statement.executeQuery(sql);
+			ticketNumber = result.getInt("ticketNumber");
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		} finally {
+			dbClose(conn);
+		}
+		return ticketNumber;
 
 	}
 
